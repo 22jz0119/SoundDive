@@ -25,6 +25,8 @@ public class DBManager {
 		}
 	}
 	
+	
+	
 	/**
 	 * インスタンスを取得する
 	 * @return self
