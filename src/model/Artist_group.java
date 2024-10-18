@@ -2,7 +2,7 @@ package model;
 
 import java.time.LocalDate;
 
-public class Artist_group_table {
+public class Artist_group {
 	private int id;
 	private int user_id;
 	private String account_name;
@@ -52,7 +52,7 @@ public class Artist_group_table {
 	public void setRating_star(String rating_star) {
 		this.rating_star = rating_star;
 	}
-	public Artist_group_table(int id, int user_id, String account_name, String picture_image_movie,
+	public Artist_group(int id, int user_id, String account_name, String picture_image_movie,
 			LocalDate create_date, LocalDate update_date, String rating_star) {
 		super();
 		this.id = id;
