@@ -3,38 +3,24 @@ package model;
 import java.util.Date;
 
 public class User {
-    private int id; // NUMBER → int
-    private String name; // VARCHAR2(255) → String
-    private String password; // VARCHAR2(255) → String
-    private long telNumber; // NUMBER → long (電話番号などの大きい値)
-    private String address; // VARCHAR2(255) → String
-    private Date createDate; // DATE → java.util.Date
-    private Date updateDate; // DATE → java.util.Date
 
-    // コンストラクタ
-    public User() {
-    }
+    private Long id;
+    private String name;
+    private String password;
+    private Long telNumber;
+    private String address;
+    private Date createDate;
+    private Date updateDate;
 
-    public User(int id, String name, String password, long telNumber, String address, Date createDate, Date updateDate) {
-        this.id = id;
-        this.name = name;
-        this.password = password;
-        this.telNumber = telNumber;
-        this.address = address;
-        this.createDate = createDate;
-        this.updateDate = updateDate;
-    }
-
-    // IDのゲッターとセッター
-    public int getId() {
+    // Getters and Setters
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    // 名前のゲッターとセッター
     public String getName() {
         return name;
     }
@@ -43,7 +29,6 @@ public class User {
         this.name = name;
     }
 
-    // パスワードのゲッターとセッター
     public String getPassword() {
         return password;
     }
@@ -52,16 +37,14 @@ public class User {
         this.password = password;
     }
 
-    // 電話番号のゲッターとセッター
-    public long getTelNumber() {
+    public Long getTelNumber() {
         return telNumber;
     }
 
-    public void setTelNumber(long telNumber) {
+    public void setTelNumber(Long telNumber) {
         this.telNumber = telNumber;
     }
 
-    // 住所のゲッターとセッター
     public String getAddress() {
         return address;
     }
@@ -70,7 +53,6 @@ public class User {
         this.address = address;
     }
 
-    // 作成日のゲッターとセッター
     public Date getCreateDate() {
         return createDate;
     }
@@ -79,7 +61,6 @@ public class User {
         this.createDate = createDate;
     }
 
-    // 更新日のゲッターとセッター
     public Date getUpdateDate() {
         return updateDate;
     }
@@ -88,4 +69,5 @@ public class User {
         this.updateDate = updateDate;
     }
 }
+
 
