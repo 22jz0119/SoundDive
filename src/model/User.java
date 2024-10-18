@@ -68,6 +68,20 @@ public class User {
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
+
+	public User(Long id, String name, String password, Long telNumber, String address, Date createDate,
+			Date updateDate) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.password = password;
+		this.telNumber = telNumber;
+		this.address = address;
+		this.createDate = createDate;
+		this.updateDate = updateDate;
+	}
+    
+    
 }
 
 
