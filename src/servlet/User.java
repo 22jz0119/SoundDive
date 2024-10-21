@@ -2,8 +2,6 @@ package servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,64 +9,75 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet implementation class Oser
- */
+import dao.DBManager;
+import dao.UserDAO;
+
 @WebServlet("/User")
 public class User extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.setContentType("text/html");
-		response.setCharacterEncoding("Shift_JIS");
-		
-		PrintWriter out = response.getWriter();
-		
+    private static final long serialVersionUID = 1L;
+    private UserDAO userDAO;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        try {
+            // MySQL JDBCドライバーのロード
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            DBManager dbManager = new DBManager(); // DBManagerのインスタンスを初期化
+            userDAO = new UserDAO(dbManager); // UserDAOを初期化
+        } catch (ClassNotFoundException e) {
+            throw new ServletException("JDBCドライバーのロードに失敗しました", e);
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html");
+        response.setCharacterEncoding("Shift_JIS");
+
+        PrintWriter out = response.getWriter();
+
         out.println("<html>");
-        out.println("<head><title>Hello Servlet</title></head>");
+        out.println("<head><title>User Information</title></head>");
         out.println("<body>");
         out.println("<h1>Hello, World!</h1>");
-        out.println("<p>This is a simple servlet example.</p>");
-        String DATABASE_NAME = "databaseg09";
-        String PROPERTIES = "?characterEncoding=UTF-8&enabledTLSProtocols=TLSv1.2";
-//        String PROPERTIES = "?characterEncoding=UTF-8&serverTimezone=Asia/Tokyo&enabledTLSProtocols=TLSv1.2";
-        String URL = "jdbc:mysql://158.101.151.242:3306/" + DATABASE_NAME + PROPERTIES;
-//        String URL = "jdbc:mysql://158.101.151.242:3306/databaseg09?characterEncoding=UTF-8&enabledTLSProtocols=TLSv1.2";
-        //DB接続用・ユーザ定数
-        String USER = "new_root";
-        String PASS = "#98MxdslOf;lg09";
-        out.println(URL);
-        try {
-            //MySQL に接続する
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            //データベースに接続
-            Connection conn = DriverManager.getConnection(URL, USER, PASS);
+        out.println("<p>This is a simple servlet example with database interaction.</p>");
 
-            // データベースに対する処理
-            out.println("データベースに接続に成功");
-            
-            // 接続を閉じる
-            conn.close();
+        int userId = 1; // 取得したいユーザーのIDを指定
+        model.User user = userDAO.getUserById(userId); // ユーザーを取得
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        // サーブレットの応答にユーザー情報を追加
+        if (user != null) {
+            out.println("<h2>ユーザー情報</h2>");
+            out.println("<p>ユーザーID: " + user.getId() + "</p>");
+            out.println("<p>ユーザー名: " + user.getName() + "</p>");
+            out.println("<p>電話番号: " + user.getTelNumber() + "</p>");
+            out.println("<p>住所: " + user.getAddress() + "</p>");
+            out.println("<p>作成日: " + user.getCreateDate() + "</p>");
+            out.println("<p>更新日: " + user.getUpdateDate() + "</p>");
+        } else {
+            out.println("<p>ユーザーが見つかりませんでした。</p>");
         }
+
         out.println("</body>");
         out.println("</html>");
-		
-		
-	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
+        // ユーザー情報をコンソールに出力
+        if (user != null) {
+            System.out.println("ユーザー情報:");
+            System.out.println("ユーザーID: " + user.getId());
+            System.out.println("ユーザー名: " + user.getName());
+            System.out.println("電話番号: " + user.getTelNumber());
+            System.out.println("住所: " + user.getAddress());
+            System.out.println("作成日: " + user.getCreateDate());
+            System.out.println("更新日: " + user.getUpdateDate());
+        } else {
+            System.out.println("ユーザーが見つかりませんでした。");
+        }
+    }
 
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
 }

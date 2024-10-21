@@ -15,15 +15,16 @@ public class UserDAO {
         this.dbManager = dbManager;
     }
 
+    // ユーザーを挿入するメソッド
     public boolean insertUser(User user) {
-        String sql = "INSERT INTO user_table (id, us_name, us_password, us_tel_number, us_address, create_date, update_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO user (id, user_name, user_password, user_tel_number, user_address, create_date, update_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, user.getId().intValue());
+            pstmt.setInt(1, user.getId());
             pstmt.setString(2, user.getName());
             pstmt.setString(3, user.getPassword());
-            pstmt.setLong(4, user.getTelNumber());
+            pstmt.setString(4, user.getTelNumber());
             pstmt.setString(5, user.getAddress());
             pstmt.setDate(6, new Date(user.getCreateDate().getTime()));
             pstmt.setDate(7, new Date(user.getUpdateDate().getTime()));
@@ -36,21 +37,22 @@ public class UserDAO {
         return false;
     }
 
-    public User getUserById(Long id) {
-        String sql = "SELECT us_name, us_password, us_tel_number, us_address, create_date, update_date FROM user_table WHERE id = ?";
+    // IDによってユーザーを取得するメソッド
+    public User getUserById(int id) {
+        String sql = "SELECT * FROM user WHERE id = ?";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setLong(1, id);
+            pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                String name = rs.getString("us_name");
-                String password = rs.getString("us_password");
-                Long telNumber = rs.getLong("us_tel_number");
-                String address = rs.getString("us_address");
-                java.util.Date createDate = new java.util.Date(rs.getTimestamp("create_date").getTime());
-                java.util.Date updateDate = new java.util.Date(rs.getTimestamp("update_date").getTime());
+                String name = rs.getString("user_name");
+                String password = rs.getString("user_password");
+                String telNumber = rs.getString("user_tel_number");
+                String address = rs.getString("user_address");
+                Date createDate = rs.getDate("create_date");
+                Date updateDate = rs.getDate("update_date");
 
                 return new User(id, name, password, telNumber, address, createDate, updateDate);
             }
@@ -60,6 +62,7 @@ public class UserDAO {
         return null;
     }
 
+    // ユーザー情報を表示するメソッド
     public void printUser(User user) {
         if (user != null) {
             System.out.println("ユーザーID: " + user.getId());
@@ -74,5 +77,3 @@ public class UserDAO {
         }
     }
 }
-
-// UserServiceとメインメソッドを別ファイルに作成

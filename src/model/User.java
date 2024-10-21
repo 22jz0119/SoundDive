@@ -1,23 +1,22 @@
 package model;
-
-import java.util.Date;
+import java.sql.Date;
 
 public class User {
+    private int id; // 主キー: INT
+    private String name; // VARCHAR(255) と仮定
+    private String password; // VARCHAR(255) と仮定
+    private String telNumber; // BIGINT
+    private String address; // VARCHAR(255) と仮定
+    private Date createDate; // DATETIME
+    private Date updateDate; // DATETIME
 
-    private Long id;
-    private String name;
-    private String password;
-    private Long telNumber;
-    private String address;
-    private Date createDate;
-    private Date updateDate;
 
-    // Getters and Setters
-    public Long getId() {
+    // ゲッターとセッター
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -37,11 +36,11 @@ public class User {
         this.password = password;
     }
 
-    public Long getTelNumber() {
+    public String getTelNumber() {
         return telNumber;
     }
 
-    public void setTelNumber(Long telNumber) {
+    public void setTelNumber(String telNumber) {
         this.telNumber = telNumber;
     }
 
@@ -69,7 +68,7 @@ public class User {
         this.updateDate = updateDate;
     }
 
-	public User(Long id, String name, String password, Long telNumber, String address, Date createDate,
+	public User(int id, String name, String password, String telNumber, String address, Date createDate,
 			Date updateDate) {
 		super();
 		this.id = id;
@@ -83,5 +82,3 @@ public class User {
     
     
 }
-
-
