@@ -2,7 +2,7 @@ package model;
 
 import java.time.LocalDate;
 
-public class Live_artist_table {
+public class Live_artist {
 	private int id;
 	private int user_id;
 	private int livehouse_application_id;
@@ -38,7 +38,7 @@ public class Live_artist_table {
 	public void setUpdate_date(LocalDate update_date) {
 		this.update_date = update_date;
 	}
-	public Live_artist_table(int id, int user_id, int livehouse_application_id, LocalDate create_date,
+	public Live_artist(int id, int user_id, int livehouse_application_id, LocalDate create_date,
 			LocalDate update_date) {
 		super();
 		this.id = id;

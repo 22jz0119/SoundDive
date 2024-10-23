@@ -1,32 +1,29 @@
 package model;
 
-import java.time.LocalDate;
+import java.sql.Date;
 
-public class Livehouse_information {
+public class Livehouse_information{
 	private int id;
-	private String Owner_name;
-	private String equipment_information;
-	private String house_explanation_information;
-	private String livehouse_detailed_information;
-	private String livehouse_name;
-	private String live_address;
-	private int live_tel_number;
-	private LocalDate create_date;
-	private LocalDate update_date;
-	
-	
-	
+    private String oner_name;
+    private String equipment_information;
+    private String livehouse_explanation_information;
+    private String livehouse_detailed_information;
+    private String livehouse_name;
+    private String live_address;
+    private String live_tel_number;
+    private Date createDate;
+    private Date updateDate;
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getOwner_name() {
-		return Owner_name;
+	public String getOner_name() {
+		return oner_name;
 	}
-	public void setOwner_name(String owner_name) {
-		Owner_name = owner_name;
+	public void setOner_name(String oner_name) {
+		this.oner_name = oner_name;
 	}
 	public String getEquipment_information() {
 		return equipment_information;
@@ -34,11 +31,11 @@ public class Livehouse_information {
 	public void setEquipment_information(String equipment_information) {
 		this.equipment_information = equipment_information;
 	}
-	public String getHouse_explanation_information() {
-		return house_explanation_information;
+	public String getLivehouse_explanation_information() {
+		return livehouse_explanation_information;
 	}
-	public void setHouse_explanation_information(String house_explanation_information) {
-		this.house_explanation_information = house_explanation_information;
+	public void setLivehouse_explanation_information(String livehouse_explanation_information) {
+		this.livehouse_explanation_information = livehouse_explanation_information;
 	}
 	public String getLivehouse_detailed_information() {
 		return livehouse_detailed_information;
@@ -58,42 +55,39 @@ public class Livehouse_information {
 	public void setLive_address(String live_address) {
 		this.live_address = live_address;
 	}
-	public int getLive_tel_number() {
+	public String getLive_tel_number() {
 		return live_tel_number;
 	}
-	public void setLive_tel_number(int live_tel_number) {
+	public void setLive_tel_number(String live_tel_number) {
 		this.live_tel_number = live_tel_number;
 	}
-	public LocalDate getCreate_date() {
-		return create_date;
+	public Date getCreateDate() {
+		return createDate;
 	}
-	public void setCreate_date(LocalDate create_date) {
-		this.create_date = create_date;
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
 	}
-	public LocalDate getUpdate_date() {
-		return update_date;
+	public Date getUpdateDate() {
+		return updateDate;
 	}
-	public void setUpdate_date(LocalDate update_date) {
-		this.update_date = update_date;
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
 	}
-	public Livehouse_information(int id, String owner_name, String equipment_information,
-			String house_explanation_information, String livehouse_detailed_information, String livehouse_name,
-			String live_address, int live_tel_number, LocalDate create_date, LocalDate update_date) {
+	public Livehouse_information(int id, String oner_name, String equipment_information,
+			String livehouse_explanation_information, String livehouse_detailed_information, String livehouse_name,
+			String live_address, String live_tel_number, java.util.Date createDate2, java.util.Date updateDate2) {
 		super();
 		this.id = id;
-		Owner_name = owner_name;
+		this.oner_name = oner_name;
 		this.equipment_information = equipment_information;
-		this.house_explanation_information = house_explanation_information;
+		this.livehouse_explanation_information = livehouse_explanation_information;
 		this.livehouse_detailed_information = livehouse_detailed_information;
 		this.livehouse_name = livehouse_name;
 		this.live_address = live_address;
 		this.live_tel_number = live_tel_number;
-		this.create_date = create_date;
-		this.update_date = update_date;
+		this.createDate = (Date) createDate2;
+		this.updateDate = (Date) updateDate2;
 	}
-
-	
-	
 	
 	
 }

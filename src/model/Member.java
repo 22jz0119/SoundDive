@@ -1,6 +1,6 @@
 package model;
 
-public class Member_table {
+public class Member {
 	private int id;
 	private int artist_group_id;
 	private String member_name;
@@ -29,7 +29,7 @@ public class Member_table {
 	public void setMember_potision(String member_potision) {
 		this.member_potision = member_potision;
 	}
-	public Member_table(int id, int artist_group_id, String member_name, String member_potision) {
+	public Member(int id, int artist_group_id, String member_name, String member_potision) {
 		super();
 		this.id = id;
 		this.artist_group_id = artist_group_id;
