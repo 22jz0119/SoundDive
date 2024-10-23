@@ -37,6 +37,7 @@ public class Artist_groupDAO {
         return false;
     }
 
+    
     // IDでArtist_groupを取得するメソッド
     public Artist_group getArtist_groupById(int id) {
         String sql = "SELECT * FROM artist_group WHERE id = ?";
