@@ -1,10 +1,10 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import model.User;
 
@@ -26,8 +26,8 @@ public class UserDAO {
             pstmt.setString(3, user.getPassword());
             pstmt.setString(4, user.getTelNumber());
             pstmt.setString(5, user.getAddress());
-            pstmt.setDate(6, new Date(user.getCreateDate().getTime()));
-            pstmt.setDate(7, new Date(user.getUpdateDate().getTime()));
+            pstmt.setTimestamp(6, user.getCreateDate());
+            pstmt.setTimestamp(7, user.getUpdateDate());
 
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0;
@@ -47,14 +47,27 @@ public class UserDAO {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                String name = rs.getString("user_name");
-                String password = rs.getString("user_password");
-                String telNumber = rs.getString("user_tel_number");
-                String address = rs.getString("user_address");
-                Date createDate = rs.getDate("create_date");
-                Date updateDate = rs.getDate("update_date");
+                return rs2model(rs); // rs2model メソッドで `User` オブジェクトを作成
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    // ログインIDとパスワードでユーザーを検索するメソッド
+    public User findByLoginIdAndPassword(String loginId, String password) {
+        String sql = "SELECT * FROM user WHERE user_login_id = ? AND user_password = ?";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-                return new User(id, name, password, telNumber, address, createDate, updateDate);
+            stmt.setString(1, loginId);
+            stmt.setString(2, password);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs2model(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -62,18 +75,17 @@ public class UserDAO {
         return null;
     }
 
-    // ユーザー情報を表示するメソッド
-    public void printUser(User user) {
-        if (user != null) {
-            System.out.println("ユーザーID: " + user.getId());
-            System.out.println("ユーザー名: " + user.getName());
-            System.out.println("パスワード: " + user.getPassword());
-            System.out.println("電話番号: " + user.getTelNumber());
-            System.out.println("住所: " + user.getAddress());
-            System.out.println("作成日: " + user.getCreateDate());
-            System.out.println("更新日: " + user.getUpdateDate());
-        } else {
-            System.out.println("ユーザーが見つかりませんでした。");
-        }
+    // ResultSet を User オブジェクトに変換するメソッド
+    private User rs2model(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        String loginId = rs.getString("user_login_id");
+        String name = rs.getString("user_name");
+        String password = rs.getString("user_password");
+        String telNumber = rs.getString("user_tel_number");
+        String address = rs.getString("user_address");
+        Timestamp createDate = rs.getTimestamp("create_date");
+        Timestamp updateDate = rs.getTimestamp("update_date");
+
+        return new User(id, loginId, name, password, telNumber, address, createDate, updateDate);
     }
 }

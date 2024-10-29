@@ -1,15 +1,16 @@
 package model;
-import java.sql.Date;
+
+import java.sql.Timestamp;
 
 public class User {
     private int id; // 主キー: INT
+    private String login_id;
     private String name; // VARCHAR(255) と仮定
     private String password; // VARCHAR(255) と仮定
     private String telNumber; // BIGINT
     private String address; // VARCHAR(255) と仮定
-    private Date createDate; // DATETIME
-    private Date updateDate; // DATETIME
-
+    private Timestamp createDate; // DATETIME
+    private Timestamp updateDate; // DATETIME
 
     // ゲッターとセッター
     public int getId() {
@@ -18,6 +19,14 @@ public class User {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getLogin_id() {
+        return login_id;
+    }
+
+    public void setLogin_id(String login_id) {
+        this.login_id = login_id;
     }
 
     public String getName() {
@@ -52,33 +61,31 @@ public class User {
         this.address = address;
     }
 
-    public Date getCreateDate() {
+    public Timestamp getCreateDate() { // 修正：Timestamp型
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(Timestamp createDate) { // 修正：Timestamp型
         this.createDate = createDate;
     }
 
-    public Date getUpdateDate() {
+    public Timestamp getUpdateDate() { // 修正：Timestamp型
         return updateDate;
     }
 
-    public void setUpdateDate(Date updateDate) {
+    public void setUpdateDate(Timestamp updateDate) { // 修正：Timestamp型
         this.updateDate = updateDate;
     }
 
-	public User(int id, String name, String password, String telNumber, String address, Date createDate,
-			Date updateDate) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.password = password;
-		this.telNumber = telNumber;
-		this.address = address;
-		this.createDate = createDate;
-		this.updateDate = updateDate;
-	}
-    
-    
+    // コンストラクタ
+    public User(int id, String login_id, String name, String password, String telNumber, String address, Timestamp createDate, Timestamp updateDate) {
+        this.id = id;
+        this.login_id = login_id;
+        this.name = name;
+        this.password = password;
+        this.telNumber = telNumber;
+        this.address = address;
+        this.createDate = createDate;
+        this.updateDate = updateDate;
+    }
 }

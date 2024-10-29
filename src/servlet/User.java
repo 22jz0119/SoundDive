@@ -23,7 +23,7 @@ public class User extends HttpServlet {
         try {
             // MySQL JDBCドライバーのロード
             Class.forName("com.mysql.cj.jdbc.Driver");
-            DBManager dbManager = new DBManager(); // DBManagerのインスタンスを初期化
+            DBManager dbManager = DBManager.getInstance(); // DBManagerのインスタンスを初期化
             userDAO = new UserDAO(dbManager); // UserDAOを初期化
         } catch (ClassNotFoundException e) {
             throw new ServletException("JDBCドライバーのロードに失敗しました", e);
