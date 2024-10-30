@@ -8,63 +8,45 @@ import dao.DBManager;
 import dao.UserDAO;
 import model.User;
 
-/**
- * ログイン・ログアウト処理を行うクラス
- * 
- * @author d.sugawara
- *
- */
 public class AuthLogic {
-	/**
-	 * ログイン処理を行う
-	 * 
-	 * @param email
-	 * @param password
-	 * @return 成功時はログインしたユーザ、失敗時はnull
-	 */
-	public User login(String login_id, String password) {
-		UserDAO dao = new UserDAO(DBManager.getInstance());
-		User user = dao.findByLoginIdAndPassword(login_id, password);
+    public User login(String login_id, String password) {
+        System.out.println("Attempting to log in user with ID: " + login_id);
 
-		System.out.println(user);
-		
-		if ((user != null) && (BCrypt.checkpw(password, user.getPassword()))) {
-			
-			return user;
-		}
+        UserDAO dao = new UserDAO(DBManager.getInstance());
+        User user = dao.findByLoginId(login_id); // ユーザー情報を先に取得
 
-		return null;
-	}
-	
-	/**
-	 * ログアウト処理を行う
-	 * 
-	 * @return なし
-	 */
-	public void logout(HttpSession session) {
-		if (isLoggedIn(session)) {
-			session.removeAttribute("loginUser");
-		}
-	}
+        if (user != null) {
+            System.out.println("User found: " + user.getName());
+            // パスワードを確認
+            boolean passwordMatches = BCrypt.checkpw(password, user.getPassword());
+            System.out.println("Password matches: " + passwordMatches);
+            System.out.println("Entered password: " + password); // 追加
+            System.out.println("Stored hashed password: " + user.getPassword()); // 追加
 
-	/**
-	 * ログイン状態を確認する
-	 * 
-	 * @param session
-	 * @return ログインしていれば true、していなければ false
-	 */
-	public boolean isLoggedIn(HttpSession session) {
-		return session.getAttribute("loginUser") != null;
-	}
-	
+            if (passwordMatches) {
+                System.out.println("Login successful for user: " + user.getName());
+                return user;
+            } else {
+                System.out.println("Invalid password for user ID: " + login_id);
+            }
+        } else {
+            System.out.println("No user found with ID: " + login_id);
+        }
+        return null;
+    }
 
+    public void logout(HttpSession session) {
+        if (isLoggedIn(session)) {
+            System.out.println("Logging out user.");
+            session.removeAttribute("loginUser");
+        } else {
+            System.out.println("No user is currently logged in.");
+        }
+    }
 
-	/**
-	 * ログイン状態を確認する
-	 * @param session
-	 * @return ログインしていれば true、していなければ false
-	 */
-//	public boolean isLoggedInK(HttpSession session) {
-//		return session.getAttribute("loginUser") != null;
-//	}
+    public boolean isLoggedIn(HttpSession session) {
+        boolean loggedIn = session.getAttribute("loginUser") != null;
+        System.out.println("Is user logged in? " + loggedIn);
+        return loggedIn;
+    }
 }

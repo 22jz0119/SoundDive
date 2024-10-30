@@ -7,7 +7,7 @@ public class User {
     private String login_id;
     private String name; // VARCHAR(255) と仮定
     private String password; // VARCHAR(255) と仮定
-    private String telNumber; // BIGINT
+    private String telnumber; // BIGINT
     private String address; // VARCHAR(255) と仮定
     private Timestamp createDate; // DATETIME
     private Timestamp updateDate; // DATETIME
@@ -46,11 +46,11 @@ public class User {
     }
 
     public String getTelNumber() {
-        return telNumber;
+        return telnumber;
     }
 
     public void setTelNumber(String telNumber) {
-        this.telNumber = telNumber;
+        this.telnumber = telNumber;
     }
 
     public String getAddress() {
@@ -78,12 +78,12 @@ public class User {
     }
 
     // コンストラクタ
-    public User(int id, String login_id, String name, String password, String telNumber, String address, Timestamp createDate, Timestamp updateDate) {
+    public User(int id, String login_id, String name, String password, String telnumber, String address, Timestamp createDate, Timestamp updateDate) {
         this.id = id;
         this.login_id = login_id;
         this.name = name;
         this.password = password;
-        this.telNumber = telNumber;
+        this.telnumber = telnumber;
         this.address = address;
         this.createDate = createDate;
         this.updateDate = updateDate;
