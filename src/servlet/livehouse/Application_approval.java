@@ -8,49 +8,65 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.DBManager;
+import dao.Live_artistDAO;
+import dao.Livehouse_applicationDAO;
+import model.Live_artist;
 import model.Livehouse_application;
 
-/**
- * Servlet implementation class Application_approval
- */
 @WebServlet("/Application_approval")
 public class Application_approval extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-	public Application_approval() {
-        super();
+    private static final long serialVersionUID = 1L;
+    
+    private Livehouse_applicationDAO applicationDAO;
+    private Live_artistDAO artistDAO;
+
+    @Override
+    public void init() {
+        DBManager dbManager = DBManager.getInstance();
+        applicationDAO = new Livehouse_applicationDAO(dbManager);
+        artistDAO = new Live_artistDAO(dbManager);
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	 @Override
-	    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	        int reservationId = Integer.parseInt(request.getParameter("id")); // クエリパラメータから予約IDを取得
 
-	        // DAOを使ってデータベースから予約者名と予約日時を取得
-	        Livehouse_application reservation = dao.getReservationById(reservationId);
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String applicationIdParam = request.getParameter("applicationId");
 
-	        if (reservation != null) {
-	            // JSPにデータを渡す
-	            request.setAttribute("reservationName", reservation.getName());
-	            request.setAttribute("reservationDateTime", reservation.getDatetime());
+        // applicationIdがnullまたは空でないか確認
+        if (applicationIdParam == null || applicationIdParam.isEmpty()) {
+            response.getWriter().println("エラー: 予約IDが指定されていません。");
+            return;
+        }
 
-	            // JSPにフォワード
-	            request.getRequestDispatcher("../reservation.jsp").forward(request, response);
-	        } else {
-	            response.getWriter().println("予約情報が見つかりませんでした。");
-	        }
-	    }
+        try {
+            int applicationId = Integer.parseInt(applicationIdParam);
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response); // doPostからdoGetを呼び出す
-	}
+            // データベースから予約日時を取得
+            Livehouse_application application = applicationDAO.getLivehouse_applicationById(applicationId);
+            
+            if (application != null) {
+                Live_artist artist = artistDAO.getLive_artistById(application.getId());
 
+                if (artist != null) {
+                	request.setAttribute("reservationName", "田中 太郎");
+                	request.setAttribute("reservationDateTime", "2024年10月10日 15時");
+                	request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_approval.jsp").forward(request, response);
+                	System.out.println("JSPへのフォワードを開始します");
+
+                } else {
+                    response.getWriter().println("エラー: アーティスト情報が見つかりませんでした。");
+                }
+            } else {
+                response.getWriter().println("エラー: ライブハウス申請情報が見つかりませんでした。");
+            }
+        } catch (NumberFormatException e) {
+            response.getWriter().println("エラー: 予約IDが無効です。");
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
 }
