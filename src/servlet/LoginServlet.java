@@ -8,22 +8,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import dao.DBManager;
-import dao.UserDAO;
+import logic.AuthLogic;
 import model.User;
 
-@WebServlet("/Login")
+@WebServlet("/loginTest")
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private UserDAO userDAO;
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        DBManager dbManager = DBManager.getInstance();
-        userDAO = new UserDAO(dbManager);
-    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -32,19 +24,19 @@ public class LoginServlet extends HttpServlet {
 
         PrintWriter out = response.getWriter();
 
-        // リクエストパラメータからログインIDとパスワードを取得
+        // フォームから取得するデータ
         String loginId = request.getParameter("login_id");
         String password = request.getParameter("password");
 
-        // ログインを確認
-        User user = userDAO.findByLoginIdAndPassword(loginId, password);
+        // AuthLogicのインスタンス化
+        AuthLogic authLogic = new AuthLogic();
+        User user = authLogic.login(loginId, password);
 
-        // レスポンスとして結果を表示
-        out.println("<html>");
-        out.println("<head><title>Login Result</title></head>");
-        out.println("<body>");
-
+        out.println("<html><body>");
         if (user != null) {
+            // ログイン成功時にセッションにユーザー情報を保存
+            HttpSession session = request.getSession();
+            session.setAttribute("loginUser", user);
             out.println("<h2>ログイン成功</h2>");
             out.println("<p>ユーザーID: " + user.getId() + "</p>");
             out.println("<p>ユーザー名: " + user.getName() + "</p>");
@@ -52,9 +44,7 @@ public class LoginServlet extends HttpServlet {
             out.println("<h2>ログイン失敗</h2>");
             out.println("<p>ログインIDまたはパスワードが正しくありません。</p>");
         }
-
-        out.println("</body>");
-        out.println("</html>");
+        out.println("</body></html>");
     }
 
     @Override
