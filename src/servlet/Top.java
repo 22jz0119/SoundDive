@@ -27,7 +27,7 @@ public class Top extends HttpServlet {
         String password = request.getParameter("password");
         
         System.out.println("Login ID: " + login_id);
-        System.out.println("Entered Password: " + password); // 追加
+        System.out.println("Entered Password: " + password); 
 
 
         // AuthLogicクラスでログイン認証を実施
