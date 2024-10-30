@@ -64,6 +64,7 @@ public class Application_approval extends HttpServlet {
             response.getWriter().println("エラー: 予約IDが無効です。");
         }
     }
+    
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
