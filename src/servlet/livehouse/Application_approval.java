@@ -70,3 +70,4 @@ public class Application_approval extends HttpServlet {
         doGet(request, response);
     }
 }
+
