@@ -3,8 +3,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>予約完了</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
+	<title>予約完了</title>
 </head>
 <body>
 <header class="main-header">
@@ -14,8 +16,8 @@
         </div>
         <nav class="header-nav">
             <ul class="header-nav-ul">
-                <li><a href="livehouse_home.html">HOME</a></li>
-                <li><a href="livehouse_mypage.html">MY PAGE</a></li>
+                <li><a href="livehouse/livehouse_home.jsp">HOME</a></li>
+                <li><a href="../livehouse_mypage.jsp">MY PAGE</a></li>
                 <li><a href="">000</a></li>
                 <li><a href="">000</a></li>
             </ul>
@@ -31,7 +33,7 @@
     </section>
     <div class="livehouse-details-container">
         <div class="approved-artist-div">
-            <img class="approved-artist-img" src="../assets/img/アーティスト画像.png" alt="アーティスト画像">
+            <img class="approved-artist-img" src="livehouse/assets/img/アーティスト画像.png" alt="アーティスト画像">
         </div>
         <div class="application_approval-info">
             <h1 class="booking-detail">予約詳細</h1>
