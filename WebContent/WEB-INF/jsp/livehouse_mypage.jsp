@@ -58,7 +58,7 @@
                 <button class="edit-btn">編集する</button>
                 <div class="live-my-inputcontener">
                     <input class="livehouse-name" type="text" name="" placeholder="ライブハウス名を入力してください"><br>
-                    <input class="livehouse-owner" type="text" name="" placeholder="代表者名を入力してください">
+                    <input class="livehouse-owner" type="text" name="" placeholder="オーナー名を入力してください">
                 </div>
         
                 <div class="livehouse-info">

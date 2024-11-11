@@ -38,7 +38,14 @@
         <div class="application_approval-info">
             <h1 class="booking-detail">予約詳細</h1>
             <ul class="booking-detail-info">
-                <li class="approved-name">予約者名: ${reservationName}</li>
+                <c:choose>
+                <c:when test="${accountName != null}">
+                    <li class="approved-account-name">アカウント名: ${accountName}</li>
+                </c:when>
+                <c:otherwise>
+                    <li>${error}</li>
+                </c:otherwise>
+            </c:choose>
                 <li class="approved-date">予約日時: ${reservationDateTime}</li>
                 <li class="approved-pay">前払い金額: 8000円</li>
             </ul>
