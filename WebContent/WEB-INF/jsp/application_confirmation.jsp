@@ -46,11 +46,11 @@
 				                    <li>${error}</li>
 				                </c:otherwise>
 				            </c:choose>
-                            <h3>ジャンル:テクノバンド</h3>
-                            <li class="confirmation-name">Vocal: 田中 太郎</li>
-                            <li>Guitar:佐藤 太郎</li>
-                            <li>Base: 加藤 花子</li>
-                            <li>dram:林 花子</li>
+                            <h3>ジャンル:${groupGenre}</h3>
+                            <li class="confirmation-name">${memberPosition}: ${memberName}</li>
+                            <li>${memberPosition}:${memberName}</li>
+                            <li>${memberPosition}: ${memberName}</li>
+                            <li>${memberPosition}:${memberName}</li>
                             <!-- <h2>サンプル音源</h2> -->
                             <audio class="sound-source" controls src="water.mp3" type="audio/mp3">まじかるろりぽっぷ☆（てきとう）</audio>
                         </ul>
@@ -72,7 +72,7 @@
                     </div>
                 </div>
                 <div class="application_confirmation-btn">
-                    <button class="approve-btn" onclick="location.href='application_list.html'">戻る</button>
+                    <button class="approve-btn" onclick="/location.href='application_list.jsp'">戻る</button>
                     <button class="decline-btn" onclick="location.href='application_approval.html'">承認</button>
                 </div>
             </div>

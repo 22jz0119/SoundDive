@@ -32,6 +32,7 @@ public class Application_confirmation extends HttpServlet {
         if (artistGroup != null) {
             String accountName = artistGroup.getAccount_name(); // アーティストグループのaccount_name属性を取得
             request.setAttribute("accountName", accountName); // JSPに渡す
+            request.setAttribute("groupGenre", artistGroup.getGroup_genre()); // ジャンルも渡す
 
             // メンバー情報を取得（例としてID 1のメンバーを取得）
             int memberId = 1;  // 必要に応じて取得したいメンバーIDを指定
@@ -41,6 +42,7 @@ public class Application_confirmation extends HttpServlet {
             if (member != null) {
                 request.setAttribute("memberName", member.getMember_name());
                 request.setAttribute("memberPosition", member.getMember_potision());
+                request.setAttribute("groupGenre", artistGroup.getGroup_genre()); // ジャンルを設定
             } else {
                 request.setAttribute("memberError", "メンバー情報が見つかりません");
             }
