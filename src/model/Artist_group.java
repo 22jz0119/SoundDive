@@ -7,6 +7,7 @@ public class Artist_group {
 	private int user_id;
 	private String account_name;
 	private String picture_image_movie;
+	private String group_genre;
 	private LocalDate create_date;
 	private LocalDate update_date;
 	private String rating_star;
@@ -34,6 +35,13 @@ public class Artist_group {
 	public void setPicture_image_movie(String picture_image_movie) {
 		this.picture_image_movie = picture_image_movie;
 	}
+	public String getGroup_genre() {
+		return group_genre;
+	}
+	public void setGroup_genre(String group_genre) {
+		this.group_genre = group_genre;
+	}
+	
 	public LocalDate getCreate_date() {
 		return create_date;
 	}
@@ -53,12 +61,13 @@ public class Artist_group {
 		this.rating_star = rating_star;
 	}
 	public Artist_group(int id, int user_id, String account_name, String picture_image_movie,
-			LocalDate create_date, LocalDate update_date, String rating_star) {
+		String group_genre,	LocalDate create_date, LocalDate update_date, String rating_star) {
 		super();
 		this.id = id;
 		this.user_id = user_id;
 		this.account_name = account_name;
 		this.picture_image_movie = picture_image_movie;
+		this.group_genre = group_genre;
 		this.create_date = create_date;
 		this.update_date = update_date;
 		this.rating_star = rating_star;
