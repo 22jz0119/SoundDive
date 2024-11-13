@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -27,23 +28,23 @@
         </div>
 
         <div class="top-explain">
-            <p class="top-explain-txt">SoundDiveは、アーティストとライブハウスをつなぐために設計された画期的なブッキングサービスです。これまでアーティスト側からのアプローチが多かったライブブッキングの業界において、ライブハウスが自ら求めるアーティストと直接つながれる環境を提供します。ライブハウスにとって最適なアーティストの選出から、アポ取りの管理までをデジタルで一貫対応し、従来のアナログな方法を革新。ユーザーが手軽に利用でき、リピート利用のしやすさを実感していただけるサービスを目指しています。</p>
+            <p class="top-explain-txt">SoundDiveは、アーティストとライブハウスをつなぐために設計された画期的なブッキングサービスです。</p>
         </div>
 
         <div class="top-login-containar">
             <form action="<%= request.getContextPath() %>/Top" method="post">
-			    <ul class="top-login-ul">
-			        <li class="top-login-title"><p>LogIn</p></li>
-			        <li class="top-login-ID"><p>ID</p></li>
-			        <li class="top-login-id-txt"><input type="text" id="top-loginId-txtbox" name="loginId"></li>
-			        <li class="top-login-pass"><p>PassWord</p></li>
-			        <li class="top-login-pass-txt"><input type="password" id="top-loginPass-textbox" name="password"></li>
-			        <li><button type="submit" class="top-login-btn">Login</button></li>
-			    </ul>
-			</form>
+                <ul class="top-login-ul">
+                    <li class="top-login-title"><p>LogIn</p></li>
+                    <li class="top-login-ID"><p>Tel Number</p></li>
+                    <li class="top-login-id-txt"><input type="text" id="top-loginId-txtbox" name="tel_number"></li>
+                    <li class="top-login-pass"><p>PassWord</p></li>
+                    <li class="top-login-pass-txt"><input type="password" id="top-loginPass-textbox" name="password"></li>
+                    <li><button type="submit" class="top-login-btn">Login</button></li>
+                </ul>
+            </form>
 
             <ul>
-                <li class="top-newaccount-btnframe"><button type="button" id="top-newaccount-btn" onclick="location.href='<%= request.getContextPath() %>/new_acount.jsp'">NewAccount</button></li>
+                <li class="top-newaccount-btnframe"><button type="button" id="top-newaccount-btn" onclick="location.href='<%= request.getContextPath() %>/New_Acount'">NewAccount</button></li>
             </ul>
         </div>
 

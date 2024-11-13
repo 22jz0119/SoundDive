@@ -1,16 +1,19 @@
 package model;
 
+import java.io.Serializable; // Serializableをインポート
 import java.sql.Timestamp;
 
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L; // シリアライズ用のバージョンID
+
     private int id; // 主キー: INT
-    private String login_id;
     private String name; // VARCHAR(255) と仮定
     private String password; // VARCHAR(255) と仮定
-    private String telnumber; // BIGINT
+    private String tel_number; // BIGINT
     private String address; // VARCHAR(255) と仮定
     private Timestamp createDate; // DATETIME
     private Timestamp updateDate; // DATETIME
+    private String user_type; // ENUM('artist', 'livehouse') として設定
 
     // ゲッターとセッター
     public int getId() {
@@ -19,14 +22,6 @@ public class User {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getLogin_id() {
-        return login_id;
-    }
-
-    public void setLogin_id(String login_id) {
-        this.login_id = login_id;
     }
 
     public String getName() {
@@ -45,14 +40,6 @@ public class User {
         this.password = password;
     }
 
-    public String getTelNumber() {
-        return telnumber;
-    }
-
-    public void setTelNumber(String telNumber) {
-        this.telnumber = telNumber;
-    }
-
     public String getAddress() {
         return address;
     }
@@ -61,31 +48,50 @@ public class User {
         this.address = address;
     }
 
-    public Timestamp getCreateDate() { // 修正：Timestamp型
+    public Timestamp getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Timestamp createDate) { // 修正：Timestamp型
+    public void setCreateDate(Timestamp createDate) {
         this.createDate = createDate;
     }
 
-    public Timestamp getUpdateDate() { // 修正：Timestamp型
+    public Timestamp getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Timestamp updateDate) { // 修正：Timestamp型
+    public void setUpdateDate(Timestamp updateDate) {
         this.updateDate = updateDate;
     }
+    
+    
 
-    // コンストラクタ
-    public User(int id, String login_id, String name, String password, String telnumber, String address, Timestamp createDate, Timestamp updateDate) {
-        this.id = id;
-        this.login_id = login_id;
-        this.name = name;
-        this.password = password;
-        this.telnumber = telnumber;
-        this.address = address;
-        this.createDate = createDate;
-        this.updateDate = updateDate;
-    }
+    public String getTel_number() {
+		return tel_number;
+	}
+
+	public void setTel_number(String tel_number) {
+		this.tel_number = tel_number;
+	}
+
+	public String getUser_type() {
+		return user_type;
+	}
+
+	public void setUser_type(String user_type) {
+		this.user_type = user_type;
+	}
+
+	public User(int id, String name, String password, String tel_number, String address,
+			Timestamp createDate, Timestamp updateDate, String user_type) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.password = password;
+		this.tel_number = tel_number;
+		this.address = address;
+		this.createDate = createDate;
+		this.updateDate = updateDate;
+		this.user_type = user_type;
+	}
 }

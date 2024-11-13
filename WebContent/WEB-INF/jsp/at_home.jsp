@@ -31,13 +31,13 @@
             <h2 class="booking-title-h2">Booking</h2>
         </div>
         <section class="booking-nav-section">
-            <form action="" method="post"> 
+            <form action="" method="post">
                 <div class="booking-button">
                     <div class="booking-solo-button">
-                        <a href="#" class="solo-button">SOLO LIVE</a>
-                    </div>
+    					<a href="<%= request.getContextPath() %>/At_Details" class="solo-button">SOLO LIVE</a>
+					</div>
                     <div class="booking-multi-button">
-                        <a href="#" class="multi-button">MULTI LIVE</a>
+                        <a href="<%= request.getContextPath() %>/At_Cogig" class="multi-button">MULTI LIVE</a>
                     </div>
                 </div>
             </form>

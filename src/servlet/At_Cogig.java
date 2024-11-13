@@ -9,16 +9,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class LivehouseInfomation
+ * Servlet implementation class Artist_Cogig_Request
  */
-@WebServlet("/Artist_House_reservation")
-public class Artist_House_reservation extends HttpServlet {
+@WebServlet("/At_Cogig")
+public class At_Cogig extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Artist_House_reservation() {
+    public At_Cogig() {
         super();
         // TODO Auto-generated constructor stub
     }

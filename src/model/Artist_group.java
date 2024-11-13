@@ -82,6 +82,4 @@ public class Artist_group {
 		this.update_date = update_date;
 		this.rating_star = rating_star;
 	}
-	
-	
 }
