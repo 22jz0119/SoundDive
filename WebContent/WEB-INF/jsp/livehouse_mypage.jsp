@@ -25,7 +25,7 @@
             </div>
         </header>
         <main>
-            
+            <form action="<%= request.getContextPath() %>/Livehouse_mypage" method="POST" enctype="multipart/form-data">
             <div class="profile-container">
                 <label class="profile-icon" for="fileInput">
                     <!-- デフォルトのテキストを中央に表示 -->
@@ -113,8 +113,8 @@
                 <div class="live-mypage-keep">
                     <button class="keep-btn">保存</button>
                 </div>
-
             </div>
+            </form>
         </main>
 </body>
 </html>

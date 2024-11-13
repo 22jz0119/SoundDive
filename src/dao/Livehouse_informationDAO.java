@@ -40,8 +40,10 @@ public class Livehouse_informationDAO {
     	return false;
     }
     
+    
+    
     public Livehouse_information getLivehouse_informationById(int id) {
-    	String sql = "SELECT * FROM livehouse_information WHERE = ?";
+    	String sql = "SELECT * FROM livehouse_information WHERE id = ?";
     	
     	try (Connection conn = dbManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
