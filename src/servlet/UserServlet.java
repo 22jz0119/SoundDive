@@ -48,10 +48,9 @@ public class UserServlet extends HttpServlet {  // クラス名を UserServlet �
         if (user != null) {
             out.println("<h2>ユーザー情報</h2>");
             out.println("<p>ユーザーID: " + user.getId() + "</p>");
-            out.println("<p>ログインID: " + user.getLogin_id() + "</p>");  // ログインIDを追加
             out.println("<p>パスワード: " + user.getPassword() + "</p>");
             out.println("<p>ユーザー名: " + user.getName() + "</p>");
-            out.println("<p>電話番号: " + user.getTelNumber() + "</p>");
+            out.println("<p>電話番号: " + user.getTel_number() + "</p>");
             out.println("<p>住所: " + user.getAddress() + "</p>");
             out.println("<p>作成日: " + user.getCreateDate() + "</p>");
             out.println("<p>更新日: " + user.getUpdateDate() + "</p>");
@@ -66,10 +65,9 @@ public class UserServlet extends HttpServlet {  // クラス名を UserServlet �
         if (user != null) {
             System.out.println("ユーザー情報:");
             System.out.println("ユーザーID: " + user.getId());
-            System.out.println("ログインID: " + user.getLogin_id());  // ログインIDを追加
             System.out.println("ユーザー名: " + user.getName());
             System.out.println("パスワード: " + user.getPassword());
-            System.out.println("電話番号: " + user.getTelNumber());
+            System.out.println("電話番号: " + user.getTel_number());
             System.out.println("住所: " + user.getAddress());
             System.out.println("作成日: " + user.getCreateDate());
             System.out.println("更新日: " + user.getUpdateDate());

@@ -17,34 +17,27 @@ public class Top extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 初回アクセス時にtop.jspにフォワード
         request.getRequestDispatcher("WEB-INF/jsp/top.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // ユーザー入力のログインIDとパスワードを取得
-        String login_id = request.getParameter("loginId"); // 正しいパラメータ名を確認
+        String tel_number = request.getParameter("tel_number");
         String password = request.getParameter("password");
-        
-        System.out.println("Login ID: " + login_id);
-        System.out.println("Entered Password: " + password); 
 
+        System.out.println("Tel Number: " + tel_number);
+        System.out.println("Entered Password: " + password);
 
-        // AuthLogicクラスでログイン認証を実施
         AuthLogic logic = new AuthLogic();
-        User user = logic.login(login_id, password);
+        User user = logic.login(tel_number, password);
 
         if (user != null) {
-            // 認証成功：セッションにユーザー情報を保存
             HttpSession session = request.getSession();
-            session.setAttribute("loginUser", user);
+            logic.loginUserSession(session, user);
 
-            // at_home.jspにリダイレクト
-            response.sendRedirect(request.getContextPath() + "/WEB-INF/jsp/at_home.jsp"); // at_home.jspの正しいパスに修正
+            response.sendRedirect(request.getContextPath() + "/At_Home");
         } else {
-            // 認証失敗：エラーメッセージを設定し、top.jspに戻る
             request.setAttribute("msg", "ログインに失敗しました");
-            doGet(request, response);
+            request.getRequestDispatcher("WEB-INF/jsp/top.jsp").forward(request, response);
         }
     }
 }

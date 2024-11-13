@@ -10,53 +10,50 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.DBManager;
-import dao.UserDAO; // DAOのインポート
-import model.User; // ユーザーモデルのインポート
+import dao.UserDAO;
+import model.User;
 
 @WebServlet("/New_Acount")
 public class New_Acount extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    // GETリクエスト処理
+    // GETリクエスト処理 - 登録ページにフォワード
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 何らかのメッセージが設定されている場合、リクエスト属性を取得
-        String errorMessage = (String) request.getAttribute("errorMessage");
-        String successMessage = (String) request.getAttribute("successMessage");
-        
-        // new_acount.jspにフォワード
-        request.setAttribute("errorMessage", errorMessage);
-        request.setAttribute("successMessage", successMessage);
-        request.getRequestDispatcher("new_acount.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/jsp/new_acount.jsp").forward(request, response);
     }
 
+    // POSTリクエスト処理 - フォームデータを受け取り、新規ユーザーを登録
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // フォームからデータを取得
+        request.setCharacterEncoding("UTF-8");
         String name = request.getParameter("name");
-        String loginId = request.getParameter("login");
         String password = request.getParameter("password");
-        String telNumber = request.getParameter("tel"); // 変数名を修正
-        String address = request.getParameter("address");
-        
+        String userType = request.getParameter("account_type"); // アカウントの種類（artist/livehouse）
+        String telNumber = request.getParameter("tel");
+        String prefecture = request.getParameter("prefecture");
+        String addressDetail = request.getParameter("address_detail");
+
+        // 住所を一つのフィールドとして結合
+        String address = prefecture + " " + addressDetail;
+
         // 現在のタイムスタンプを取得
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 
         // Userオブジェクトを作成（idは自動生成と仮定）
-        User user = new User(0, loginId, name, password, telNumber, address, currentTimestamp, currentTimestamp);
+        User user = new User(0, name, password, telNumber, address, currentTimestamp, currentTimestamp, userType);
 
-        // UserDAOのインスタンスを作成
-        UserDAO userDao = new UserDAO(DBManager.getInstance()); // シングルトンインスタンスを渡す
-
-        // ユーザーをデータベースに登録するためのDAOを使用
-        boolean isRegistered = userDao.insertUser(user); // insertUserメソッドを使用
+        // UserDAOのインスタンスを作成し、ユーザーをデータベースに登録
+        UserDAO userDao = new UserDAO(DBManager.getInstance());
+        boolean isRegistered = userDao.insertUser(user);
 
         if (isRegistered) {
-            // 登録成功時、成功メッセージを設定して適切なページにリダイレクト
+            // 登録成功時 - メッセージを設定して登録完了ページへフォワード
             request.setAttribute("successMessage", "登録が完了しました。");
-//            response.sendRedirect("success.jsp"); // 成功ページにリダイレクト（success.jspは適宜作成）
+            request.getRequestDispatcher("WEB-INF/jsp/top.jsp").forward(request, response);
         } else {
-            // 登録失敗時、エラーメッセージを設定して元のフォームに戻る
+            // 登録失敗時 - エラーメッセージを設定し、再度登録ページへフォワード
             request.setAttribute("errorMessage", "登録に失敗しました。再度お試しください。");
-            doGet(request, response); // doGetメソッドを呼び出してエラーメッセージを表示
+            request.getRequestDispatcher("WEB-INF/jsp/new_acount.jsp").forward(request, response);
         }
     }
 }
