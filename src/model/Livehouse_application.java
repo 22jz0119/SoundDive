@@ -72,6 +72,5 @@ public class Livehouse_application {
 		this.create_date = create_date;
 		this.update_date = update_date;
 	}
-
 	
 }
