@@ -79,7 +79,7 @@ public class Livehouse_applicationDAO {
             System.out.println("ID: " + livehouse_application.getId());
             System.out.println("ライブハウス情報ID: " + livehouse_application.getLivehouse_information_id());
             System.out.println("日時: " + livehouse_application.getDatetime());
-            System.out.println("フラグ: " + livehouse_application.isTrueFalse()); // フラグの表示を追加
+            System.out.println("承認0: " + livehouse_application.isTrueFalse()); // フラグの表示を追加
             System.out.println("開始時間: " + livehouse_application.getStart_time());
             System.out.println("終了時間: " + livehouse_application.getFinish_time());
             System.out.println("作成日: " + livehouse_application.getCreate_date());
