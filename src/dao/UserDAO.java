@@ -19,7 +19,7 @@ public class UserDAO {
 
     // ユーザーを挿入するメソッド
     public boolean insertUser(User user) {
-        String sql = "INSERT INTO user (name, password, tel_number, address, create_date, update_date, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO user (us_name, us_password, us_tel_number, address_pre_munic, create_date, update_date, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -33,7 +33,7 @@ public class UserDAO {
             pstmt.setString(4, user.getAddress());
             pstmt.setTimestamp(5, user.getCreateDate());
             pstmt.setTimestamp(6, user.getUpdateDate());
-            pstmt.setString(7, user.getUser_type()); // user_typeを追加
+            pstmt.setString(7, user.getUser_type());
 
             int rowsAffected = pstmt.executeUpdate();
             System.out.println("Rows affected: " + rowsAffected);
@@ -71,7 +71,7 @@ public class UserDAO {
     // ユーザーを電話番号で検索するメソッド
     public User findByTelNumber(String tel_number) {
         User user = null;
-        String sql = "SELECT * FROM user WHERE tel_number = ?";
+        String sql = "SELECT * FROM user WHERE us_tel_number = ?";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -96,10 +96,10 @@ public class UserDAO {
     public User create(String tel_number, String name, String password, String address, String user_type) {
         if (findByTelNumber(tel_number) != null) {
             System.out.println("User already exists with tel_number: " + tel_number);
-            return null; // 既にユーザーが存在する場合
+            return null;
         }
 
-        String sql = "INSERT INTO user (tel_number, name, password, address, create_date, update_date, user_type) VALUES (?, ?, ?, ?, NOW(), NOW(), ?)";
+        String sql = "INSERT INTO user (us_tel_number, us_name, us_password, address_pre_munic, create_date, update_date, user_type) VALUES (?, ?, ?, ?, NOW(), NOW(), ?)";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -111,19 +111,19 @@ public class UserDAO {
             pstmt.setString(2, name);
             pstmt.setString(3, hashedPassword);
             pstmt.setString(4, address);
-            pstmt.setString(5, user_type); // user_typeを追加
+            pstmt.setString(5, user_type);
 
             int rowsAffected = pstmt.executeUpdate();
             System.out.println("Rows affected for new user creation: " + rowsAffected);
 
             if (rowsAffected > 0) {
-                return findByTelNumber(tel_number); // 作成したユーザーを返す
+                return findByTelNumber(tel_number);
             }
         } catch (SQLException e) {
             System.err.println("Error creating user: " + e.getMessage());
             e.printStackTrace();
         }
-        return null; // 登録失敗
+        return null;
     }
 
     // 電話番号とパスワードでユーザーを検索するメソッド
@@ -150,13 +150,13 @@ public class UserDAO {
     private User rs2model(ResultSet rs) throws SQLException {
         System.out.println("Mapping ResultSet to User model");
         int id = rs.getInt("id");
-        String name = rs.getString("name");
-        String password = rs.getString("password");
-        String telNumber = rs.getString("tel_number");
-        String address = rs.getString("address");
+        String name = rs.getString("us_name");
+        String password = rs.getString("us_password");
+        String telNumber = rs.getString("us_tel_number");
+        String address = rs.getString("address_pre_munic");
         Timestamp createDate = rs.getTimestamp("create_date");
         Timestamp updateDate = rs.getTimestamp("update_date");
-        String userType = rs.getString("user_type"); // user_typeを追加
+        String userType = rs.getString("user_type");
 
         System.out.println("Mapped User: ID=" + id + ", name=" + name + ", userType=" + userType);
         return new User(id, name, password, telNumber, address, createDate, updateDate, userType);

@@ -2,9 +2,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Kosugi&family=M+PLUS+1:wght@100..900&family=Nanum+Gothic:wght@800&display=swap');
 
 body {
-    font-family: "M PLUS 1", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 600;
+    font-family: "Shippori Mincho B1", serif;
+    font-weight: 500;
+    font-style: normal;
     font-style: normal;
     background: black;
 }
@@ -17,18 +17,24 @@ html {
 }
 
 header {
-    opacity: 0.9;
+    opacity: 1;
     width: 1920px;
+    height: 100px;
     position: fixed;
     color: #fff;
-    background: #000000;
+    background-image: linear-gradient(90deg, rgba(248, 134, 57, 1), rgba(97, 48, 48, 1));
 }
 
 
 header>.header-container {
+    padding-top: 20px;
     height: 60px;
     display: flex;
     align-items: center;
+}
+
+main{
+    margin: 0 500px;
 }
 
 
@@ -37,8 +43,9 @@ header>.header-container {
     height: 100%;
 }
 .main-title{
+
     font-size: 1.5rem;
-    margin-left: 40px;
+    margin-left: 300px;
 }
 
 .main-title-h1{
@@ -48,6 +55,7 @@ header>.header-container {
 
 .header-nav {
     margin-left: auto;
+    margin-right: 350px;
 }
 
 .header-nav a {
@@ -64,6 +72,14 @@ header>.header-container {
     margin-top: 300px;
     display: flex;
     justify-content: center;
+}
+.a-t-home-keyvisual-div{
+    display: flex;
+    justify-content: center;
+}
+.a-t-home-key-visual{
+    width: 1200px;
+
 }
 
 /* h1 {
@@ -155,58 +171,49 @@ td.is-disabled {
 
 .booking-title{
     color: #fff;
-    display: flex;
-    justify-content: center;
-    margin: 30px 500px;
 
     border-bottom: 2px solid #000;
 }
 
 .booking-title-h2{
+    display: flex;
+    justify-content: center;
     font-size: 2.5rem;
 }
 
-.booking-select-title{
-    font-size: 1.2rem;
-}
 
-.booking-button{
+.livehouse-booking-select-ul
+{
     display: flex;
     justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
-.booking-solo-button{
-    
-    margin-top: 10px;
-    margin-right: 50px;
+.livehouse-booking-select-li1{
+    margin-right: 70px;
 }
 
-.solo-button{
+
+.livehouse-booking-sololive-btn{
     border-radius: 3%;
-    text-decoration: none;
     color: white;
-    font-size: 1.2rem;
-    background-color: rgb(198, 41, 41);
-    padding: 30px 100px 30px 100px;
-    border: 10% solid rgb(255, 255, 255);
-
+    background: red;
+    text-decoration: none;
+    padding: 15px 50px;
+}
+.livehouse-booking-select-li2{
+    margin-left: 70px;
 }
 
-.booking-multi-button{
-    margin-top: 10px;
-    margin-left: 50px;
-}
-
-.multi-button{
+.livehouse-booking-multilive-btn{
     border-radius: 3%;
-    text-decoration: none;
     color: white;
-    font-size: 1.2rem;
-    background-color: rgb(35, 63, 199);
-    padding: 30px 100px 30px 100px;
-    border: 10% solid rgb(255, 255, 255);
+    background: blue;
+    text-decoration: none;
+    padding: 15px 50px;
 }
-
 .livehouse-search-container{
     padding-top: 100px;
 }
@@ -324,9 +331,6 @@ td.is-disabled {
 
 .artist-livehouse-detail-title{
     font-size: 1.4rem;
-    margin: 0 600px;
-    display: flex;
-    justify-content: center;
     border-bottom: 1px solid #fff;
 }
 
@@ -350,19 +354,100 @@ td.is-disabled {
 
 }
 
-.A-t-detail-livehousename{
-    font-size: 1.6rem;
-    margin: 150px 0 0 400px;
+/*ライブハウス詳細画面*/
+
+.artist-livehouse-details-main{
+    color: #fff;
+}
+
+.artist-livehouse-detail-section{
+
+}
+
+
+.artist-livehouse-detail-oner{
+    
+
+}
+
+
+
+
+.artist_livehouse_details-Discription{
+
 }
 
 
 .A-t-discription-ul{
+
+}
+
+.a-t-livehouse-detail-img-div{
+    display: flex;
+    justify-content: center;
+}
+
+
+.artist_livehouse_details-img1{
+    width: 700px;
+    height: 500px;
+}
+
+.A-t-l-detail-img-div{
+
+
+}
+.A-t-detail-livehousename{
+    display: flex;
+    justify-content: center;
+
+}
+
+.A-t-discription-ul3{
     list-style: none;
 }
 
+
+
+/*空き状況・予約見出し*/
+.OpenSpots-Reserve{
+    font-family: "Shippori Mincho B1", serif;
+    font-weight: 500;
+    font-style: normal;
+    margin-top: 250px;
+    text-align: center;
+}
+
+.OpenSpots-Reserve-detile{
+    font-family: "Shippori Mincho B1", serif;
+    font-weight: 500;
+    font-style: normal;
+    text-align: center;
+}
+
+.Notes-or-Cautions{
+    font-family: "Shippori Mincho B1", serif;
+    font-weight: 500;
+    font-style: normal;
+    text-align: center;
+}
+
+.a-t-detail-calendar-containar{
+    font-family: "Shippori Mincho B1", serif;
+    font-weight: 500;
+    font-style: normal;
+    display: flex;
+    justify-content: center;
+}
+
+
 /* アーティスト側ライブハウス詳細画面のカレンダー*/
 #calendar-container {
+    font-family: "Shippori Mincho B1", serif;
+    font-weight: 500;
+    font-style: normal;
     display: flex;
+    justify-content: center;
     flex-wrap: wrap;
 }
 
@@ -381,7 +466,7 @@ td.is-disabled {
 
 .calendar-cell {
     border: 1px solid #ddd;
-    padding: 5px;
+    padding: 20px 80px 20px 80px;
     text-align: center;
 }
 
@@ -396,6 +481,7 @@ td.is-disabled {
 .calendar-cell.is-disabled {
     color: #ccc;
 }
+
 
 
 
@@ -532,134 +618,78 @@ input[type="submit"]:active, .info-check:active {
 .attention{
     font-size: small;
 }
-
 /*アーティスト申請承認ページ*/
-
-.application_approval-info{
-    font-size: 1rem;
-    padding: 20px;
-}
-.approvaled-application{
-    color: #FFF;
-    font-size: 1.5rem;
-    text-align: center;
-}
-
-.application_approvaled-h2{
-    padding: 20px;
-    font-size: 2rem;
-    font-weight: 500;
-    color: #FFF;
-    border-bottom: 1px solid white;
-}
-.application_approvaled{
-    display: flex;
-    justify-content: center;
-}
 .main-application_approval{
     padding-top: 100px;
 }
-.booking-detail{
-    display: block;
-    font-size: 1.17em;
-    margin-block-start: 1em;
-    margin-block-end: 1em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
-    font-weight: bold;
-    unicode-bidi: isolate;
-}
-.booking-detail-info{
-    display: grid;
-    list-style-type: none;
-    padding: 10px;
-    padding-bottom: 10px;
-}
-.main-approved{
-    background-image: url(../img/key-visual.jpg);
-    background-position: center;
-    background-size: cover;
-}
 
-.approved-artist-div{
-    background-color: #FFF;
-    width: 280px;
-    margin-left: 10px;
-}
-
-.approved-artist-img{
-    padding: 10px;
-}
-
-
-
-.application_approval-info
-.approved-artist-img{
-    width: 280px;
-    height: 150px;
-    object-fit: cover;
-    padding: 20px;
-
-}
-
-
-.main-approved,
-.application-lists{
-    color: #fff;
-    font-weight: 400;
-}
-
-.approved-main{
-    padding-top: 80px;
-}
-
-.main-approved,
-.application-lists{
-    padding-left: 40%;
-}
-
-
-.livehouse-details-container {
-    background: linear-gradient(to right, #FF6500, #1E3E62, #0B192C, #000000);
-    border: 1px solid #ccc;
-    padding: 20px;
-    box-sizing: border-box;
-    display: flex;
-    width: 650px;
-    height: 300px;
-    color: white;
-    margin-left: 630px;
-  }
-  
-
-/*ホームリンク*/
-.back-home{
-    position: relative;
-    display: inline-block;
-    transition: .3s;
-    color: #21ccbe;
-    text-decoration: none;
-    margin-top: 10px;  
-    padding-top: 10px;
+.application_approvaled-h2{
     display: flex;
     justify-content: center;
-  }
-  
-  .back-home::after {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    content: '';
-    width: 0;
-    height: 2px;
-    background-color: #ffffff;
-    transition: .3s;
-    transform: translateX(-50%);
-  }
-  
-  .back-home:hover::after{
-    width: 100%;
-  }
+    font-size: 2rem;
+    border-bottom: 1px solid #fff;
+}
+
+.approvaled-application-title{
+    margin: 100px 0;
+    text-align: center;
+    font-size: 1.7rem;
+}
+
+.application-approval-section{
+    padding: 50px 0;
+    border-radius: 10px;
+    background-image: linear-gradient(90deg, rgba(61, 200, 193, 0.233), rgba(61, 156, 194, 0.562) 50%, rgba(197, 125, 233, 1));
+}
+
+
+
+.application-approval-ul-1{
+    padding-top: 50px;
+    list-style: none;
+    display: flex;
+    justify-content: center;
+} 
+
+.application-approval-ul-2{
+    list-style: none;
+}
+
+.application-approval-div1{
+    display: flex;
+    justify-content: space-around;
+}
+
+.application-approval-li-1{
+    font-size: 1.5rem;
+}
+
+
+.application-approval-li-2{
+    font-size: 1.3rem;
+}
+
+
+.approved-artist-img{
+    width: 400px;
+}
+.application-approval-backhome-btn-div{
+    display: flex;
+    justify-content: center;
+}
+
+.application-approval-backhome-btn{
+    border-radius: 3px;
+    padding: 10px 70px;
+    background:  rgb(163, 48, 40);
+    margin-top: 50px;
+    color: white;
+    text-decoration: none;
+}
+
+
+
+
 /* ライブハウスマイページ */
 .live-profile-icon {
     margin: 70px 0 0 750px;
@@ -670,6 +700,16 @@ input[type="submit"]:active, .info-check:active {
 .edit-btn {
     margin: 80px 0 0 1500px;
     padding: 10px;
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(135deg, #4CAF50, #3e8e41); /* グラデーション */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
 .livehouse-name {
@@ -714,19 +754,25 @@ input[type="submit"]:active, .info-check:active {
     color: white;
     margin: 100px 0 0 830px;
 }
-.live-exterior-interior,
-.live-detail-info{
+.live-exterior-interior{
     text-align: center;
     margin: 80px;
 
 }
+
+.live-detail-info{
+    text-align: center;
+    margin: 80px;
+    padding-top: 300px;
+}
+
 
 .keep-btn {
     padding: 12px 24px;
     font-size: 18px;
     font-weight: bold;
     color: white;
-    background: linear-gradient(135deg, #4CAF50, #3e8e41); /* グラデーション */
+    background: linear-gradient(135deg, #b70000, #b70000); /* グラデーション */
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -736,12 +782,65 @@ input[type="submit"]:active, .info-check:active {
     justify-content: center;
   }
 
-  /* ホバー時のスタイル */
-  .keep-btn:hover {
-    background: linear-gradient(135deg, #3e8e41, #4CAF50);
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
-    transform: translateY(-2px);
+
+
+  .live-mypage-keep{
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+    align-items: center; /* ボタンを縦方向にも中央にしたい場合 */
+    
   }
+
+  /*ライブハウスマイページ画像選択*/
+  .livehouse-picture {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.image-container {
+    position: relative;
+    width: 800px; /* お好みの大きさに調整 */
+    height: 500px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.image-container input {
+    display: none; /* 入力ボックスは非表示 */
+}
+
+.upload-button {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.upload-button:hover {
+    background-color: #45a049;
+}
+
 
   /* フォーカス時のスタイル */
   .keep-btn:focus {
@@ -752,7 +851,8 @@ input[type="submit"]:active, .info-check:active {
 
 .livehouse-picture {
     display: flex;
-    height: 450px;
+    justify-content: center;
+    height: 210px;
     gap: 30px;
 }
 
@@ -766,12 +866,12 @@ input[type="submit"]:active, .info-check:active {
 
 /*アーティスト申請確認ページ*/
 .band-confirmation-container{
-    width: 1000px;
+
+}
+
+.reservation-details-container-info{
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
-    
-    
 }
 
 .question-approval{
@@ -784,8 +884,7 @@ input[type="submit"]:active, .info-check:active {
 
 .reservation-details-container{
     
-    margin-left: 500px;
-    display: inline-block;
+    display: flex;
     justify-content: center;
     font-size: 1rem;
     font-weight: 500;
@@ -829,18 +928,13 @@ input[type="submit"]:active, .info-check:active {
     display: flex;
     justify-content: center;
     color: white;
-    margin-left: 900px;
+
 }
 
 .sound-source{
     padding-top: 15px;
 }
 
-.confirmation-info,
-.reservation-details-container-info{
-    display: grid;
-    list-style-type:none;
-}
 
 /*ボタン*/
 .application_confirmation-btn{
@@ -1099,6 +1193,10 @@ th.b {
     list-style: none;
 }
 
+.a-t-detail-description-div{
+    display: flex;
+    justify-content: space-between;
+}
 .timeselection {
     text-align: center;
     font-size: 25px;
@@ -1182,23 +1280,8 @@ th.b {
 
 /* ライブハウス予約確認ページ*/
 
-.a-t-reservation-confirmation{
-    padding-top: 100px;
-}
 
-.a-t-confirmation-header{
-    display: flex;
-    justify-content: center;
-}
 
-.a-t-confirmation-header{
-    margin: 0 700px;
-    border-bottom: 1px solid #fff;
-}
-
-.a-t-reservation-details{
-    margin: 100px 600px 0 600px;
-}
 
 .a-t-details-title{
     font-size: 1.7rem;
@@ -1211,22 +1294,11 @@ th.b {
 }
 
 
-.a-t-reservation-info-item{
-    letter-spacing: 0.05rem;
-    font-size: 1.2rem;
-    display: flex;
-    justify-content: center;
-    padding: 1%;
-}
-
-.a-t-info-label{
-    margin-right: 20px;
-}
 
 
 /* アーティストセクションを中央に配置 */
 .a-t-artist-section {
-    width: 80%; /* セクションの幅を調整 */
+   /* セクションの幅を調整 */
     margin: 0 auto; /* 左右中央配置 */
     padding: 20px;
     background-color: #000; /* 背景を暗く */
@@ -1236,102 +1308,84 @@ th.b {
 }
 
 /* アーティストの画像とテキストを横並びにする */
-.a-t-artist-info-container {
-    margin-left: 500px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start; /* 左寄せにする */
-    gap: 30px; /* 画像とテキストの間のスペース */
-}
+
 
 /* アーティストの画像を適切なサイズに調整 */
-.a-t-artist-image-wrapper {
-    flex-shrink: 0;
+
+.A-t-Booking-Confirmation-main{
+    padding-top: 100px;
 }
 
-.a-t-artist-image {
-    max-width: 200px; /* 画像サイズを調整 */
-    height: auto;
-    border-radius: 10px; /* 画像の角を丸く */
-}
-
-/* テキストを画像の隣に表示 */
-.a-t-artist-details-container {
-    margin-left: 30px;
+.a-t-reservation-details
+{
+    background-image: linear-gradient(90deg, rgba(61, 200, 193, 0.427), rgba(61, 156, 194, 1) 50%, rgba(197, 125, 233, 1));
     display: flex;
-    flex-direction: column;
     justify-content: center;
+    border-radius: 10px;
+    margin: 40px 0 50px 0;
 }
 
-.a-t-artist-detail-list {
+.a-t-reservation-info-list{
     list-style: none;
-    padding: 0;
-    margin: 0;
 }
 
-.a-t-artist-detail-item {
-    margin-bottom: 20px; /* 各項目の間に余白 */
-}
 
 /* ラベルと値を適切に配置 */
-.a-t-artist-detail-label {
-    font-weight: bold;
-    margin-right: 10px;
-    display: inline-block;
+
+
+
+.a-t-booking-group-containar{
+    border-radius: 10px;
+    background-image: linear-gradient(90deg, rgba(61, 200, 193, 0.461), rgba(61, 156, 194, 1) 50%, rgba(197, 125, 233, 1));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
 }
 
-.a-t-artist-detail-value {
-    display: inline-block;
+.a-t-booking-group-frame{
+    list-style: none;
 }
 
-/* 見出しのスタイル */
-.a-t-artist-section-title {
-    font-size: 1.7rem;
-    margin-bottom: 20px;
-    text-align: center;
+#a-t-booking-group-img{
+    width: 150px;
+    height: 200px;
+}
+.a-t-booking-place-main-div{
+    border-radius: 10px;
+    padding: 30px;
+    background-image: linear-gradient(90deg, rgba(61, 200, 193, 0.418), rgba(61, 156, 194, 1) 50%, rgba(197, 125, 233, 1));
 }
 
-.a-t-venue-section{
-    max-width: 800px;
-    margin: 0 auto;
+.a-t-booking-place-title{
+    margin-top: 100px;
+    font-size: 1.4rem;
+}
+
+.a-t-booking-place-containar1{
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.a-t-booking-place-ul1{
+    list-style: none;
+}
+.a-t-booking-place-ul2{
+    list-style: none;
 }
 
 .a-t-venue-image{
-    width: 600px;
-    height: 400px;
+    width: 350px;
+    height: 350px;
 }
 
-.a-t-venue-image-wrapper{
-    display: flex;
-    justify-content: center;
-}
-.a-t-venue-detail-list{
-    margin-left: 70px;
-}
 
-.a-t-artist-details-container-heading{
-    font-size: 1.3rem;
-}
 
-.a-t-venue-details-container ul{
-    list-style: none;
-}
 
-.a-t-venue-detail-value{
-    padding-top: 30px;
-    font-size: 1.2rem;
-    margin-left: 250px;
-    letter-spacing: 2px
-}
 /* タイトルのスタイルを統一 */
-.a-t-details-title, 
-.a-t-artist-section-title, 
-.a-t-venue-section-title {
-    font-size: 1.6rem; /* 文字サイズを統一 */
-    text-align: center; /* 中央揃え */
-    margin-bottom: 20px; /* 下に余白を追加 */
-    letter-spacing: 3px;
-}
 
 
 .a-t-payment-title{
@@ -1379,7 +1433,11 @@ th.b {
 }
 
 .profile-icon img {
-    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 画像が枠内に収まるようにする */
+    border-radius: 50%; /* 丸く表示 */
+    display: block;
 }
 
 
@@ -1524,6 +1582,9 @@ th.b {
 /**  後で確認  **/
 
 .artist-livehouse-detail-title{
+    font-family: "Shippori Mincho B1", serif;
+    font-weight: 500;
+    font-style: normal;
     font-size: 1.4rem;
     margin: 0 600px;
     display: flex;
@@ -1533,6 +1594,9 @@ th.b {
 
 
 .artist-livehouse-detail-oner{
+    font-family: "Shippori Mincho B1", serif;
+    font-weight: 500;
+    font-style: normal;
     margin-right: 30px;
 }
 
@@ -1551,8 +1615,8 @@ th.b {
 }
 
 .A-t-detail-livehousename{
-    font-size: 1.6rem;
-    margin: 150px 0 0 400px;
+    font-size: 1.5rem;
+
 }
 
 
@@ -1695,7 +1759,7 @@ th.b {
     font-weight: 500;
     font-style: normal;
     margin: 600px 0 200px 0;
-    background-color: rgba(140, 75, 42, 0.306);
+    background-color: rgba(0, 0, 0, 0.658);
     padding-top: 100px;
     padding-bottom: 100px;
 

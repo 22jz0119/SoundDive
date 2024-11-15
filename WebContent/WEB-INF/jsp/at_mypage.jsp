@@ -15,10 +15,10 @@
             </div>
             <nav class="header-nav">
                 <ul class="header-nav-ul">
-                    <li><a href="artist_home.jsp">HOME</a></li>
-                    <li><a href="artist_mypage.jsp">MY PAGE</a></li>
-                    <li><a href="">000</a></li>
-                    <li><a href="">000</a></li>
+                    <li><a href="at_home.jsp">HOME</a></li>
+                    <li><a href="at_mypage.jsp">MY PAGE</a></li>
+                    <li><a href="#">000</a></li>
+                    <li><a href="#">000</a></li>
                 </ul>
             </nav>
         </div>
@@ -31,7 +31,7 @@
                 <span class="placeholder-text">アイコンをアップロード</span>
                 <img id="profileImage" src="" alt="" style="display: none;">
             </label>
-            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+            <input type="file" id="fileInput" name="profile_icon" accept="image/*" style="display: none;" onchange="previewImage()">
         </div>            
         
         <!-- バンド名入力 -->
@@ -41,13 +41,22 @@
         
         <!-- メンバー詳細 -->
         <div class="member-details">
-            <%-- 以下のメンバー情報を動的に増やしたり、処理したい場合はサーバーサイドロジックをここに挿入できます --%>
             <div class="member-1">
                 <input type="text" class="profile-card" id="member1-name" name="member1_name" placeholder="氏名" required><br>
                 <input type="text" class="profile-card p-c-sub" id="member1-role" name="member1_role" placeholder="役割 例: ボーカル" required><br>
             </div>
-
-            <!-- 必要に応じて他のメンバー情報も追加 -->
+            <div class="member-1">
+                <input type="text" class="profile-card" id="member2-name" name="member2_name" placeholder="氏名" required><br>
+                <input type="text" class="profile-card p-c-sub" id="member2-role" name="member2_role" placeholder="役割 例: ギター" required><br>
+            </div>
+            <div class="member-1">
+                <input type="text" class="profile-card" id="member3-name" name="member3_name" placeholder="氏名" required><br>
+                <input type="text" class="profile-card p-c-sub" id="member3-role" name="member3_role" placeholder="役割 例: ドラム" required><br>
+            </div>
+            <div class="member-1">
+                <input type="text" class="profile-card" id="member4-name" name="member4_name" placeholder="氏名" required><br>
+                <input type="text" class="profile-card p-c-sub" id="member4-role" name="member4_role" placeholder="役割 例: ベース" required><br>
+            </div>
         </div>
 
         <!-- バンド歴入力 -->
@@ -67,9 +76,8 @@
             <input type="submit" value="送信" class="form-group-4">
         </div>
     </form>
-    
+
     <script>
-        // プロフィール画像のプレビュー機能
         function previewImage() {
             const file = document.getElementById('fileInput').files[0];
             const reader = new FileReader();
@@ -81,7 +89,6 @@
                 reader.readAsDataURL(file);
             }
         }
-        document.getElementById('fileInput').addEventListener('change', previewImage);
     </script>
 </body>
 </html>
