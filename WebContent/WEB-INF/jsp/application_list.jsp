@@ -32,8 +32,12 @@
                 <h2 class="application_list_h2">アーティスト申請一覧画面</h2>
             </div>
             <div class="reservation-date">
-                <p class="application-date">日付 2024/12/24</p>
-                <p class="application-number">件数〇件</p>
+                <!-- クエリパラメータから日付を取得して表示 -->
+                <p class="application-date">日付: 
+                    <c:out value="${param.date}" /> <!-- クエリパラメータ `date` を表示 -->
+                </p>
+                <!-- 件数を動的に表示 -->
+                <p class="application-number">件数: <c:out value="${fn:length(applicationList)}" />件</p>
             </div>
         </section>
         <!--申請リスト-->
@@ -53,16 +57,14 @@
                             <li>ジャンル: ${application.groupGenre}</li>
                             <li>バンド歴: ${application.bandYears}年</li>
                         </ul>
-                        <!-- 
-                         --><ul class="application-lists-detail">
-                            <!-- 申請情報を表示 
+                        <ul class="application-lists-detail">
+                            <!-- 申請情報を表示 -->
                             <li>申請ID: ${application.applicationId}</li>
                             <li>申請日時: ${application.datetime}</li>
                             <li>開始時間: ${application.startTime}</li>
                             <li>終了時間: ${application.finishTime}</li>
                             <li>承認状態: ${application.trueFalse ? '承認済み' : '未承認'}</li>
                         </ul>
-                        
                         <!-- サンプル音源の表示 -->
                         <audio class="sound-source" controls>
                             <source src="water.mp3" type="audio/mp3">
