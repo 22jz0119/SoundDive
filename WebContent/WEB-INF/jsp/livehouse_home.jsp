@@ -46,7 +46,10 @@
             <div id="calendar"></div>
         </div>
         
-        <script src="../assets/js/artist_home.js"></script> <!-- JavaScriptファイルをリンク -->
+        <script src="${pageContext.request.contextPath}/assets/js/livehouse_home.js"></script>
+
+
+
 
 </body>
 </html>

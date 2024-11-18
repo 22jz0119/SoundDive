@@ -55,7 +55,7 @@ public class Artist_groupDAO {
             pstmt.setInt(1, artistGroup.getId());
             pstmt.setInt(2, artistGroup.getUser_id());
             pstmt.setString(3, artistGroup.getAccount_name());
-            pstmt.setString(4, artistGroup.getPicture_image_movie());
+            pstmt.setBytes(4, artistGroup.getPicture_image_movie());
             pstmt.setString(5, artistGroup.getGroup_genre());
             pstmt.setString(6, artistGroup.getBand_years());
             pstmt.setDate(7, Date.valueOf(artistGroup.getCreate_date()));

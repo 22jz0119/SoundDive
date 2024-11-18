@@ -38,25 +38,41 @@
         </section>
         <!--申請リスト-->
         <div class="application-lists">
-            <c:forEach var="artist" items="${artistList}">
-                <div class="artist-list-container">
-                    <div class="application-lists-info">
-                        <div class="artist-list-img-bg">
-                            <img class="artist-list-img" src="../assets/img/アーティスト画像.png" alt="アーティスト画像">
-                        </div>
-                        <div class="application-lists-info-2">
-                            <h1 class="application-lists-name">${artist.account_name}</h1>
-                            <ul class="application-lists-detail">
-                                <li>ジャンル:${artist.group_genre}</li>
-                                <li>バンド歴:${artist.band_years}年</li>
-                            </ul>
-                            <!-- <h3>サンプル音源</h3> -->
-                            <audio class="sound-source" controls src="water.mp3" type="audio/mp3">とまとまん</audio>
-                        </div>
+        <!-- applicationList をループして各グループ情報を表示 -->
+        <c:forEach var="application" items="${applicationList}">
+            <div class="artist-list-container">
+                <div class="application-lists-info">
+                    <div class="artist-list-img-bg">
+                        <!-- グループ画像: 必要に応じて画像パスを動的にする -->
+                        <img class="artist-list-img" src="../assets/img/アーティスト画像.png" alt="アーティスト画像">
+                    </div>
+                    <div class="application-lists-info-2">
+                        <!-- グループ情報を動的に表示 -->
+                        <h1 class="application-lists-name">${application.accountName}</h1>
+                        <ul class="application-lists-detail">
+                            <li>ジャンル: ${application.groupGenre}</li>
+                            <li>バンド歴: ${application.bandYears}年</li>
+                        </ul>
+                        <!-- 
+                         --><ul class="application-lists-detail">
+                            <!-- 申請情報を表示 
+                            <li>申請ID: ${application.applicationId}</li>
+                            <li>申請日時: ${application.datetime}</li>
+                            <li>開始時間: ${application.startTime}</li>
+                            <li>終了時間: ${application.finishTime}</li>
+                            <li>承認状態: ${application.trueFalse ? '承認済み' : '未承認'}</li>
+                        </ul>
+                        
+                        <!-- サンプル音源の表示 -->
+                        <audio class="sound-source" controls>
+                            <source src="water.mp3" type="audio/mp3">
+                            このブラウザはオーディオ再生をサポートしていません。
+                        </audio>
                     </div>
                 </div>
-            </c:forEach>
-        </div>
+            </div>
+        </c:forEach>
+    </div>
     </main>
 </body>
 </html>
