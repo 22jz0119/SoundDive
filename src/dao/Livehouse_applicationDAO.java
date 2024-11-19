@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import model.LivehouseApplicationWithGroup;
 import model.Livehouse_application;
@@ -115,6 +117,34 @@ public class Livehouse_applicationDAO {
         }
         return applicationList;
     }
+    //livehouseカレンダー予約件数表示
+    public Map<Integer, Integer> getReservationCountByMonth(int year, int month) {
+        String sql = "SELECT DAY(datetime) AS day, COUNT(*) AS count " +
+                     "FROM livehouse_application " +
+                     "WHERE YEAR(datetime) = ? AND MONTH(datetime) = ? " +
+                     "GROUP BY DAY(datetime)";
+        
+        Map<Integer, Integer> reservationCounts = new HashMap<>();
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, year);
+            pstmt.setInt(2, month);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int day = rs.getInt("day");
+                int count = rs.getInt("count");
+                reservationCounts.put(day, count);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return reservationCounts;
+    }
+
 
     
     //<リスト表示>
