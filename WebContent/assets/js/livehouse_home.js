@@ -7,6 +7,24 @@ document.addEventListener('DOMContentLoaded', function () {
         const monthYear = document.createElement("div");
         monthYear.id = "monthYear";
         monthYear.innerText = `${year}年 ${month + 1}月`;
+
+        // 前月と次月への移動ボタン
+        const prevButton = document.createElement("button");
+        prevButton.innerText = "前の月";
+        prevButton.addEventListener("click", function () {
+            const newDate = new Date(year, month - 1); // 前の月
+            fetchReservations(newDate.getFullYear(), newDate.getMonth());
+        });
+
+        const nextButton = document.createElement("button");
+        nextButton.innerText = "次の月";
+        nextButton.addEventListener("click", function () {
+            const newDate = new Date(year, month + 1); // 次の月
+            fetchReservations(newDate.getFullYear(), newDate.getMonth());
+        });
+
+        monthYear.appendChild(prevButton);
+        monthYear.appendChild(nextButton);
         calendar.appendChild(monthYear);
 
         // 曜日のヘッダー
@@ -71,16 +89,24 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // サンプルデータでカレンダーを作成
+    // サーバーから予約件数データを取得してカレンダーを作成
+    function fetchReservations(year, month) {
+        fetch(`/Livehouse_home?year=${year}&month=${month + 1}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch reservation data');
+                }
+                return response.json();
+            })
+            .then(reservations => {
+                createCalendar(year, month, reservations);
+            })
+            .catch(error => {
+                console.error('Error fetching reservations:', error);
+            });
+    }
+
+    // 初期表示のために現在の年と月でリクエストを送る
     const today = new Date();
-    const reservations = {
-        1: 2,
-        5: 1,
-        10: 3,
-        15: 0,
-        20: 5,
-        25: 1,
-        30: 4
-    }; // 予約件数のサンプルデータ
-    createCalendar(today.getFullYear(), today.getMonth(), reservations);
+    fetchReservations(today.getFullYear(), today.getMonth());
 });

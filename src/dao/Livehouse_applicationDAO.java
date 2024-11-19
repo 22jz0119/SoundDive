@@ -119,20 +119,18 @@ public class Livehouse_applicationDAO {
     }
     //livehouseカレンダー予約件数表示
     public Map<Integer, Integer> getReservationCountByMonth(int year, int month) {
-        String sql = "SELECT DAY(datetime) AS day, COUNT(*) AS count " +
-                     "FROM livehouse_application " +
-                     "WHERE YEAR(datetime) = ? AND MONTH(datetime) = ? " +
-                     "GROUP BY DAY(datetime)";
-        
         Map<Integer, Integer> reservationCounts = new HashMap<>();
+        String sql = "SELECT DAY(datetime) AS day, COUNT(*) AS count FROM livehouse_application " +
+                     "WHERE YEAR(datetime) = ? AND MONTH(datetime) = ? GROUP BY DAY(datetime)";
 
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, year);
             pstmt.setInt(2, month);
+            
             ResultSet rs = pstmt.executeQuery();
-
+            
             while (rs.next()) {
                 int day = rs.getInt("day");
                 int count = rs.getInt("count");
@@ -141,9 +139,10 @@ public class Livehouse_applicationDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        
         return reservationCounts;
     }
+
 
 
     
