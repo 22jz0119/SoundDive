@@ -90,10 +90,20 @@ public class Livehouse_applicationDAO {
 
     // 申請したグループ情報を結合
     public List<LivehouseApplicationWithGroup> getApplicationsWithGroups() {
-        String sql = "SELECT la.id AS application_id, la.datetime, la.true_false, la.start_time, la.finish_time, " +
-                     "ag.id AS group_id, ag.account_name, ag.group_genre, ag.band_years, la.user_id " +
-                     "FROM livehouse_application la " +
-                     "JOIN artist_group ag ON la.livehouse_information_id = ag.id";
+        String sql = "SELECT " +
+                     "la.id AS application_id, " +
+                     "la.date_time, " +
+                     "la.true_false, " +
+                     "la.start_time, " +
+                     "la.finish_time, " +
+                     "ag.id AS group_id, " +
+                     "ag.account_name, " +
+                     "ag.group_genre, " +
+                     "ag.band_years, " +
+                     "la.user_id " +  // user_id を取得
+                     "FROM livehouse_application_table la " +
+                     "JOIN user u ON la.user_id = u.id " +  // livehouse_application_table と user_table を JOIN
+                     "JOIN artist_group ag ON u.id = ag.user_id";  // user_table と artist_group を JOIN
 
         List<LivehouseApplicationWithGroup> applicationList = new ArrayList<>();
         try (Connection conn = dbManager.getConnection();
@@ -103,7 +113,7 @@ public class Livehouse_applicationDAO {
             while (rs.next()) {
                 LivehouseApplicationWithGroup application = new LivehouseApplicationWithGroup(
                     rs.getInt("application_id"),
-                    rs.getDate("datetime").toLocalDate(),
+                    rs.getDate("date_time").toLocalDate(),
                     rs.getBoolean("true_false"),
                     rs.getDate("start_time").toLocalDate(),
                     rs.getDate("finish_time").toLocalDate(),
@@ -120,6 +130,10 @@ public class Livehouse_applicationDAO {
         }
         return applicationList;
     }
+
+
+
+
 
     // 指定された年と月のライブハウス予約件数を取得するメソッド
     public Map<Integer, Integer> getReservationCountByMonth(int year, int month) {

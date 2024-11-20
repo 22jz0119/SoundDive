@@ -39,35 +39,45 @@
         <!-- 申請リスト -->
         <div class="application-lists">
             <c:forEach var="application" items="${applicationList}">
-                <div class="artist-list-container">
-                    <div class="application-lists-info">
-                        <div class="artist-list-img-bg">
-                            <!-- グループ画像 -->
-                            <img class="artist-list-img" src="<%= request.getContextPath() %>/assets/img/artist_default.png" alt="アーティスト画像">
-                        </div>
-                        <div class="application-lists-info-2">
-                            <!-- グループ情報 -->
-                            <h1>${application.accountName}</h1>
-                            <ul>
-                                <li>ジャンル: ${application.groupGenre}</li>
-                                <li>バンド歴: ${application.bandYears}年</li>
-                            </ul>
-                            <ul>
-                                <li>申請ID: ${application.applicationId}</li>
-                                <li>申請日時: ${application.datetime}</li>
-                                <li>開始時間: ${application.startTime}</li>
-                                <li>終了時間: ${application.finishTime}</li>
-                                <li>承認状態: ${application.trueFalse ? '承認済み' : '未承認'}</li>
-                            </ul>
-                            <!-- サンプル音源 -->
-                            <audio controls>
-                                <source src="<%= request.getContextPath() %>/assets/audio/sample.mp3" type="audio/mp3">
-                                このブラウザはオーディオ再生をサポートしていません。
-                            </audio>
-                        </div>
+                <div class="application-artist-list-main">
+                    <div class="application-artist-list-img-containar">
+                        <img src="../assets/img/アーティスト画像.png" alt="" class="application-artist-list-ikon">
+                    </div>
+                    <div class="application-artist-list-frame">
+                        
+                        <ul class="application-artist-list-ul0">
+                            <li><p>${application.accountName}</p></li>
+                        </ul>
+                        <ul class="application-artist-list-ul1">
+                            <li class="application-artist-list-ul1-li1"><p>ジャンル</p></li>
+                            <li class="application-artist-list-ul1-li2"><p>${application.groupGenre}</p></li>
+                        </ul>
+                        <ul class="application-artist-list-ul2">
+                            <li class="application-artist-list-ul2-li1"><p>バンド歴</p></li>
+                            <li class="application-artist-list-ul2-li2"><p>${application.bandYears}</p></li>
+                        </ul>
+                        <ul class="application-artist-list-ul3">
+                            <li class="application-artist-list-ul3-li1"><p>レーティング</p></li>
+                            <li class="application-artist-list-ul3-li2"><p>評価3.5</p></li>
+                        </ul>
+                        <ul class="application-artist-list-ul4">
+                            <li class="application-artist-list-ul4-li1"><audio class="sound-source" controls src="water.mp3" type="audio/mp3">とまとまん</audio></li>
+                        </ul>
+                        <ul class="application-artist-list-ul5">
+                            <li class="application-artist-list-ul5-li1"><a href="" class="application-artist-list-ul5-li1-a">対バンを申し込む</a></li>
+                        </ul>
                     </div>
                 </div>
             </c:forEach>
+            
+            <c:if test="${empty applicationList}">
+    <p>申請データはありません。</p>
+</c:if>
+<c:forEach var="application" items="${applicationList}">
+    <!-- データが正しくループしているかを確認 -->
+    <p>${application.accountName} - ${application.groupGenre} - ${application.bandYears}</p>
+</c:forEach>
+            
         </div>
     </main>
 </body>

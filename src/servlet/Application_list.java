@@ -18,7 +18,6 @@ public class Application_list extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // DB接続マネージャーのインスタンス化
         DBManager dbManager = DBManager.getInstance();
         Livehouse_applicationDAO livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
 
@@ -36,4 +35,6 @@ public class Application_list extends HttpServlet {
         doGet(request, response);
     }
 }
+
+
 
