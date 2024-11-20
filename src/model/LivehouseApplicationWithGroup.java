@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class LivehouseApplicationWithGroup {
     private int applicationId;
-    private LocalDate datetime;
+    private LocalDate dateTime;
     private boolean trueFalse;
     private LocalDate startTime;
     private LocalDate finishTime;
@@ -12,7 +12,25 @@ public class LivehouseApplicationWithGroup {
     private String accountName;
     private String groupGenre;
     private String bandYears;
-    
+    private int userId;
+
+    // コンストラクタを追加
+    public LivehouseApplicationWithGroup(int applicationId, LocalDate dateTime, boolean trueFalse,
+                                         LocalDate startTime, LocalDate finishTime, int groupId,
+                                         String accountName, String groupGenre, String bandYears, int userId) {
+        this.applicationId = applicationId;
+        this.dateTime = dateTime;
+        this.trueFalse = trueFalse;
+        this.startTime = startTime;
+        this.finishTime = finishTime;
+        this.groupId = groupId;
+        this.accountName = accountName;
+        this.groupGenre = groupGenre;
+        this.bandYears = bandYears;
+        this.userId = userId;  // userIdを設定
+    }
+
+    // ゲッターとセッター
     public int getApplicationId() {
         return applicationId;
     }
@@ -21,12 +39,12 @@ public class LivehouseApplicationWithGroup {
         this.applicationId = applicationId;
     }
 
-    public LocalDate getDatetime() {
-        return datetime;
+    public LocalDate getDateTime() {
+        return dateTime;
     }
 
-    public void setDatetime(LocalDate datetime) {
-        this.datetime = datetime;
+    public void setDateTime(LocalDate dateTime) {
+        this.dateTime = dateTime;
     }
 
     public boolean isTrueFalse() {
@@ -85,18 +103,11 @@ public class LivehouseApplicationWithGroup {
         this.bandYears = bandYears;
     }
 
-    
+    public int getUserId() {
+        return userId;
+    }
 
-    public LivehouseApplicationWithGroup(int applicationId, LocalDate datetime, boolean trueFalse, LocalDate startTime, LocalDate finishTime, int groupId, String accountName, String groupGenre, String bandYears) {
-        this.applicationId = applicationId;
-        this.datetime = datetime;
-        this.trueFalse = trueFalse;
-        this.startTime = startTime;
-        this.finishTime = finishTime;
-        this.groupId = groupId;
-        this.accountName = accountName;
-        this.groupGenre = groupGenre;
-        this.bandYears = bandYears;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }
-
