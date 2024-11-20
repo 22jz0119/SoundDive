@@ -7,13 +7,12 @@ public class Artist_group {
     private int id;
     private int user_id;
     private String account_name;
-    private byte[] picture_image_movie; // MEDIUMBLOB対応のbyte[]型に変更
+    private String picture_image_movie; // MEDIUMBLOB対応のbyte[]型に変更
+    private String rating_star;
     private String group_genre;
-    private String band_years;
+    private int band_years;
     private LocalDate create_date;
     private LocalDate update_date;
-    private String rating_star;
-    private String janru; // 追加されたJanruフィールド
 
     public int getId() {
         return id;
@@ -39,11 +38,11 @@ public class Artist_group {
         this.account_name = account_name;
     }
 
-    public byte[] getPicture_image_movie() { // byte[]型のゲッター
+    public String getPicture_image_movie() { // byte[]型のゲッター
         return picture_image_movie;
     }
 
-    public void setPicture_image_movie(byte[] picture_image_movie) { // byte[]型のセッター
+    public void setPicture_image_movie(String picture_image_movie) { // byte[]型のセッター
         this.picture_image_movie = picture_image_movie;
     }
 
@@ -55,11 +54,11 @@ public class Artist_group {
         this.group_genre = group_genre;
     }
 
-    public String getBand_years() {
+    public int getBand_years() {
         return band_years;
     }
 
-    public void setBand_years(String band_years) {
+    public void setBand_years(int band_years) {
         this.band_years = band_years;
     }
 
@@ -87,18 +86,15 @@ public class Artist_group {
         this.rating_star = rating_star;
     }
 
-    public String getJanru() {  
-        return janru;
+    public String getgroup_genre() {  
+        return group_genre;
     }
 
-    public void setJanru(String janru) {  
-        this.janru = janru;
-    }
 
     // picture_image_movieフィールドとJanruフィールドを含むコンストラクタ
-    public Artist_group(int id, int user_id, String account_name, byte[] picture_image_movie,
-                        String group_genre, String band_years, LocalDate create_date,
-                        LocalDate update_date, String rating_star, String janru) {
+    public Artist_group(int id, int user_id, String account_name, String picture_image_movie,
+                        String group_genre, int band_years, LocalDate create_date,
+                        LocalDate update_date, String rating_star) {
         super();
         this.id = id;
         this.user_id = user_id;
@@ -109,6 +105,5 @@ public class Artist_group {
         this.create_date = create_date;
         this.update_date = update_date;
         this.rating_star = rating_star;
-        this.janru = janru;
     }
 }

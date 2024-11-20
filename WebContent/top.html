@@ -1,52 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../WebContent/assets/css/style.css">
-  <title>SoundDive</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <title>SoundDive</title>
 </head>
 
 <body>
-  <div class="video-background">
-    <video autoplay loop muted>
-      <source src="../assets/img/TestMovie.mp4" type="video/mp4">
-    </video>
-  </div>
-  
-  <main class="top-main">
-    <div class="top-main-containar">
-      <h1 class="top-main-title">SoundDive</h1>
-      <p class="top-title-detail">アーティストとライブハウスのブッキングサービス</p>
+    <div class="video-background">
+        <video autoplay loop muted>
+            <source src="/assets/img/TestMovie.mp4" type="video/mp4">
+        </video>
     </div>
+    
+    <main class="top-main">
+        <div class="top-main-containar">
+            <h1 class="top-main-title">SoundDive</h1>
+            <p class="top-title-detail">アーティストとライブハウスのブッキングサービス</p>
+        </div>
 
-    <div class="top-catchphrase">
-      <h3 class="top-catchphrase-h3">音楽と出会いを繋ぐ、ライブハウスとアーティストの架け橋</h3>
-    </div>
+        <div class="top-catchphrase">
+            <h3 class="top-catchphrase-h3">音楽と出会いを繋ぐ、ライブハウスとアーティストの架け橋</h3>
+        </div>
 
-    <div class="top-explain">
-      <p class="top-explain-txt">Sound Diveは、アーティストとライブハウスをつなぐために設計された画期的なブッキングサービスです。これまでアーティスト側からのアプローチが多かったライブブッキングの業界において、ライブハウスが自ら求めるアーティストと直接つながれる環境を提供します。ライブハウスにとって最適なアーティストの選出から、アポ取りの管理までをデジタルで一貫対応し、従来のアナログな方法を革新。ユーザーが手軽に利用でき、リピート利用のしやすさを実感していただけるサービスを目指しています。</p>
-    </div>
+        <div class="top-explain">
+            <p class="top-explain-txt">SoundDiveは、アーティストとライブハウスをつなぐために設計された画期的なブッキングサービスです。</p>
+        </div>
 
-    <!-- ログインフォーム -->
-    <div class="top-login-containar">
-      <form action="Top" method="post">
-        <ul class="top-login-ul">
-          <li class="top-login-title"><p>LogIn</p></li>
-          <li class="top-login-ID"><p>ID</p></li>
-          <li class="top-login-id-txt"><input type="text" name="tel_number" id="top-loginId-txtbox"></li>
-          <li class="top-login-pass"><p>PassWord</p></li>
-          <li class="top-login-pass-txt"><input type="password" name="password" id="top-loginPass-textbox"></li>
-          <li><button type="submit" class="top-login-btn">Login</button></li>
-        </ul>
-      </form>
-      <ul>
-        <li class="top-newaccount-btnframe"><button type="submit" id="top-newaccount-btn">NewAccount</button></li>
-      </ul>
-    </div>
-  </main>
-  
+        <div class="top-login-containar">
+            <form action="/Top" method="post">
+                <ul class="top-login-ul">
+                    <li class="top-login-title"><p>LogIn</p></li>
+                    <li class="top-login-ID"><p>Tel Number</p></li>
+                    <li class="top-login-id-txt"><input type="text" id="top-loginId-txtbox" name="tel_number"></li>
+                    <li class="top-login-pass"><p>PassWord</p></li>
+                    <li class="top-login-pass-txt"><input type="password" id="top-loginPass-textbox" name="password"></li>
+                    <li><button type="submit" class="top-login-btn">Login</button></li>
+                </ul>
+            </form>
+
+            <ul>
+                <li class="top-newaccount-btnframe"><button type="button" id="top-newaccount-btn" onclick="location.href='/New_Acount'">NewAccount</button></li>
+            </ul>
+        </div>
+
+        <!-- エラーメッセージの表示 -->
+        <div class="error-message" style="display:none;">Error message goes here</div> <!-- Placeholder for error message -->
+
+    </main>
 </body>
-
 </html>
