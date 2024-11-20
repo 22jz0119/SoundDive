@@ -42,11 +42,10 @@
                         		<c:when test="${accountName != null}">
                         			<h2>${applicationList.account_name}</h2>
                             		<h3>${applicationList.group_genre}ジャンル:テクノバンド</h3>
-                            		<li class="confirmation-name">Vocal: 田中 太郎</li>
-                            		<li>Guitar:佐藤 太郎</li>
-                            		<li>Base: 加藤 花子</li>
-                            		<li>dram:林 花子</li>
-                        		</c:when>
+                            		<li class="confirmation-name">${memberPosition}: ${memberName}</li>
+                           		 	<li>${memberPosition}:${memberName}</li>
+                            		<li>${memberPosition}: ${memberName}</li>
+                            		<li>${memberPosition}:${memberName}</li>
                         	  
                         	</c:choose>
                           
