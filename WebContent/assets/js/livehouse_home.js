@@ -1,86 +1,120 @@
-document.addEventListener('DOMContentLoaded', function () {
-    function createCalendar(year, month, reservations) {
-        const calendar = document.getElementById("calendar");
-        calendar.innerHTML = ""; // カレンダーをクリア
+document.addEventListener("DOMContentLoaded", function () {
+    let today = new Date();
+    let currentYear = today.getFullYear();
+    let currentMonth = today.getMonth() + 1; // 月は0始まりなので+1
 
-        // 月と年の表示
-        const monthYear = document.createElement("div");
-        monthYear.id = "monthYear";
-        monthYear.innerText = `${year}年 ${month + 1}月`;
-        calendar.appendChild(monthYear);
+    const calendarDiv = document.getElementById("calendar");
+    const reservationListDiv = document.getElementById("reservation-list");
 
-        // 曜日のヘッダー
-        const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
-        const headerRow = document.createElement("tr");
-        weekdays.forEach(day => {
-            const th = document.createElement("th");
-            th.innerText = day;
-            headerRow.appendChild(th);
+    // カレンダーをレンダリング
+    function renderCalendar(year, month) {
+        const firstDay = new Date(year, month - 1, 1); // 1日
+        const lastDay = new Date(year, month, 0); // 月末
+        const daysInMonth = lastDay.getDate();
+        const startDayOfWeek = firstDay.getDay(); // 日曜日=0
+
+        let html = "<table border='1'><tr>";
+        const daysOfWeek = ["日", "月", "火", "水", "木", "金", "土"];
+
+        // 曜日ヘッダー
+        daysOfWeek.forEach(day => {
+            html += `<th>${day}</th>`;
         });
-        const headerTable = document.createElement("table");
-        headerTable.appendChild(headerRow);
-        calendar.appendChild(headerTable);
+        html += "</tr><tr>";
 
-        // 月の日数と初日の曜日を取得
-        const firstDay = new Date(year, month, 1).getDay();
-        const lastDate = new Date(year, month + 1, 0).getDate();
-
-        // 空のセルを追加
-        let row = document.createElement("tr");
-        for (let i = 0; i < firstDay; i++) {
-            const td = document.createElement("td");
-            row.appendChild(td);
+        // 空白セル (1日の曜日に対応するまで)
+        for (let i = 0; i < startDayOfWeek; i++) {
+            html += "<td></td>";
         }
 
-        // 日付を追加
-        for (let date = 1; date <= lastDate; date++) {
-            const td = document.createElement("td");
-            td.innerText = date; // 日付を表示
+        // 日付セル
+        for (let day = 1; day <= daysInMonth; day++) {
+            if ((startDayOfWeek + day - 1) % 7 === 0 && day !== 1) {
+                html += "</tr><tr>"; // 新しい行を開始
+            }
+            html += `<td class="calendar-day" data-day="${day}" data-year="${year}" data-month="${month}">${day}</td>`;
+        }
 
-            // クリックイベントを追加
-            td.addEventListener("click", function () {
-                const selectedDate = `${year}-${month + 1}-${date}`;
-                window.location.href = `/your-target-page?date=${selectedDate}`;
+        // 空白セル (月末の残り)
+        const remainingCells = (7 - (startDayOfWeek + daysInMonth) % 7) % 7;
+        for (let i = 0; i < remainingCells; i++) {
+            html += "<td></td>";
+        }
+
+        html += "</tr></table>";
+        calendarDiv.innerHTML = html;
+
+        // 日付セルのクリックイベントを設定
+        document.querySelectorAll(".calendar-day").forEach(cell => {
+            cell.addEventListener("click", function () {
+                const year = this.getAttribute("data-year");
+                const month = this.getAttribute("data-month");
+                const day = this.getAttribute("data-day");
+                
+                console.log(`Selected Date: ${year}-${month}-${day}`); // デバッグ用ログ
+                fetchReservations(year, month, day);
             });
-
-            // 予約件数を表示
-            const count = reservations[date] || 0; // 予約件数を取得
-            if (count > 0) {
-                const reservationCount = document.createElement("div");
-                reservationCount.className = "reservation-count";
-                reservationCount.innerText = `予約: ${count}`;
-                td.appendChild(reservationCount);
-            }
-
-            row.appendChild(td);
-
-            // 週の終わりで新しい行を作成
-            if ((date + firstDay) % 7 === 0) {
-                const table = document.createElement("table");
-                table.appendChild(row);
-                calendar.appendChild(table);
-                row = document.createElement("tr");
-            }
-        }
-
-        // 最後の行を追加
-        if (row.children.length > 0) {
-            const table = document.createElement("table");
-            table.appendChild(row);
-            calendar.appendChild(table);
-        }
+        });
     }
 
-    // サンプルデータでカレンダーを作成
-    const today = new Date();
-    const reservations = {
-        1: 2,
-        5: 1,
-        10: 3,
-        15: 0,
-        20: 5,
-        25: 1,
-        30: 4
-    }; // 予約件数のサンプルデータ
-    createCalendar(today.getFullYear(), today.getMonth(), reservations);
+    // 特定の日付の予約リストを取得
+    function fetchReservations(year, month, day) {
+        fetch(`Livehouse_reservation?year=${year}&month=${month}&day=${day}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    reservationListDiv.innerHTML = `<p>${data.error}</p>`;
+                } else {
+                    renderReservationList(data);
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching reservations:", error);
+                reservationListDiv.innerHTML = "<p>予約リストの取得に失敗しました。</p>";
+            });
+    }
+
+    // 予約リストをレンダリング
+    function renderReservationList(reservations) {
+        if (reservations.length === 0) {
+            reservationListDiv.innerHTML = "<p>この日に予約はありません。</p>";
+            return;
+        }
+
+        let html = "<table border='1'><tr><th>グループ名</th><th>ジャンル</th><th>バンド歴</th><th>開始時間</th><th>終了時間</th></tr>";
+        reservations.forEach(reservation => {
+            html += `<tr>
+                        <td>${reservation.accountName}</td>
+                        <td>${reservation.groupGenre}</td>
+                        <td>${reservation.bandYears}年</td>
+                        <td>${reservation.startTime}</td>
+                        <td>${reservation.finishTime}</td>
+                    </tr>`;
+        });
+        html += "</table>";
+        reservationListDiv.innerHTML = html;
+    }
+
+    // 初期カレンダー表示
+    renderCalendar(currentYear, currentMonth);
+
+    // 月を変更する
+    document.getElementById("prev").addEventListener("click", function () {
+        currentMonth--;
+        if (currentMonth === 0) {
+            currentMonth = 12;
+            currentYear--;
+        }
+        renderCalendar(currentYear, currentMonth);
+    });
+
+    document.getElementById("next").addEventListener("click", function () {
+        currentMonth++;
+        if (currentMonth === 13) {
+            currentMonth = 1;
+            currentYear++;
+        }
+        renderCalendar(currentYear, currentMonth);
+    });
+    
 });

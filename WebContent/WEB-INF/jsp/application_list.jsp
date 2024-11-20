@@ -1,80 +1,74 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
-	<title>アーティスト申請一覧ページ</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
+    <title>アーティスト申請一覧ページ</title>
 </head>
 <body>
-	<!--ヘッダー-->
+    <!-- ヘッダー -->
     <header class="main-header">
         <div class="header-container">
-            <div class="main-title">
-                <h1 class="main-title-h1">Sound Dive</h1>
-            </div>
+            <h1 class="main-title">Sound Dive</h1>
             <nav class="header-nav">
                 <ul class="header-nav-ul">
                     <li><a href="livehouse_home.html">HOME</a></li>
                     <li><a href="livehouse_mypage.html">MY PAGE</a></li>
-                    <li><a href="">000</a></li>
-                    <li><a href="">000</a></li>
+                    <li><a href="#">その他1</a></li>
+                    <li><a href="#">その他2</a></li>
                 </ul>
             </nav>
         </div>
     </header>
     <main>
-        <!--予約日付-->
+        <!-- 予約日付 -->
         <section class="application-list-count">
-            <div class="main-application_list">
-                <h2 class="application_list_h2">アーティスト申請一覧画面</h2>
-            </div>
+            <h2>アーティスト申請一覧画面</h2>
             <div class="reservation-date">
                 <!-- クエリパラメータから日付を取得して表示 -->
-                <p class="application-date">日付: 
-                    <c:out value="${param.date}" /> <!-- クエリパラメータ `date` を表示 -->
-                </p>
+                <p>日付: <c:out value="${param.date}" /></p>
                 <!-- 件数を動的に表示 -->
-                <p class="application-number">件数: <c:out value="${fn:length(applicationList)}" />件</p>
+                <p>件数: <c:out value="${fn:length(applicationList)}" />件</p>
             </div>
         </section>
-        <!--申請リスト-->
+        <!-- 申請リスト -->
         <div class="application-lists">
-        <!-- applicationList をループして各グループ情報を表示 -->
-        <c:forEach var="application" items="${applicationList}">
-            <div class="artist-list-container">
-                <div class="application-lists-info">
-                    <div class="artist-list-img-bg">
-                        <!-- グループ画像: 必要に応じて画像パスを動的にする -->
-                        <img class="artist-list-img" src="../assets/img/アーティスト画像.png" alt="アーティスト画像">
-                    </div>
-                    <div class="application-lists-info-2">
-                        <!-- グループ情報を動的に表示 -->
-                        <h1 class="application-lists-name">${application.accountName}</h1>
-                        <ul class="application-lists-detail">
-                            <li>ジャンル: ${application.groupGenre}</li>
-                            <li>バンド歴: ${application.bandYears}年</li>
-                        </ul>
-                        <ul class="application-lists-detail">
-                            <!-- 申請情報を表示 -->
-                            <li>申請ID: ${application.applicationId}</li>
-                            <li>申請日時: ${application.datetime}</li>
-                            <li>開始時間: ${application.startTime}</li>
-                            <li>終了時間: ${application.finishTime}</li>
-                            <li>承認状態: ${application.trueFalse ? '承認済み' : '未承認'}</li>
-                        </ul>
-                        <!-- サンプル音源の表示 -->
-                        <audio class="sound-source" controls>
-                            <source src="water.mp3" type="audio/mp3">
-                            このブラウザはオーディオ再生をサポートしていません。
-                        </audio>
+            <c:forEach var="application" items="${applicationList}">
+                <div class="artist-list-container">
+                    <div class="application-lists-info">
+                        <div class="artist-list-img-bg">
+                            <!-- グループ画像 -->
+                            <img class="artist-list-img" src="<%= request.getContextPath() %>/assets/img/artist_default.png" alt="アーティスト画像">
+                        </div>
+                        <div class="application-lists-info-2">
+                            <!-- グループ情報 -->
+                            <h1>${application.accountName}</h1>
+                            <ul>
+                                <li>ジャンル: ${application.groupGenre}</li>
+                                <li>バンド歴: ${application.bandYears}年</li>
+                            </ul>
+                            <ul>
+                                <li>申請ID: ${application.applicationId}</li>
+                                <li>申請日時: ${application.datetime}</li>
+                                <li>開始時間: ${application.startTime}</li>
+                                <li>終了時間: ${application.finishTime}</li>
+                                <li>承認状態: ${application.trueFalse ? '承認済み' : '未承認'}</li>
+                            </ul>
+                            <!-- サンプル音源 -->
+                            <audio controls>
+                                <source src="<%= request.getContextPath() %>/assets/audio/sample.mp3" type="audio/mp3">
+                                このブラウザはオーディオ再生をサポートしていません。
+                            </audio>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </c:forEach>
-    </div>
+            </c:forEach>
+        </div>
     </main>
 </body>
 </html>
