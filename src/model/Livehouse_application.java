@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 public class Livehouse_application {
 	private int id;
+	private int user_id;
 	private int livehouse_information_id;
 	private LocalDate datetime;
 	private boolean true_false;
@@ -17,6 +18,13 @@ public class Livehouse_application {
 	public void setId(int id) {
 		this.id = id;
 	}
+	public int getUser_id() {
+		return user_id;
+	}
+	public void setUser_id(int user_id) {
+		this.user_id = user_id;
+	}
+	
 	public int getLivehouse_information_id() {
 		return livehouse_information_id;
 	}
@@ -60,10 +68,11 @@ public class Livehouse_application {
 	public void setUpdate_date(LocalDate update_date) {
 		this.update_date = update_date;
 	}
-	public Livehouse_application(int id, int livehouse_information_id, LocalDate datetime, Boolean true_false, LocalDate start_time,LocalDate finish_time, LocalDate create_date,
+	public Livehouse_application(int id, int user_id, int livehouse_information_id, LocalDate datetime, Boolean true_false, LocalDate start_time,LocalDate finish_time, LocalDate create_date,
 			LocalDate update_date) {
 		super();
 		this.id = id;
+		this.user_id = user_id;
 		this.livehouse_information_id = livehouse_information_id;
 		this.datetime = datetime;
 		this.true_false = true_false;
