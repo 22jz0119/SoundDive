@@ -24,7 +24,7 @@
                 </nav>
             </div>
         </header>
-        <main>
+       <main>
             <div class="main-reservation-confirmation">
                 <section class="confirmation-sec">
                     <div class="confirmation-div">
@@ -38,19 +38,18 @@
                             <img class="confirmation-artist-img" src="../assets/img/アーティスト画像.png" alt="アーティスト画像">
                         </div>
                         <ul class="confirmation-info">
-                            <c:choose>
-				                <c:when test="${accountName != null}">
-				                    <li class="approved-account-name">アカウント名: ${accountName}</li>
-				                </c:when>
-				                <c:otherwise>
-				                    <li>${error}</li>
-				                </c:otherwise>
-				            </c:choose>
-                            <h3>ジャンル:${groupGenre}</h3>
-                            <li class="confirmation-name">${memberPosition}: ${memberName}</li>
-                            <li>${memberPosition}:${memberName}</li>
-                            <li>${memberPosition}: ${memberName}</li>
-                            <li>${memberPosition}:${memberName}</li>
+                        	<c:choose>
+                        		<c:when test="${accountName != null}">
+                        			<h2>${applicationList.account_name}</h2>
+                            		<h3>${applicationList.group_genre}ジャンル:テクノバンド</h3>
+                            		<li class="confirmation-name">Vocal: 田中 太郎</li>
+                            		<li>Guitar:佐藤 太郎</li>
+                            		<li>Base: 加藤 花子</li>
+                            		<li>dram:林 花子</li>
+                        		</c:when>
+                        	  
+                        	</c:choose>
+                          
                             <!-- <h2>サンプル音源</h2> -->
                             <audio class="sound-source" controls src="water.mp3" type="audio/mp3">まじかるろりぽっぷ☆（てきとう）</audio>
                         </ul>
@@ -58,21 +57,18 @@
                     <div class="reservation-details-container">
                         <h2>予約詳細</h2>
                         <ul class="reservation-details-container-info">
-                             <c:choose>
-				                <c:when test="${accountName != null}">
-				                    <li class="approved-account-name">アカウント名: ${accountName}</li>
-				                </c:when>
-				                <c:otherwise>
-				                    <li>${error}</li>
-				                </c:otherwise>
-				            </c:choose>
-                            <li>予約日時: 2024年10月10日 〇〇時</li>
-                            <li>前払い金額: 8000円</li>
+                        	<c:choose>
+                        		<c:when></c:when>
+                        		<li>予約者名: 田中 太郎</li>
+                            	<li>予約日時: 2024年10月10日 〇〇時</li>
+                            	<li>前払い金額: 8000円</li>
+                        	</c:choose>
+                            
                         </ul>
                     </div>
                 </div>
                 <div class="application_confirmation-btn">
-                    <button class="approve-btn" onclick="/location.href='application_list.jsp'">戻る</button>
+                    <button class="approve-btn" onclick="location.href='application_list.html'">戻る</button>
                     <button class="decline-btn" onclick="location.href='application_approval.html'">承認</button>
                 </div>
             </div>
