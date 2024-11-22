@@ -32,6 +32,7 @@ public class LivehouseApplicationWithGroup {
         this.userId = userId;  // userIdを設定
         this.us_name = us_name;
     }
+    
 
     // ゲッターとセッター
     public int getApplicationId() {
