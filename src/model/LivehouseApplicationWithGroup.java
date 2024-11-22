@@ -15,6 +15,7 @@ public class LivehouseApplicationWithGroup {
     private String bandYears;
     private int userId;
     private String us_name;
+    
 
     // コンストラクタを追加
     public LivehouseApplicationWithGroup(int applicationId, int id, LocalDate dateTime, boolean trueFalse,LocalDate startTime, LocalDate finishTime, int groupId,String accountName, String groupGenre, String bandYears, int userId, String us_name) {
