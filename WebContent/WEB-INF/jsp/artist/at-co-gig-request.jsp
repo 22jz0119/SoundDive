@@ -43,7 +43,7 @@
             <table class="taibantable">
                 <tr class="a">
                     <th rowspan="4"><img src="../assets/img/Group 5.png" alt="バンドのイラスト" class="band-image"></th>
-                    <th>アーティスト名</th>
+                    <th>${application.account} </th>
                     <th class="b">ステータス</th>
                 </tr>
                 <tr class="a">

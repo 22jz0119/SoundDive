@@ -4,7 +4,8 @@ import java.time.LocalDate;
 
 public class LivehouseApplicationWithGroup {
     private int applicationId;
-    private LocalDate dateTime;
+    private int id;
+    private LocalDate date_Time;
     private boolean trueFalse;
     private LocalDate startTime;
     private LocalDate finishTime;
@@ -15,11 +16,10 @@ public class LivehouseApplicationWithGroup {
     private int userId;
 
     // コンストラクタを追加
-    public LivehouseApplicationWithGroup(int applicationId, LocalDate dateTime, boolean trueFalse,
-                                         LocalDate startTime, LocalDate finishTime, int groupId,
-                                         String accountName, String groupGenre, String bandYears, int userId) {
+    public LivehouseApplicationWithGroup(int applicationId, int id, LocalDate dateTime, boolean trueFalse,LocalDate startTime, LocalDate finishTime, int groupId,String accountName, String groupGenre, String bandYears, int userId) {
         this.applicationId = applicationId;
-        this.dateTime = dateTime;
+        this.id = id;
+        this.date_Time = dateTime;
         this.trueFalse = trueFalse;
         this.startTime = startTime;
         this.finishTime = finishTime;
@@ -38,13 +38,21 @@ public class LivehouseApplicationWithGroup {
     public void setApplicationId(int applicationId) {
         this.applicationId = applicationId;
     }
+    
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public LocalDate getDateTime() {
-        return dateTime;
+        return date_Time;
     }
 
     public void setDateTime(LocalDate dateTime) {
-        this.dateTime = dateTime;
+        this.date_Time = dateTime;
     }
 
     public boolean isTrueFalse() {
