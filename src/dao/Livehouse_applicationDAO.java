@@ -38,6 +38,7 @@ public class Livehouse_applicationDAO {
             pstmt.setDate(6, Date.valueOf(livehouse_application.getFinish_time()));  // LocalDate -> Date
             pstmt.setDate(7, Date.valueOf(livehouse_application.getCreate_date()));  // LocalDate -> Date
             pstmt.setDate(8, Date.valueOf(livehouse_application.getUpdate_date()));  // LocalDate -> Date
+            pstmt.setInt(9, livehouse_application.getId());
 
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0;  // 挿入が成功した場合、1以上の行が影響を受ける
@@ -91,7 +92,7 @@ public class Livehouse_applicationDAO {
     // 申請したグループ情報を結合
     public List<LivehouseApplicationWithGroup> getApplicationsWithGroups() {
         String sql = "SELECT " +
-                     "la.id AS application_id, " +
+                     "la.id AS application_id, " +  // id列を使用
                      "la.date_time, " +
                      "la.true_false, " +
                      "la.start_time, " +
@@ -100,10 +101,10 @@ public class Livehouse_applicationDAO {
                      "ag.account_name, " +
                      "ag.group_genre, " +
                      "ag.band_years, " +
-                     "la.user_id " +  // user_id を取得
+                     "la.user_id " +
                      "FROM livehouse_application_table la " +
-                     "JOIN user u ON la.user_id = u.id " +  // livehouse_application_table と user_table を JOIN
-                     "JOIN artist_group ag ON u.id = ag.user_id";  // user_table と artist_group を JOIN
+                     "JOIN user u ON la.user_id = u.id " +
+                     "JOIN artist_group ag ON u.id = ag.user_id";
 
         List<LivehouseApplicationWithGroup> applicationList = new ArrayList<>();
         try (Connection conn = dbManager.getConnection();
@@ -112,16 +113,17 @@ public class Livehouse_applicationDAO {
 
             while (rs.next()) {
                 LivehouseApplicationWithGroup application = new LivehouseApplicationWithGroup(
-                    rs.getInt("application_id"),
-                    rs.getDate("date_time").toLocalDate(),
+                    rs.getInt("application_id"),  // id列を取得
+                    rs.getInt("group_id"),
+                    rs.getTimestamp("date_time").toLocalDateTime().toLocalDate(),
                     rs.getBoolean("true_false"),
-                    rs.getDate("start_time").toLocalDate(),
-                    rs.getDate("finish_time").toLocalDate(),
+                    rs.getTimestamp("start_time").toLocalDateTime().toLocalDate(),
+                    rs.getTimestamp("finish_time").toLocalDateTime().toLocalDate(),
                     rs.getInt("group_id"),
                     rs.getString("account_name"),
                     rs.getString("group_genre"),
                     rs.getString("band_years"),
-                    rs.getInt("user_id")  // user_id を取得
+                    rs.getInt("user_id")
                 );
                 applicationList.add(application);
             }
@@ -132,8 +134,51 @@ public class Livehouse_applicationDAO {
     }
 
 
+ // 指定されたIDで申請の詳細を取得するメソッド
+    public LivehouseApplicationWithGroup getApplicationDetailsById(int applicationId) {
+        String sql = "SELECT " +
+                     "la.id AS application_id, " +
+                     "la.date_time, " +
+                     "la.true_false, " +
+                     "la.start_time, " +
+                     "la.finish_time, " +
+                     "ag.id AS group_id, " +
+                     "ag.account_name, " +
+                     "ag.group_genre, " +
+                     "ag.band_years, " +
+                     "la.user_id " +
+                     "FROM livehouse_application_table la " +
+                     "JOIN user u ON la.user_id = u.id " +
+                     "JOIN artist_group ag ON u.id = ag.user_id " +
+                     "WHERE la.id = ?";  // id列を条件に使用
 
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+            pstmt.setInt(1, applicationId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new LivehouseApplicationWithGroup(
+                        rs.getInt("application_id"),  // id列を取得
+                        rs.getInt("group_id"),
+                        rs.getTimestamp("date_time").toLocalDateTime().toLocalDate(),
+                        rs.getBoolean("true_false"),
+                        rs.getTimestamp("start_time").toLocalDateTime().toLocalDate(),
+                        rs.getTimestamp("finish_time").toLocalDateTime().toLocalDate(),
+                        rs.getInt("group_id"),
+                        rs.getString("account_name"),
+                        rs.getString("group_genre"),
+                        rs.getString("band_years"),
+                        rs.getInt("user_id")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     // 指定された年と月のライブハウス予約件数を取得するメソッド
     public Map<Integer, Integer> getReservationCountByMonth(int year, int month) {
@@ -141,7 +186,7 @@ public class Livehouse_applicationDAO {
         
         // SQLクエリ: 日ごとの予約件数を取得
         String sql = "SELECT DAY(datetime) AS day, COUNT(*) AS count " +
-                     "FROM livehouse_application " +
+                     "FROM livehouse_application_table " +
                      "WHERE YEAR(datetime) = ? AND MONTH(datetime) = ? " +
                      "GROUP BY DAY(datetime)";
 
@@ -173,7 +218,7 @@ public class Livehouse_applicationDAO {
         String sql = "SELECT la.id AS application_id, la.datetime, la.true_false, la.start_time, la.finish_time, " +
                      "ag.id AS group_id, ag.account_name, ag.group_genre, ag.band_years, " +
                      "la.user_id " +  // 修正: user_idを追加
-                     "FROM livehouse_application la " +
+                     "FROM livehouse_application_table la " +
                      "JOIN artist_group ag ON la.livehouse_information_id = ag.id " +
                      "WHERE YEAR(la.datetime) = ? AND MONTH(la.datetime) = ? AND DAY(la.datetime) = ?";
 
@@ -189,6 +234,7 @@ public class Livehouse_applicationDAO {
                 while (rs.next()) {
                     reservations.add(new LivehouseApplicationWithGroup(
                         rs.getInt("application_id"),
+                        rs.getInt("id"),
                         rs.getDate("datetime").toLocalDate(),
                         rs.getBoolean("true_false"),
                         rs.getDate("start_time").toLocalDate(),
