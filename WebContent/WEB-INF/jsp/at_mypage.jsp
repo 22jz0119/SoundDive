@@ -75,10 +75,10 @@
         <div class="form-group-2">
             <c:choose>
                 <c:when test="${not empty userGroup}">
-                    <textarea id="band-history" name="band_history" placeholder="バンド歴、詳細など.." rows="4" required>${userGroup.band_years}</textarea>
+                    <textarea id="band-history" name="band_years" placeholder="バンド歴、詳細など.." rows="4" required>${userGroup.band_years}</textarea>
                 </c:when>
                 <c:otherwise>
-                    <textarea id="band-history" name="band_history" placeholder="バンド歴、詳細など.." rows="4" required></textarea>
+                    <textarea id="band-history" name="band_years" placeholder="バンド歴、詳細など.." rows="4" required></textarea>
                 </c:otherwise>
             </c:choose>
         </div>

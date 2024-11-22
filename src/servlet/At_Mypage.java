@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -16,7 +18,9 @@ import javax.servlet.http.Part;
 
 import dao.Artist_groupDAO;
 import dao.DBManager;
+import dao.Member_tableDAO;
 import model.Artist_group;
+import model.Member;
 
 @WebServlet("/At_Mypage")
 @MultipartConfig
@@ -34,13 +38,16 @@ public class At_Mypage extends HttpServlet {
             return;
         }
 
-        // ユーザーに関連するグループ情報を取得
+        // アーティストグループ情報を取得
         Artist_groupDAO artistGroupDAO = new Artist_groupDAO(DBManager.getInstance());
         Artist_group userGroup = artistGroupDAO.getGroupByUserId(userId);
 
-        // グループが存在する場合、リクエストスコープに情報をセット
+        // メンバー情報を取得
         if (userGroup != null) {
+            Member_tableDAO memberTableDAO = new Member_tableDAO(DBManager.getInstance());
+            List<Member> members = memberTableDAO.getMembersByArtistGroupId(userGroup.getId());
             request.setAttribute("userGroup", userGroup);
+            request.setAttribute("members", members);
         } else {
             request.setAttribute("errorMessage", "グループ情報が見つかりません。");
         }
@@ -62,22 +69,16 @@ public class At_Mypage extends HttpServlet {
             return;
         }
 
-        // リクエストパラメータの確認
         String accountName = request.getParameter("account_name");
         String groupGenre = request.getParameter("group_genre");
         String bandYearsParam = request.getParameter("band_years");
+        String[] memberNames = request.getParameterValues("member_name[]");
+        String[] memberRoles = request.getParameterValues("member_role[]");
 
-        // ログ出力
-        System.out.println("Received account_name: " + accountName);
-        System.out.println("Received group_genre: " + groupGenre);
-        System.out.println("Received band_years: " + bandYearsParam);
-
-        // バンド歴の処理
         int bandYears = 0;
         if (bandYearsParam != null && !bandYearsParam.trim().isEmpty()) {
             try {
                 bandYears = Integer.parseInt(bandYearsParam);
-                System.out.println("Parsed band_years: " + bandYears);
             } catch (NumberFormatException e) {
                 request.setAttribute("errorMessage", "バンド歴は数値で入力してください。");
                 request.getRequestDispatcher("/WEB-INF/jsp/at_mypage.jsp").forward(request, response);
@@ -85,43 +86,34 @@ public class At_Mypage extends HttpServlet {
             }
         }
 
-        // 画像のアップロード処理
+        List<Member> members = new ArrayList<>();
+        if (memberNames != null && memberRoles != null && memberNames.length == memberRoles.length) {
+            for (int i = 0; i < memberNames.length; i++) {
+                members.add(new Member(0, 0, memberNames[i], memberRoles[i]));
+            }
+        }
+
         Part profileImagePart = request.getPart("picture_image_movie");
         String pictureImagePath = null;
 
         if (profileImagePart != null && profileImagePart.getSize() > 0) {
             String fileName = System.currentTimeMillis() + "_" + profileImagePart.getSubmittedFileName();
-            
-            // 保存先のディレクトリを確認
-            String uploadDir = "/var/lib/tomcat/webapps/uploads"; // 明示的なパスに変更
+            String uploadDir = "/var/lib/tomcat/webapps/SoundDive/uploads";
             File uploadDirFile = new File(uploadDir);
 
-            // ディレクトリが存在するか確認し、なければ作成
             if (!uploadDirFile.exists()) {
-                boolean created = uploadDirFile.mkdirs();
-                if (!created) {
-                    request.setAttribute("errorMessage", "画像の保存ディレクトリを作成できませんでした。");
-                    request.getRequestDispatcher("/WEB-INF/jsp/at_mypage.jsp").forward(request, response);
-                    return;
-                }
+                uploadDirFile.mkdirs();
             }
 
             pictureImagePath = "uploads/" + fileName;
 
-            // ファイルの保存処理
             try (InputStream inputStream = profileImagePart.getInputStream()) {
-                java.nio.file.Files.copy(inputStream, java.nio.file.Paths.get(uploadDir + java.io.File.separator + fileName));
-                System.out.println("Image saved at: " + uploadDir + java.io.File.separator + fileName); // 画像の保存先をログ出力
-            } catch (IOException e) {
-                e.printStackTrace();
-                request.setAttribute("errorMessage", "画像の保存中にエラーが発生しました。");
-                request.getRequestDispatcher("/WEB-INF/jsp/at_mypage.jsp").forward(request, response);
-                return;
+                java.nio.file.Files.copy(inputStream, java.nio.file.Paths.get(uploadDir + File.separator + fileName));
             }
         }
 
-        // アーティストグループの更新または新規作成
         Artist_groupDAO artistGroupDAO = new Artist_groupDAO(DBManager.getInstance());
+        Member_tableDAO memberTableDAO = new Member_tableDAO(DBManager.getInstance());
         Artist_group existingGroup = artistGroupDAO.getGroupByUserId(userId);
 
         if (existingGroup != null) {
@@ -132,7 +124,13 @@ public class At_Mypage extends HttpServlet {
             existingGroup.setUpdate_date(LocalDate.now());
 
             boolean isUpdated = artistGroupDAO.updateGroup(existingGroup);
+
             if (isUpdated) {
+                memberTableDAO.deleteMemberById(existingGroup.getId()); // 既存メンバーを削除
+                for (Member member : members) {
+                    member.setArtist_group_id(existingGroup.getId());
+                    memberTableDAO.insertMember(member);
+                }
                 request.setAttribute("successMessage", "プロフィールが正常に更新されました。");
             } else {
                 request.setAttribute("errorMessage", "プロフィール更新中にエラーが発生しました。");
@@ -149,7 +147,7 @@ public class At_Mypage extends HttpServlet {
                 LocalDate.now(),
                 "0.0"
             );
-            int groupId = artistGroupDAO.createAndReturnId(newGroup);
+            int groupId = artistGroupDAO.createAndReturnId(newGroup, members);
 
             if (groupId > 0) {
                 request.setAttribute("successMessage", "プロフィールが正常に保存されました。");
@@ -158,15 +156,15 @@ public class At_Mypage extends HttpServlet {
             }
         }
 
-        // ユーザーの最新のグループ情報を再度取得して表示
         Artist_group userGroup = artistGroupDAO.getGroupByUserId(userId);
         if (userGroup != null) {
+            List<Member> updatedMembers = memberTableDAO.getMembersByArtistGroupId(userGroup.getId());
             request.setAttribute("userGroup", userGroup);
+            request.setAttribute("members", updatedMembers);
         } else {
             request.setAttribute("errorMessage", "グループ情報が見つかりません。");
         }
 
-        // JSPへ転送
         request.getRequestDispatcher("/WEB-INF/jsp/at_mypage.jsp").forward(request, response);
     }
 }

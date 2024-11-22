@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Artist_group;
+import model.Member;
 
 public class Artist_groupDAO {
     private DBManager dbManager;
@@ -44,44 +45,48 @@ public class Artist_groupDAO {
     }
 
     // アーティストグループを新規作成し、成功時にIDを返すメソッド
-    public int createAndReturnId(Artist_group artistGroup) {
+    public int createAndReturnId(Artist_group artistGroup, List<Member> members) {
         String sql = "INSERT INTO artist_group (user_id, account_name, picture_image_movie, group_genre, band_years, create_date, update_date, rating_star) "
                    + "VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?)";
 
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
+            // アーティストグループを挿入
             pstmt.setInt(1, artistGroup.getUser_id());
             pstmt.setString(2, artistGroup.getAccount_name());
-
-            // 画像を保存し、ファイルパスをデータベースに保存
-            if (artistGroup.getPicture_image_movie() != null) {
-                String fileName = System.currentTimeMillis() + "_profile.jpg"; // ファイル名を一意に
-                String filePath = saveImageToFileSystem(artistGroup.getPicture_image_movie().getBytes(), fileName);
-                pstmt.setString(3, filePath); // データベースにはファイルパスを保存
-            } else {
-                pstmt.setNull(3, java.sql.Types.VARCHAR);
-            }
-
+            pstmt.setString(3, artistGroup.getPicture_image_movie());
             pstmt.setString(4, artistGroup.getGroup_genre());
-            pstmt.setInt(5, artistGroup.getBand_years()); // `int` 型の `band_years` をセット
+            pstmt.setInt(5, artistGroup.getBand_years());
             pstmt.setString(6, artistGroup.getRating_star());
 
             int affectedRows = pstmt.executeUpdate();
 
+            // 挿入成功後、グループの ID を取得
             if (affectedRows > 0) {
                 try (ResultSet rs = pstmt.getGeneratedKeys()) {
                     if (rs.next()) {
-                        return rs.getInt(1); // 自動生成されたIDを返す
+                        int groupId = rs.getInt(1);
+
+                        // メンバーを挿入（連番で設定）
+                        Member_tableDAO memberDAO = new Member_tableDAO(dbManager);
+                        int artistGroupId = 1;
+                        for (Member member : members) {
+                            member.setArtist_group_id(groupId); // グループIDを設定
+                            memberDAO.insertMember(new Member(0, groupId, member.getMember_name(), member.getMember_position()));
+                            artistGroupId++;
+                        }
+
+                        return groupId;
                     }
                 }
             }
-        } catch (SQLException | IOException e) {
-            System.err.println("Error creating artist group: " + e.getMessage());
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        return -1; // エラー時
+        return -1; // エラーが発生した場合
     }
+
     
     public List<Artist_group> getGroupsByUserId(int userId) {
         String sql = "SELECT * FROM artist_group WHERE user_id = ?";
@@ -105,29 +110,40 @@ public class Artist_groupDAO {
 
     
     public boolean updateGroup(Artist_group group) {
-        String sql = "UPDATE artist_group SET account_name = ?, picture_image_movie = ?, group_genre = ?, band_years = ?, update_date = ? "
-                   + "WHERE user_id = ?";
+        // SQLクエリ
+        String sql = "UPDATE artist_group SET account_name = ?, picture_image_movie = ?, group_genre = ?, band_years = ?, update_date = ? WHERE user_id = ?";
 
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, group.getAccount_name());
-            pstmt.setString(2, group.getPicture_image_movie());
+            // パラメータの設定
+            if (group.getAccount_name() != null) {
+                pstmt.setString(1, group.getAccount_name());
+            } else {
+                pstmt.setNull(1, java.sql.Types.VARCHAR); // nullの場合はnullを設定
+            }
+
+            if (group.getPicture_image_movie() != null) {
+                pstmt.setString(2, group.getPicture_image_movie());
+            } else {
+                pstmt.setNull(2, java.sql.Types.VARCHAR); // nullの場合はnullを設定
+            }
+
             pstmt.setString(3, group.getGroup_genre());
             pstmt.setInt(4, group.getBand_years());
             pstmt.setDate(5, Date.valueOf(group.getUpdate_date()));
             pstmt.setInt(6, group.getUser_id());
 
+            // 実行
             int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected > 0;
+            return rowsAffected > 0; // 更新が成功した場合はtrueを返す
+
         } catch (SQLException e) {
-        	System.out.println("Updating group with band_years: " + group.getBand_years());
             System.err.println("Error updating artist group: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
     }
-
     
     public boolean updateArtistGroupByUserId(int userId, Artist_group updatedGroup) {
         String sql = "UPDATE artist_group SET account_name = ?, picture_image_movie = ?, group_genre = ?, band_years = ?, update_date = NOW(), rating_star = ? WHERE user_id = ?";

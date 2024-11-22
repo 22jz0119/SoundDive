@@ -28,10 +28,12 @@
             <div class="main-application_list">
                 <h2 class="application_list_h2">アーティスト申請カレンダートップ</h2>
             </div>
-            <!-- <div class="reservation-date">
+            
+             <div class="reservation-date">
                 <p class="application-date">日付 2024/12/24</p>
                 <p class="application-number">件数〇件</p>
-            </div> -->
+            </div> 
+            
         </section>
         <div class="live-main-calendar-button">
             <div class="live-calendar-next-button">
@@ -45,8 +47,7 @@
         <div class="live-home-calendar-div">
             <div id="calendar"></div>
         </div>
+        <script src="${pageContext.request.contextPath}/assets/js/livehouse_home.js"></script>
         
-        <script src="../assets/js/artist_home.js"></script> <!-- JavaScriptファイルをリンク -->
-
-</body>
+        </body>
 </html>
