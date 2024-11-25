@@ -34,27 +34,32 @@
                     </div>
                     <p class="question-approval">以下の予約を承認しますか？</p>
                 </section>
+                
                 <div class="band-confirmation-container">
+                 
                     <div class="confirmation-profile">
                         <div class="confirmation-artist-img-div">
                             <img class="confirmation-artist-img" src="../assets/img/アーティスト画像.png" alt="アーティスト画像">
                         </div>
                         <ul class="confirmation-info">
-                            <h2>つきみ</h2>
-                            <h3>ジャンル:テクノバンド</h3>
-                            <li class="confirmation-name">Vocal: 田中 太郎</li>
-                            <li>Guitar:佐藤 太郎</li>
-                            <li>Base: 加藤 花子</li>
-                            <li>dram:林 花子</li>
-                            <!-- <h2>サンプル音源</h2> -->
+                            <h2>${application.accountName}</h2>
+                            <h3>ジャンル:${application.groupGenre}</h3>
+                            
+                            <!-- メンバーリストをループで表示 -->
+	                        <ul>
+							    <c:forEach var="member" items="${applicationDetails.members}">
+							        <li>${member.member_position}: ${member.member_name}</li>
+							    </c:forEach>
+							</ul>
+
                             <audio class="sound-source" controls src="water.mp3" type="audio/mp3">まじかるろりぽっぷ☆（てきとう）</audio>
                         </ul>
                     </div>
                     <div class="reservation-details-container">
                         <h2>予約詳細</h2>
                         <ul class="reservation-details-container-info">
-                            <li>予約者名: 田中 太郎</li>
-                            <li>予約日時: 2024年10月10日 〇〇時</li>
+                            <li>予約者名:${user.us_name }</li>
+                            <li>予約日時:${application.date_time }</li>
                             <li>前払い金額: 8000円</li>
                         </ul>
                     </div>

@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import model.Livehouse_information;
 
@@ -87,6 +89,41 @@ public class Livehouse_informationDAO {
     		 System.out.println("ユーザーが見つかりませんでした。");
     	 }
      }
+     
+     public List<Livehouse_information> get() {
+    	    List<Livehouse_information> list = new ArrayList<>();
+    	    
+    	    DBManager manager = DBManager.getInstance();
+    	    try (Connection cn = manager.getConnection()) {
+    	        String sql = "SELECT * FROM livehouse_information";
+    	        PreparedStatement stmt = cn.prepareStatement(sql);
+    	        ResultSet rs = stmt.executeQuery();
+    	        
+    	        // データをリストに格納
+    	        while (rs.next()) {
+    	            int id = rs.getInt("id");
+    	            String oner_name = rs.getString("oner_name");
+    	            String equipment_information = rs.getString("equipment_information");
+    	            String livehouse_explanation_information = rs.getString("livehouse_explanation_information");
+    	            String livehouse_detailed_information = rs.getString("livehouse_detailed_information");
+    	            String livehouse_name = rs.getString("livehouse_name");
+    	            String live_address = rs.getString("live_address");
+    	            String live_tel_number = rs.getString("live_tel_number");
+    	            Date createDate = rs.getDate("create_date");
+    	            Date updateDate = rs.getDate("update_date");
+
+    	            // Livehouse_information オブジェクトを作成してリストに追加
+    	            Livehouse_information livehouse = new Livehouse_information(id, oner_name, equipment_information, 
+    	                    livehouse_explanation_information, livehouse_detailed_information, livehouse_name, 
+    	                    live_address, live_tel_number, createDate, updateDate);
+    	            list.add(livehouse);
+    	        }
+    	    } catch (SQLException e) {
+    	        e.printStackTrace();
+    	    }
+
+    	    return list;
+    	}
     
     
 
