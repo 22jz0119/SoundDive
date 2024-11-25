@@ -41,182 +41,42 @@
             <!--申請リスト-->
             <section class="application-artist-list-containar">
                 <div class="application-artist-list-main">
-                    <div class="application-artist-list-img-containar">
-                        <img src="../assets/img/アーティスト画像.png" alt="" class="application-artist-list-ikon">
-                    </div>
-                    <div class="application-artist-list-frame">
-                        
-                        <ul class="application-artist-list-ul0">
-                            <li><p>つきみ</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul1">
-                            <li class="application-artist-list-ul1-li1"><p>ジャンル</p></li>
-                            <li class="application-artist-list-ul1-li2"><p>テクノバンド</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul2">
-                            <li class="application-artist-list-ul2-li1"><p>バンド歴</p></li>
-                            <li class="application-artist-list-ul2-li2"><p>3年目</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul3">
-                            <li class="application-artist-list-ul3-li1"><p>レーティング</p></li>
-                            <li class="application-artist-list-ul3-li2"><p>評価3.5</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul4">
-                            <li class="application-artist-list-ul4-li1"><audio class="sound-source" controls src="water.mp3" type="audio/mp3">とまとまん</audio></li>
-                        </ul>
-                        <ul class="application-artist-list-ul5">
-                            <li class="application-artist-list-ul5-li1"><a href="" class="application-artist-list-ul5-li1-a">対バンを申し込む</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="application-artist-list-main">
-                    <div class="application-artist-list-img-containar">
-                        <img src="../assets/img/アーティスト画像.png" alt="" class="application-artist-list-ikon">
-                    </div>
-                    <div class="application-artist-list-frame">
-                        
-                        <ul class="application-artist-list-ul0">
-                            <li><p>つきみ</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul1">
-                            <li class="application-artist-list-ul1-li1"><p>ジャンル</p></li>
-                            <li class="application-artist-list-ul1-li2"><p>テクノバンド</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul2">
-                            <li class="application-artist-list-ul2-li1"><p>バンド歴</p></li>
-                            <li class="application-artist-list-ul2-li2"><p>3年目</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul3">
-                            <li class="application-artist-list-ul3-li1"><p>レーティング</p></li>
-                            <li class="application-artist-list-ul3-li2"><p>評価3.5</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul4">
-                            <li class="application-artist-list-ul4-li1"><audio class="sound-source" controls src="water.mp3" type="audio/mp3">とまとまん</audio></li>
-                        </ul>
-                        <ul class="application-artist-list-ul5">
-                            <li class="application-artist-list-ul5-li1"><a href="" class="application-artist-list-ul5-li1-a">対バンを申し込む</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="application-artist-list-main">
-                    <div class="application-artist-list-img-containar">
-                        <img src="../assets/img/アーティスト画像.png" alt="" class="application-artist-list-ikon">
-                    </div>
-                    <div class="application-artist-list-frame">
-                        
-                        <ul class="application-artist-list-ul0">
-                            <li><p>つきみ</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul1">
-                            <li class="application-artist-list-ul1-li1"><p>ジャンル</p></li>
-                            <li class="application-artist-list-ul1-li2"><p>テクノバンド</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul2">
-                            <li class="application-artist-list-ul2-li1"><p>バンド歴</p></li>
-                            <li class="application-artist-list-ul2-li2"><p>3年目</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul3">
-                            <li class="application-artist-list-ul3-li1"><p>レーティング</p></li>
-                            <li class="application-artist-list-ul3-li2"><p>評価3.5</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul4">
-                            <li class="application-artist-list-ul4-li1"><audio class="sound-source" controls src="water.mp3" type="audio/mp3">とまとまん</audio></li>
-                        </ul>
-                        <ul class="application-artist-list-ul5">
-                            <li class="application-artist-list-ul5-li1"><a href="" class="application-artist-list-ul5-li1-a">対バンを申し込む</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="application-artist-list-main">
-                    <div class="application-artist-list-img-containar">
-                        <img src="../assets/img/アーティスト画像.png" alt="" class="application-artist-list-ikon">
-                    </div>
-                    <div class="application-artist-list-frame">
-                        
-                        <ul class="application-artist-list-ul0">
-                            <li><p>つきみ</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul1">
-                            <li class="application-artist-list-ul1-li1"><p>ジャンル</p></li>
-                            <li class="application-artist-list-ul1-li2"><p>テクノバンド</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul2">
-                            <li class="application-artist-list-ul2-li1"><p>バンド歴</p></li>
-                            <li class="application-artist-list-ul2-li2"><p>3年目</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul3">
-                            <li class="application-artist-list-ul3-li1"><p>レーティング</p></li>
-                            <li class="application-artist-list-ul3-li2"><p>評価3.5</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul4">
-                            <li class="application-artist-list-ul4-li1"><audio class="sound-source" controls src="water.mp3" type="audio/mp3">とまとまん</audio></li>
-                        </ul>
-                        <ul class="application-artist-list-ul5">
-                            <li class="application-artist-list-ul5-li1"><a href="" class="application-artist-list-ul5-li1-a">対バンを申し込む</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="application-artist-list-main">
-                    <div class="application-artist-list-img-containar">
-                        <img src="../assets/img/アーティスト画像.png" alt="" class="application-artist-list-ikon">
-                    </div>
-                    <div class="application-artist-list-frame">
-                        
-                        <ul class="application-artist-list-ul0">
-                            <li><p>つきみ</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul1">
-                            <li class="application-artist-list-ul1-li1"><p>ジャンル</p></li>
-                            <li class="application-artist-list-ul1-li2"><p>テクノバンド</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul2">
-                            <li class="application-artist-list-ul2-li1"><p>バンド歴</p></li>
-                            <li class="application-artist-list-ul2-li2"><p>3年目</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul3">
-                            <li class="application-artist-list-ul3-li1"><p>レーティング</p></li>
-                            <li class="application-artist-list-ul3-li2"><p>評価3.5</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul4">
-                            <li class="application-artist-list-ul4-li1"><audio class="sound-source" controls src="water.mp3" type="audio/mp3">とまとまん</audio></li>
-                        </ul>
-                        <ul class="application-artist-list-ul5">
-                            <li class="application-artist-list-ul5-li1"><a href="" class="application-artist-list-ul5-li1-a">対バンを申し込む</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="application-artist-list-main">
-                    <div class="application-artist-list-img-containar">
-                        <img src="../assets/img/アーティスト画像.png" alt="" class="application-artist-list-ikon">
-                    </div>
-                    <div class="application-artist-list-frame">
-                        
-                        <ul class="application-artist-list-ul0">
-                            <li><p>つきみ</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul1">
-                            <li class="application-artist-list-ul1-li1"><p>ジャンル</p></li>
-                            <li class="application-artist-list-ul1-li2"><p>テクノバンド</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul2">
-                            <li class="application-artist-list-ul2-li1"><p>バンド歴</p></li>
-                            <li class="application-artist-list-ul2-li2"><p>3年目</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul3">
-                            <li class="application-artist-list-ul3-li1"><p>レーティング</p></li>
-                            <li class="application-artist-list-ul3-li2"><p>評価3.5</p></li>
-                        </ul>
-                        <ul class="application-artist-list-ul4">
-                            <li class="application-artist-list-ul4-li1"><audio class="sound-source" controls src="water.mp3" type="audio/mp3">とまとまん</audio></li>
-                        </ul>
-                        <ul class="application-artist-list-ul5">
-                            <li class="application-artist-list-ul5-li1"><a href="" class="application-artist-list-ul5-li1-a">対バンを申し込む</a></li>
-                        </ul>
-                    </div>
-                </div>
-                
-               
-                
+                    <<div class="application-artist-list-container">
+    <!-- リストを繰り返し処理 -->
+    <c:forEach var="application" items="${applications}">
+        <div class="application-artist-list-main">
+            <div class="application-artist-list-img-containar">
+                <!-- 画像のパスを動的に変更 
+                <img src="/assets/img/artist-image.png" alt="アーティスト画像" class="application-artist-list-ikon">-->
+
+            </div>
+            <div class="application-artist-list-frame">
+                <ul class="application-artist-list-ul0">
+                    <li><p>${application.accountName}</p></li>
+                </ul>
+                <ul class="application-artist-list-ul1">
+                    <li class="application-artist-list-ul1-li1"><p>ジャンル</p></li>
+                    <li class="application-artist-list-ul1-li2"><p>${application.groupGenre}</p></li>
+                </ul>
+                <ul class="application-artist-list-ul2">
+                    <li class="application-artist-list-ul2-li1"><p>バンド歴</p></li>
+                    <li class="application-artist-list-ul2-li2"><p>${application.bandYears} 年目</p></li>
+                </ul>
+                <ul class="application-artist-list-ul3">
+                    <li class="application-artist-list-ul3-li1"><p>ユーザー名</p></li>
+                    <li class="application-artist-list-ul3-li2"><p>${application.us_name}</p></li>
+                </ul>
+                <ul class="application-artist-list-ul4">
+                    <li class="application-artist-list-ul4-li1">
+                        <!--<audio class="sound-source" controls>
+                            <source src="water.mp3" type="audio/mp3">
+                        </audio>  -->
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </c:forEach>
+                </div> 
             </section>
             
         </main>

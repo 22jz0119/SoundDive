@@ -46,15 +46,12 @@
                             <h3>ジャンル:${application.groupGenre}</h3>
                             
                             <!-- メンバーリストをループで表示 -->
-	                        <c:forEach var="member" items="${applicationDetails.members}">
-	                            <li>${member.memberPosition}: ${member.memberName}</li>
-	                        </c:forEach>
-                        	<!--  
-                            <li class="confirmation-name">${member.member_position}: ${member.member_name }</li>
-                            <li>${member.member_position}:${member.member_name }</li>
-                            <li>${member.member_position}:${member.member_name }</li>
-                            <li>${member.member_position}:${member.member_name }</li>
-                            <!-- <h2>サンプル音源</h2> -->
+	                        <ul>
+							    <c:forEach var="member" items="${applicationDetails.members}">
+							        <li>${member.member_position}: ${member.member_name}</li>
+							    </c:forEach>
+							</ul>
+
                             <audio class="sound-source" controls src="water.mp3" type="audio/mp3">まじかるろりぽっぷ☆（てきとう）</audio>
                         </ul>
                     </div>
