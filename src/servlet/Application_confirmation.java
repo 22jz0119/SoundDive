@@ -21,6 +21,7 @@ public class Application_confirmation extends HttpServlet {
         DBManager dbManager = DBManager.getInstance();
         Livehouse_applicationDAO livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
 
+        // リクエストパラメータの取得
         String idParam = request.getParameter("id");
 
         if (idParam != null) {
@@ -32,20 +33,22 @@ public class Application_confirmation extends HttpServlet {
 
                 if (applicationDetails != null) {
                     // データをリクエストスコープにセット
-                    request.setAttribute("applicationDetails", applicationDetails);
+                    request.setAttribute("application", applicationDetails);
 
                     // JSPにフォワード
                     request.getRequestDispatcher("/WEB-INF/jsp/application_confirmation.jsp").forward(request, response);
                 } else {
+                    System.err.println("Application not found for ID: " + applicationId);
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Application not found");
                 }
             } catch (NumberFormatException e) {
+                System.err.println("Invalid application ID format: " + idParam);
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid application ID format");
             }
         } else {
+            System.err.println("No application ID provided in the request");
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No application ID provided");
         }
-        String applicationId = request.getParameter("applicationId"); 
     }
 
     @Override

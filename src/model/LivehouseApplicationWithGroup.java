@@ -20,10 +20,10 @@ public class LivehouseApplicationWithGroup {
     
 
     // コンストラクタを追加
-    public LivehouseApplicationWithGroup(int applicationId, int id, LocalDate dateTime, boolean trueFalse,LocalDate startTime, LocalDate finishTime, int groupId,String accountName, String groupGenre, String bandYears, int userId, String us_name,List<Member> members) {
+    public LivehouseApplicationWithGroup(int applicationId, int id, LocalDate date_Time, boolean trueFalse,LocalDate startTime, LocalDate finishTime, int groupId,String accountName, String groupGenre, String bandYears, int userId, String us_name,List<Member> members) {
         this.applicationId = applicationId;
         this.id = id;
-        this.date_Time = dateTime;
+        this.date_Time = date_Time;
         this.trueFalse = trueFalse;
         this.startTime = startTime;
         this.finishTime = finishTime;
@@ -55,12 +55,12 @@ public class LivehouseApplicationWithGroup {
         this.id = id;
     }
 
-    public LocalDate getDateTime() {
+    public LocalDate getDate_Time() {
         return date_Time;
     }
 
-    public void setDateTime(LocalDate dateTime) {
-        this.date_Time = dateTime;
+    public void setDate_Time(LocalDate date_Time) {
+        this.date_Time = date_Time;
     }
 
     public boolean isTrueFalse() {

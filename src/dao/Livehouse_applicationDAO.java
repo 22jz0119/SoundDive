@@ -25,7 +25,7 @@ public class Livehouse_applicationDAO {
     // Livehouse_applicationを挿入するメソッド
     public boolean insertLivehouse_application(Livehouse_application livehouse_application) {
         // AUTO_INCREMENTの場合、idを除外
-        String sql = "INSERT INTO livehouse_application (livehouse_information_id, user_id, datetime, true_false, start_time, finish_time, create_date, update_date) " +
+        String sql = "INSERT INTO livehouse_application (livehouse_information_id, user_id, date_time, true_false, start_time, finish_time, create_date, update_date) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = dbManager.getConnection();
@@ -34,7 +34,7 @@ public class Livehouse_applicationDAO {
             // 各パラメータを設定
             pstmt.setInt(1, livehouse_application.getLivehouse_information_id());
             pstmt.setInt(2, livehouse_application.getUser_id());
-            pstmt.setDate(3, Date.valueOf(livehouse_application.getDatetime()));  // LocalDate -> Date
+            pstmt.setDate(3, Date.valueOf(livehouse_application.getDate_time()));  // LocalDate -> Date
             pstmt.setBoolean(4, livehouse_application.isTrueFalse());
             pstmt.setDate(5, Date.valueOf(livehouse_application.getStart_time()));  // LocalDate -> Date
             pstmt.setDate(6, Date.valueOf(livehouse_application.getFinish_time()));  // LocalDate -> Date
@@ -66,7 +66,7 @@ public class Livehouse_applicationDAO {
             if (rs.next()) {
                 int livehouse_information_id = rs.getInt("livehouse_information_id");
                 int user_id = rs.getInt("user_id");  // user_id を取得
-                Date datetime = rs.getDate("datetime");
+                Date date_time = rs.getDate("date_time");
                 boolean true_false = rs.getBoolean("true_false");
                 Date start_time = rs.getDate("start_time");
                 Date finish_time = rs.getDate("finish_time");
@@ -77,7 +77,7 @@ public class Livehouse_applicationDAO {
                     id, 
                     livehouse_information_id, 
                     user_id,  // user_id を設定
-                    datetime.toLocalDate(),
+                    date_time.toLocalDate(),
                     true_false,
                     start_time.toLocalDate(),
                     finish_time.toLocalDate(),
@@ -234,10 +234,10 @@ public class Livehouse_applicationDAO {
         Map<Integer, Integer> reservationCounts = new HashMap<>();
         
         // SQLクエリ: 日ごとの予約件数を取得
-        String sql = "SELECT DAY(datetime) AS day, COUNT(*) AS count " +
+        String sql = "SELECT DAY(date_time) AS day, COUNT(*) AS count " +
                      "FROM livehouse_application_table " +
-                     "WHERE YEAR(datetime) = ? AND MONTH(datetime) = ? " +
-                     "GROUP BY DAY(datetime)";
+                     "WHERE YEAR(date_time) = ? AND MONTH(date_time) = ? " +
+                     "GROUP BY DAY(date_time)";
 
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -264,13 +264,13 @@ public class Livehouse_applicationDAO {
 
     // リスト表示
     public List<LivehouseApplicationWithGroup> getReservationsByDate(int year, int month, int day) {
-        String sql = "SELECT la.id AS application_id, la.datetime, la.true_false, la.start_time, la.finish_time, " +
+        String sql = "SELECT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
                      "ag.id AS group_id, ag.account_name, ag.group_genre, ag.band_years, " +
                      "la.user_id, u.us_name " +
                      "FROM livehouse_application_table la " +
                      "JOIN user u ON la.user_id = u.id " +
                      "JOIN artist_group ag ON u.id = ag.user_id " +
-                     "WHERE YEAR(la.datetime) = ? AND MONTH(la.datetime) = ? AND DAY(la.datetime) = ?";
+                     "WHERE YEAR(la.date_time) = ? AND MONTH(la.datet_ime) = ? AND DAY(la.date_time) = ?";
 
         List<LivehouseApplicationWithGroup> reservations = new ArrayList<>();
         try (Connection conn = dbManager.getConnection();
@@ -290,7 +290,7 @@ public class Livehouse_applicationDAO {
                     reservations.add(new LivehouseApplicationWithGroup(
                         rs.getInt("application_id"),  // applicationId
                         rs.getInt("application_id"),  // id (同じカラムを代入)
-                        rs.getTimestamp("datetime").toLocalDateTime().toLocalDate(), // dateTime
+                        rs.getTimestamp("date_time").toLocalDateTime().toLocalDate(), // dateTime
                         rs.getBoolean("true_false"),  // trueFalse
                         rs.getTimestamp("start_time").toLocalDateTime().toLocalDate(), // startTime
                         rs.getTimestamp("finish_time").toLocalDateTime().toLocalDate(), // finishTime
@@ -337,7 +337,7 @@ public class Livehouse_applicationDAO {
             System.out.println("ID: " + livehouse_application.getId());
             System.out.println("ユーザーID" + livehouse_application.getUser_id());
             System.out.println("ライブハウス情報ID: " + livehouse_application.getLivehouse_information_id());
-            System.out.println("日時: " + livehouse_application.getDatetime());
+            System.out.println("日時: " + livehouse_application.getDate_time());
             System.out.println("承認: " + livehouse_application.isTrueFalse()); // フラグの表示を追加
             System.out.println("開始時間: " + livehouse_application.getStart_time());
             System.out.println("終了時間: " + livehouse_application.getFinish_time());

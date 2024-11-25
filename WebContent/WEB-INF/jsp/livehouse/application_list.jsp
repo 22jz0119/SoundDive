@@ -7,7 +7,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../assets/css/style.css">
+        <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
         <title>アーティスト申請一覧ページ</title>
     </head>
     <body>
@@ -60,7 +60,7 @@
                 </ul>
                 <ul class="application-artist-list-ul2">
                     <li class="application-artist-list-ul2-li1"><p>バンド歴</p></li>
-                    <li class="application-artist-list-ul2-li2"><p>${application.bandYears} 年目</p></li>
+                    <li class="application-artist-list-ul2-li2"><p>${application.bandYears}年目</p></li>
                 </ul>
                 <ul class="application-artist-list-ul3">
                     <li class="application-artist-list-ul3-li1"><p>ユーザー名</p></li>
