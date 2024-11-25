@@ -27,15 +27,16 @@
     <h2>マイページ</h2>
     
     <form action="<%= request.getContextPath() %>/At_Mypage" method="POST" enctype="multipart/form-data">
+        <!-- プロフィール画像 -->
         <div class="profile-container">
             <label class="profile-icon" for="fileInput">
                 <c:choose>
                     <c:when test="${not empty userGroup.picture_image_movie}">
-                        <!-- 条件分岐: 保存済み画像がある場合 -->
-                        <img src="${pageContext.request.contextPath}/uploads/${userGroup.picture_image_movie}" alt="Profile Image" />
+                        <!-- 画像がある場合 -->
+                        <img src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" alt="Profile Image" />
                     </c:when>
                     <c:otherwise>
-                        <!-- 条件分岐: 画像がない場合 -->
+                        <!-- 画像がない場合 -->
                         <span class="placeholder-text">アイコンをアップロード</span>
                         <img id="profileImage" src="" alt="" style="display: none;">
                     </c:otherwise>
@@ -62,10 +63,22 @@
         <div id="member-details-container">
             <c:forEach var="member" items="${members}">
                 <div class="member-detail">
+                    <!-- メンバーID（隠しフィールド） -->
+                    <input type="hidden" name="existing_member_ids[]" value="${member.id}">
+                    
+                    <!-- 氏名 -->
                     <input type="text" class="profile-card" name="member_name[]" placeholder="氏名" 
                            value="${member.member_name}" required><br>
+                    
+                    <!-- 役割 -->
                     <input type="text" class="profile-card p-c-sub" name="member_role[]" placeholder="役割 例: ボーカル" 
                            value="${member.member_position}" required><br>
+                    
+                    <!-- 削除チェックボックス -->
+                    <label>
+                        <input type="checkbox" name="deleted_member_ids[]" value="${member.id}">
+                        削除
+                    </label>
                 </div>
             </c:forEach>
         </div>
@@ -105,7 +118,6 @@
                 profileImage.src = e.target.result;
                 profileImage.style.display = 'block';
 
-                // 「アイコンをアップロード」を非表示
                 const placeholderText = document.querySelector('.placeholder-text');
                 if (placeholderText) placeholderText.style.display = 'none';
             }
@@ -119,7 +131,7 @@
             const memberDetail = document.createElement('div');
             memberDetail.className = 'member-detail';
 
-            memberDetail.innerHTML = ` 
+            memberDetail.innerHTML = `
                 <input type="text" class="profile-card" name="member_name[]" placeholder="氏名" required><br>
                 <input type="text" class="profile-card p-c-sub" name="member_role[]" placeholder="役割 例: ボーカル" required><br>
             `;

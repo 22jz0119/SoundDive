@@ -38,21 +38,23 @@ public class At_Mypage extends HttpServlet {
             return;
         }
 
-        // アーティストグループ情報を取得
-        Artist_groupDAO artistGroupDAO = new Artist_groupDAO(DBManager.getInstance());
-        Artist_group userGroup = artistGroupDAO.getGroupByUserId(userId);
+        try {
+            Artist_groupDAO artistGroupDAO = new Artist_groupDAO(DBManager.getInstance());
+            Artist_group userGroup = artistGroupDAO.getGroupByUserId(userId);
 
-        // メンバー情報を取得
-        if (userGroup != null) {
-            Member_tableDAO memberTableDAO = new Member_tableDAO(DBManager.getInstance());
-            List<Member> members = memberTableDAO.getMembersByArtistGroupId(userGroup.getId());
-            request.setAttribute("userGroup", userGroup);
-            request.setAttribute("members", members);
-        } else {
-            request.setAttribute("errorMessage", "グループ情報が見つかりません。");
+            if (userGroup != null) {
+                Member_tableDAO memberTableDAO = new Member_tableDAO(DBManager.getInstance());
+                List<Member> members = memberTableDAO.getMembersByArtistGroupId(userGroup.getId());
+                request.setAttribute("userGroup", userGroup);
+                request.setAttribute("members", members);
+            } else {
+                request.setAttribute("errorMessage", "グループ情報が見つかりません。");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "データ取得中にエラーが発生しました。");
         }
 
-        // JSPへ転送
         request.getRequestDispatcher("/WEB-INF/jsp/at_mypage.jsp").forward(request, response);
     }
 
@@ -98,71 +100,78 @@ public class At_Mypage extends HttpServlet {
 
         if (profileImagePart != null && profileImagePart.getSize() > 0) {
             String fileName = System.currentTimeMillis() + "_" + profileImagePart.getSubmittedFileName();
-            String uploadDir = "/var/lib/tomcat/webapps/SoundDive/uploads";
+            String uploadDir = "/var/lib/tomcat/webapps/SoundDive/uploads/";
             File uploadDirFile = new File(uploadDir);
 
             if (!uploadDirFile.exists()) {
                 uploadDirFile.mkdirs();
             }
 
-            pictureImagePath = "uploads/" + fileName;
+            pictureImagePath = "/uploads/" + fileName;
 
             try (InputStream inputStream = profileImagePart.getInputStream()) {
                 java.nio.file.Files.copy(inputStream, java.nio.file.Paths.get(uploadDir + File.separator + fileName));
+            } catch (IOException e) {
+                request.setAttribute("errorMessage", "画像アップロード中にエラーが発生しました。");
+                request.getRequestDispatcher("/WEB-INF/jsp/at_mypage.jsp").forward(request, response);
+                return;
             }
         }
 
-        Artist_groupDAO artistGroupDAO = new Artist_groupDAO(DBManager.getInstance());
-        Member_tableDAO memberTableDAO = new Member_tableDAO(DBManager.getInstance());
-        Artist_group existingGroup = artistGroupDAO.getGroupByUserId(userId);
+        try {
+            Artist_groupDAO artistGroupDAO = new Artist_groupDAO(DBManager.getInstance());
+            Member_tableDAO memberTableDAO = new Member_tableDAO(DBManager.getInstance());
+            Artist_group existingGroup = artistGroupDAO.getGroupByUserId(userId);
 
-        if (existingGroup != null) {
-            existingGroup.setAccount_name(accountName);
-            existingGroup.setPicture_image_movie(pictureImagePath);
-            existingGroup.setGroup_genre(groupGenre);
-            existingGroup.setBand_years(bandYears);
-            existingGroup.setUpdate_date(LocalDate.now());
+            if (existingGroup != null) {
+                // グループ情報の更新
+                existingGroup.setAccount_name(accountName);
+                existingGroup.setPicture_image_movie(pictureImagePath);
+                existingGroup.setGroup_genre(groupGenre);
+                existingGroup.setBand_years(bandYears);
+                existingGroup.setUpdate_date(LocalDate.now());
 
-            boolean isUpdated = artistGroupDAO.updateGroup(existingGroup);
+                boolean isUpdated = artistGroupDAO.updateArtistGroupByUserId(userId, existingGroup);
 
-            if (isUpdated) {
-                memberTableDAO.deleteMemberById(existingGroup.getId()); // 既存メンバーを削除
-                for (Member member : members) {
-                    member.setArtist_group_id(existingGroup.getId());
-                    memberTableDAO.insertMember(member);
+                if (isUpdated) {
+                    List<Member> existingMembers = memberTableDAO.getMembersByArtistGroupId(existingGroup.getId());
+
+                    // メンバーの削除
+                    memberTableDAO.deleteMembersNotInNewList(existingGroup.getId(), members, existingMembers);
+
+                    // メンバーの更新
+                    memberTableDAO.updateExistingMembers(members, existingMembers);
+
+                    // メンバーの挿入
+                    memberTableDAO.insertNewMembers(existingGroup.getId(), members);
+
+                    request.setAttribute("successMessage", "プロフィールが正常に更新されました。");
+                } else {
+                    request.setAttribute("errorMessage", "プロフィール更新中にエラーが発生しました。");
                 }
-                request.setAttribute("successMessage", "プロフィールが正常に更新されました。");
             } else {
-                request.setAttribute("errorMessage", "プロフィール更新中にエラーが発生しました。");
-            }
-        } else {
-            Artist_group newGroup = new Artist_group(
-                0,
-                userId,
-                accountName,
-                pictureImagePath,
-                groupGenre,
-                bandYears,
-                LocalDate.now(),
-                LocalDate.now(),
-                "0.0"
-            );
-            int groupId = artistGroupDAO.createAndReturnId(newGroup, members);
+                Artist_group newGroup = new Artist_group(
+                    0,
+                    userId,
+                    accountName,
+                    pictureImagePath,
+                    groupGenre,
+                    bandYears,
+                    LocalDate.now(),
+                    LocalDate.now(),
+                    "0.0"
+                );
+                int groupId = artistGroupDAO.createAndReturnId(newGroup, members);
 
-            if (groupId > 0) {
-                request.setAttribute("successMessage", "プロフィールが正常に保存されました。");
-            } else {
-                request.setAttribute("errorMessage", "プロフィール保存中にエラーが発生しました。");
+                if (groupId > 0) {
+                    request.setAttribute("successMessage", "プロフィールが正常に保存されました。");
+                } else {
+                    request.setAttribute("errorMessage", "プロフィール保存中にエラーが発生しました。");
+                }
             }
-        }
-
-        Artist_group userGroup = artistGroupDAO.getGroupByUserId(userId);
-        if (userGroup != null) {
-            List<Member> updatedMembers = memberTableDAO.getMembersByArtistGroupId(userGroup.getId());
-            request.setAttribute("userGroup", userGroup);
-            request.setAttribute("members", updatedMembers);
-        } else {
-            request.setAttribute("errorMessage", "グループ情報が見つかりません。");
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "サーバーでエラーが発生しました。もう一度お試しください。");
         }
 
         request.getRequestDispatcher("/WEB-INF/jsp/at_mypage.jsp").forward(request, response);
