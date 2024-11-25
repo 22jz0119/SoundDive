@@ -36,7 +36,7 @@
                 </section>
                 
                 <div class="band-confirmation-container">
-                String applicationId = request.getParameter("applicationId"); <!--  URLパラメータからidを取得--> 
+                 
                     <div class="confirmation-profile">
                         <div class="confirmation-artist-img-div">
                             <img class="confirmation-artist-img" src="../assets/img/アーティスト画像.png" alt="アーティスト画像">
@@ -44,10 +44,16 @@
                         <ul class="confirmation-info">
                             <h2>${application.accountName}</h2>
                             <h3>ジャンル:${application.groupGenre}</h3>
-                            <li class="confirmation-name">{member.member_position}: ${member.member_name }</li>
-                            <li>{member.member_position}:${member.member_name }</li>
-                            <li>{member.member_position}:${member.member_name }</li>
-                            <li>{member.member_position}:${member.member_name }</li>
+                            
+                            <!-- メンバーリストをループで表示 -->
+	                        <c:forEach var="member" items="${applicationDetails.members}">
+	                            <li>${member.memberPosition}: ${member.memberName}</li>
+	                        </c:forEach>
+                        	<!--  
+                            <li class="confirmation-name">${member.member_position}: ${member.member_name }</li>
+                            <li>${member.member_position}:${member.member_name }</li>
+                            <li>${member.member_position}:${member.member_name }</li>
+                            <li>${member.member_position}:${member.member_name }</li>
                             <!-- <h2>サンプル音源</h2> -->
                             <audio class="sound-source" controls src="water.mp3" type="audio/mp3">まじかるろりぽっぷ☆（てきとう）</audio>
                         </ul>
@@ -55,7 +61,7 @@
                     <div class="reservation-details-container">
                         <h2>予約詳細</h2>
                         <ul class="reservation-details-container-info">
-                            <li>予約者名:${us.name }</li>
+                            <li>予約者名:${user.us_name }</li>
                             <li>予約日時:${application.date_time }</li>
                             <li>前払い金額: 8000円</li>
                         </ul>

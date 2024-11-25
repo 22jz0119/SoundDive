@@ -92,7 +92,7 @@ public class Livehouse_applicationDAO {
     // 申請したグループ情報を結合
     public List<LivehouseApplicationWithGroup> getApplicationsWithGroups() {
         String sql = "SELECT " +
-                     "la.id AS application_id, " +  // id列を使用
+                     "la.id AS application_id, " +
                      "la.date_time, " +
                      "la.true_false, " +
                      "la.start_time, " +
@@ -101,7 +101,8 @@ public class Livehouse_applicationDAO {
                      "ag.account_name, " +
                      "ag.group_genre, " +
                      "ag.band_years, " +
-                     "la.user_id " +
+                     "la.user_id, " +
+                     "u.us_name " +  // us_nameを追加
                      "FROM livehouse_application_table la " +
                      "JOIN user u ON la.user_id = u.id " +
                      "JOIN artist_group ag ON u.id = ag.user_id";
@@ -119,11 +120,11 @@ public class Livehouse_applicationDAO {
                     rs.getBoolean("true_false"),
                     rs.getTimestamp("start_time").toLocalDateTime().toLocalDate(),
                     rs.getTimestamp("finish_time").toLocalDateTime().toLocalDate(),
-                    rs.getInt("group_id"),
+                    rs.getInt("user_id"),
                     rs.getString("account_name"),
                     rs.getString("group_genre"),
                     rs.getString("band_years"),
-                    rs.getInt("user_id")
+                    rs.getString("us_name")  // us_nameをセット
                 );
                 applicationList.add(application);
             }
@@ -132,6 +133,7 @@ public class Livehouse_applicationDAO {
         }
         return applicationList;
     }
+
 
 
  // 指定されたIDで申請の詳細を取得するメソッド
@@ -146,7 +148,8 @@ public class Livehouse_applicationDAO {
                      "ag.account_name, " +
                      "ag.group_genre, " +
                      "ag.band_years, " +
-                     "la.user_id " +
+                     "la.user_id, " +
+                     "u.us_name " +  // us_nameを追加
                      "FROM livehouse_application_table la " +
                      "JOIN user u ON la.user_id = u.id " +
                      "JOIN artist_group ag ON u.id = ag.user_id " +
@@ -166,11 +169,11 @@ public class Livehouse_applicationDAO {
                         rs.getBoolean("true_false"),
                         rs.getTimestamp("start_time").toLocalDateTime().toLocalDate(),
                         rs.getTimestamp("finish_time").toLocalDateTime().toLocalDate(),
-                        rs.getInt("group_id"),
+                        rs.getInt("user_id"),
                         rs.getString("account_name"),
                         rs.getString("group_genre"),
                         rs.getString("band_years"),
-                        rs.getInt("user_id")
+                        rs.getString("us_name")  // us_nameをセット
                     );
                 }
             }
@@ -179,6 +182,7 @@ public class Livehouse_applicationDAO {
         }
         return null;
     }
+
 
     // 指定された年と月のライブハウス予約件数を取得するメソッド
     public Map<Integer, Integer> getReservationCountByMonth(int year, int month) {
@@ -244,6 +248,7 @@ public class Livehouse_applicationDAO {
                         rs.getString("group_genre"),
                         rs.getString("band_years"),
                         rs.getInt("user_id")  // user_id を取得
+                        rs.getString("us_name")  // user_id を取得
                     ));
                 }
             }
@@ -251,6 +256,24 @@ public class Livehouse_applicationDAO {
             e.printStackTrace();
         }
         return reservations;
+    }
+    
+ // ユーザーIDからus_nameを取得
+    public String getUserNameByUserId(int userId) {
+        String sql = "SELECT us_name FROM user WHERE id = ?";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("us_name");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     // Livehouse_applicationの情報を表示するメソッド
