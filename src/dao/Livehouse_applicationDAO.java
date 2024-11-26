@@ -34,7 +34,7 @@ public class Livehouse_applicationDAO {
             // 各パラメータを設定
             pstmt.setInt(1, livehouse_application.getLivehouse_information_id());
             pstmt.setInt(2, livehouse_application.getUser_id());
-            pstmt.setDate(3, Date.valueOf(livehouse_application.getDate_time()));  // LocalDate -> Date
+            pstmt.setDate(3, Date.valueOf(livehouse_application.getDatetime()));  // LocalDate -> Date
             pstmt.setBoolean(4, livehouse_application.isTrueFalse());
             pstmt.setDate(5, Date.valueOf(livehouse_application.getStart_time()));  // LocalDate -> Date
             pstmt.setDate(6, Date.valueOf(livehouse_application.getFinish_time()));  // LocalDate -> Date
@@ -66,7 +66,7 @@ public class Livehouse_applicationDAO {
             if (rs.next()) {
                 int livehouse_information_id = rs.getInt("livehouse_information_id");
                 int user_id = rs.getInt("user_id");  // user_id を取得
-                Date date_time = rs.getDate("date_time");
+                Date datetime = rs.getDate("datetime");
                 boolean true_false = rs.getBoolean("true_false");
                 Date start_time = rs.getDate("start_time");
                 Date finish_time = rs.getDate("finish_time");
@@ -77,7 +77,7 @@ public class Livehouse_applicationDAO {
                     id, 
                     livehouse_information_id, 
                     user_id,  // user_id を設定
-                    date_time.toLocalDate(),
+                    datetime.toLocalDate(),
                     true_false,
                     start_time.toLocalDate(),
                     finish_time.toLocalDate(),
@@ -123,7 +123,7 @@ public class Livehouse_applicationDAO {
                 LivehouseApplicationWithGroup application = new LivehouseApplicationWithGroup(
                     rs.getInt("application_id"),  // applicationId
                     rs.getInt("application_id"),  // id (同じカラムを代入)
-                    rs.getTimestamp("date_time").toLocalDateTime().toLocalDate(), // dateTime
+                    rs.getTimestamp("date_time").toLocalDateTime(), // dateTime
                     rs.getBoolean("true_false"),  // trueFalse
                     rs.getTimestamp("start_time").toLocalDateTime().toLocalDate(), // startTime
                     rs.getTimestamp("finish_time").toLocalDateTime().toLocalDate(), // finishTime
@@ -206,7 +206,7 @@ public class Livehouse_applicationDAO {
                     return new LivehouseApplicationWithGroup(
                         rs.getInt("application_id"),
                         rs.getInt("application_id"),
-                        rs.getTimestamp("date_time").toLocalDateTime().toLocalDate(),
+                        rs.getTimestamp("date_time").toLocalDateTime(),
                         rs.getBoolean("true_false"),
                         rs.getTimestamp("start_time").toLocalDateTime().toLocalDate(),
                         rs.getTimestamp("finish_time").toLocalDateTime().toLocalDate(),
@@ -290,7 +290,7 @@ public class Livehouse_applicationDAO {
                     reservations.add(new LivehouseApplicationWithGroup(
                         rs.getInt("application_id"),  // applicationId
                         rs.getInt("application_id"),  // id (同じカラムを代入)
-                        rs.getTimestamp("date_time").toLocalDateTime().toLocalDate(), // dateTime
+                        rs.getTimestamp("date_time").toLocalDateTime(), // dateTime
                         rs.getBoolean("true_false"),  // trueFalse
                         rs.getTimestamp("start_time").toLocalDateTime().toLocalDate(), // startTime
                         rs.getTimestamp("finish_time").toLocalDateTime().toLocalDate(), // finishTime
@@ -337,7 +337,7 @@ public class Livehouse_applicationDAO {
             System.out.println("ID: " + livehouse_application.getId());
             System.out.println("ユーザーID" + livehouse_application.getUser_id());
             System.out.println("ライブハウス情報ID: " + livehouse_application.getLivehouse_information_id());
-            System.out.println("日時: " + livehouse_application.getDate_time());
+            System.out.println("日時: " + livehouse_application.getDatetime());
             System.out.println("承認: " + livehouse_application.isTrueFalse()); // フラグの表示を追加
             System.out.println("開始時間: " + livehouse_application.getStart_time());
             System.out.println("終了時間: " + livehouse_application.getFinish_time());
