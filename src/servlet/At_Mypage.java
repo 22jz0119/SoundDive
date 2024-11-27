@@ -148,7 +148,6 @@ public class At_Mypage extends HttpServlet {
                 return;
             }
         }
-
         try (Connection conn = DBManager.getInstance().getConnection()) {
             conn.setAutoCommit(false);
 
