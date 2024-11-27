@@ -22,6 +22,7 @@ import dao.DBManager;
 import dao.Member_tableDAO;
 import model.Artist_group;
 import model.Member;
+import service.MemberService;
 
 @WebServlet("/At_Mypage")
 @MultipartConfig
@@ -89,7 +90,7 @@ public class At_Mypage extends HttpServlet {
                 try {
                     deletedMemberIdList.add(Integer.parseInt(id));
                 } catch (NumberFormatException e) {
-                    System.out.println("[Error] 無効な削除ID: " + id);
+                    System.err.println("[Error] 無効な削除ID: " + id);
                 }
             }
         }
@@ -151,47 +152,28 @@ public class At_Mypage extends HttpServlet {
             Artist_group existingGroup = artistGroupDAO.getGroupByUserId(userId);
 
             if (existingGroup != null) {
+                // バンド情報の更新
                 existingGroup.setAccount_name(accountName);
-                existingGroup.setPicture_image_movie(pictureImagePath);
+                if (pictureImagePath != null) {
+                    existingGroup.setPicture_image_movie(pictureImagePath);
+                }
                 existingGroup.setGroup_genre(groupGenre);
                 existingGroup.setBand_years(bandYears);
                 existingGroup.setUpdate_date(LocalDate.now());
 
                 boolean isUpdated = artistGroupDAO.updateArtistGroupByUserId(userId, existingGroup);
-
-                if (isUpdated) {
-                    // 既存メンバーを取得
-                    List<Member> existingMembers = memberTableDAO.getMembersByArtistGroupId(existingGroup.getId());
-
-                    // **1. 削除処理**
-                    for (int memberId : deletedMemberIdList) {
-                        memberTableDAO.deleteMemberById(memberId);
-                    }
-
-                    // 削除済みメンバーを除外したリストを作成
-                    List<Member> filteredNewMembers = newMembers.stream()
-                            .filter(newMember -> existingMembers.stream()
-                                    .noneMatch(existingMember -> deletedMemberIdList.contains(existingMember.getId())))
-                            .toList();
-
-                    // **2. 更新処理**
-                    memberTableDAO.updateExistingMembers(filteredNewMembers, existingMembers);
-
-                    // **3. 挿入処理**
-                    List<Member> membersToInsert = filteredNewMembers.stream()
-                            .filter(member -> member.getId() == 0) // 新規挿入するメンバーのみ
-                            .toList();
-
-                    if (!membersToInsert.isEmpty()) {
-                        memberTableDAO.insertMembers(existingGroup.getId(), membersToInsert);
-                    }
-
-                    conn.commit();
-                    request.setAttribute("successMessage", "プロフィールが正常に更新されました。");
-                } else {
+                if (!isUpdated) {
                     conn.rollback();
                     request.setAttribute("errorMessage", "プロフィール更新中にエラーが発生しました。");
+                    return;
                 }
+
+                // サービス層の利用
+                MemberService memberService = new MemberService(Member_tableDAO.getInstance(DBManager.getInstance()));
+                memberService.manageMembers(conn, existingGroup.getId(), deletedMemberIdList, newMembers);
+
+                conn.commit();
+                request.setAttribute("successMessage", "プロフィールが正常に更新されました。");
             }
         } catch (Exception e) {
             e.printStackTrace();
