@@ -7,7 +7,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../assets/css/style.css">
+        <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
         <title>アーティスト申請確認ページ</title>
     </head>
     <body>
@@ -40,10 +40,10 @@
                             <img class="confirmation-artist-img" src="../assets/img/アーティスト画像.png" alt="アーティスト画像">
                         </div>
                         <ul class="confirmation-info">
-                            <h2>${applicationList.account_name}</h2>
-                            <h3>ジャンル:${applicationList.group_genre}</h3>
-                            <c:forEach var="member" items="${application.members}">
-								   <li class="confirmation-name">${member.memberPosition}: ${member.memberName}</li>
+                            <h2>${application.accountName}</h2>
+                            <h3>ジャンル:${application.groupGenre}</h3>
+                            <c:forEach var="member" items="${members}">
+							    <li class="confirmation-name">${member.member_position}: ${member.member_name}</li>
 							</c:forEach>
                             <!-- <h2>サンプル音源</h2> -->
                             <audio class="sound-source" controls src="water.mp3" type="audio/mp3">まじかるろりぽっぷ☆（てきとう）</audio>

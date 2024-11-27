@@ -263,22 +263,23 @@ public class Livehouse_applicationDAO {
     }
 
     // リスト表示
-    public List<LivehouseApplicationWithGroup> getReservationsByDate(int year, int month, int day) {
+    public List<LivehouseApplicationWithGroup> getReservationsByDate(int applicationId, int year, int month, int day) {
         String sql = "SELECT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
                      "ag.id AS group_id, ag.account_name, ag.group_genre, ag.band_years, " +
                      "la.user_id, u.us_name " +
                      "FROM livehouse_application_table la " +
                      "JOIN user u ON la.user_id = u.id " +
-                     "JOIN artist_group ag ON u.id = ag.user_id " +
-                     "WHERE YEAR(la.date_time) = ? AND MONTH(la.datet_ime) = ? AND DAY(la.date_time) = ?";
+                     "JOIN artist_group ag ON la.user_id = ag.user_id " + // user_id を基準に結合
+                     "WHERE la.id = ? AND YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND DAY(la.date_time) = ?";
 
         List<LivehouseApplicationWithGroup> reservations = new ArrayList<>();
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, year);
-            pstmt.setInt(2, month);
-            pstmt.setInt(3, day);
+            pstmt.setInt(1, applicationId); // livehouse_application_table の ID を指定
+            pstmt.setInt(2, year);
+            pstmt.setInt(3, month);
+            pstmt.setInt(4, day);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
@@ -287,20 +288,21 @@ public class Livehouse_applicationDAO {
                     // メンバー情報を取得
                     List<Member> members = getMembersByGroupId(groupId);
 
+                    // データを LivehouseApplicationWithGroup に追加
                     reservations.add(new LivehouseApplicationWithGroup(
-                        rs.getInt("application_id"),  // applicationId
-                        rs.getInt("application_id"),  // id (同じカラムを代入)
-                        rs.getTimestamp("date_time").toLocalDateTime(), // dateTime
-                        rs.getBoolean("true_false"),  // trueFalse
-                        rs.getTimestamp("start_time").toLocalDateTime().toLocalDate(), // startTime
-                        rs.getTimestamp("finish_time").toLocalDateTime().toLocalDate(), // finishTime
-                        groupId,                      // groupId
-                        rs.getString("account_name"), // accountName
-                        rs.getString("group_genre"),  // groupGenre
-                        rs.getString("band_years"),   // bandYears
-                        rs.getInt("user_id"),         // userId
-                        rs.getString("us_name"),      // usName
-                        members                       // メンバーリストを追加
+                        rs.getInt("application_id"),                       // applicationId
+                        rs.getInt("application_id"),                       // id (同じカラムを代入)
+                        rs.getTimestamp("date_time").toLocalDateTime(),    // dateTime
+                        rs.getBoolean("true_false"),                       // trueFalse
+                        rs.getDate("start_time").toLocalDate(),            // startTime
+                        rs.getDate("finish_time").toLocalDate(),           // finishTime
+                        groupId,                                           // groupId
+                        rs.getString("account_name"),                      // accountName
+                        rs.getString("group_genre"),                       // groupGenre
+                        rs.getString("band_years"),                        // bandYears
+                        rs.getInt("user_id"),                              // userId
+                        rs.getString("us_name"),                           // usName
+                        members                                            // メンバーリスト
                     ));
                 }
             }
@@ -308,8 +310,9 @@ public class Livehouse_applicationDAO {
             e.printStackTrace();
         }
         return reservations;
-
     }
+
+
 
 
     
