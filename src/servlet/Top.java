@@ -24,6 +24,7 @@ public class Top extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/At_Home");
             return;
         }
+        
 
         // ログイン画面を表示
         request.getRequestDispatcher("WEB-INF/jsp/top.jsp").forward(request, response);
