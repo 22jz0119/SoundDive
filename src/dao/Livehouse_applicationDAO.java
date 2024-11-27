@@ -25,7 +25,7 @@ public class Livehouse_applicationDAO {
     // Livehouse_applicationを挿入するメソッド
     public boolean insertLivehouse_application(Livehouse_application livehouse_application) {
         // AUTO_INCREMENTの場合、idを除外
-        String sql = "INSERT INTO livehouse_application (livehouse_information_id, user_id, datetime, true_false, start_time, finish_time, create_date, update_date) " +
+        String sql = "INSERT INTO livehouse_application (livehouse_information_id, user_id, date_time, true_false, start_time, finish_time, create_date, update_date) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = dbManager.getConnection();
@@ -123,7 +123,7 @@ public class Livehouse_applicationDAO {
                 LivehouseApplicationWithGroup application = new LivehouseApplicationWithGroup(
                     rs.getInt("application_id"),  // applicationId
                     rs.getInt("application_id"),  // id (同じカラムを代入)
-                    rs.getTimestamp("date_time").toLocalDateTime().toLocalDate(), // dateTime
+                    rs.getTimestamp("date_time").toLocalDateTime(), // dateTime
                     rs.getBoolean("true_false"),  // trueFalse
                     rs.getTimestamp("start_time").toLocalDateTime().toLocalDate(), // startTime
                     rs.getTimestamp("finish_time").toLocalDateTime().toLocalDate(), // finishTime
@@ -206,7 +206,7 @@ public class Livehouse_applicationDAO {
                     return new LivehouseApplicationWithGroup(
                         rs.getInt("application_id"),
                         rs.getInt("application_id"),
-                        rs.getTimestamp("date_time").toLocalDateTime().toLocalDate(),
+                        rs.getTimestamp("date_time").toLocalDateTime(),
                         rs.getBoolean("true_false"),
                         rs.getTimestamp("start_time").toLocalDateTime().toLocalDate(),
                         rs.getTimestamp("finish_time").toLocalDateTime().toLocalDate(),
@@ -234,10 +234,10 @@ public class Livehouse_applicationDAO {
         Map<Integer, Integer> reservationCounts = new HashMap<>();
         
         // SQLクエリ: 日ごとの予約件数を取得
-        String sql = "SELECT DAY(datetime) AS day, COUNT(*) AS count " +
+        String sql = "SELECT DAY(date_time) AS day, COUNT(*) AS count " +
                      "FROM livehouse_application_table " +
-                     "WHERE YEAR(datetime) = ? AND MONTH(datetime) = ? " +
-                     "GROUP BY DAY(datetime)";
+                     "WHERE YEAR(date_time) = ? AND MONTH(date_time) = ? " +
+                     "GROUP BY DAY(date_time)";
 
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -264,13 +264,13 @@ public class Livehouse_applicationDAO {
 
     // リスト表示
     public List<LivehouseApplicationWithGroup> getReservationsByDate(int year, int month, int day) {
-        String sql = "SELECT la.id AS application_id, la.datetime, la.true_false, la.start_time, la.finish_time, " +
+        String sql = "SELECT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
                      "ag.id AS group_id, ag.account_name, ag.group_genre, ag.band_years, " +
                      "la.user_id, u.us_name " +
                      "FROM livehouse_application_table la " +
                      "JOIN user u ON la.user_id = u.id " +
                      "JOIN artist_group ag ON u.id = ag.user_id " +
-                     "WHERE YEAR(la.datetime) = ? AND MONTH(la.datetime) = ? AND DAY(la.datetime) = ?";
+                     "WHERE YEAR(la.date_time) = ? AND MONTH(la.datet_ime) = ? AND DAY(la.date_time) = ?";
 
         List<LivehouseApplicationWithGroup> reservations = new ArrayList<>();
         try (Connection conn = dbManager.getConnection();
@@ -290,7 +290,7 @@ public class Livehouse_applicationDAO {
                     reservations.add(new LivehouseApplicationWithGroup(
                         rs.getInt("application_id"),  // applicationId
                         rs.getInt("application_id"),  // id (同じカラムを代入)
-                        rs.getTimestamp("datetime").toLocalDateTime().toLocalDate(), // dateTime
+                        rs.getTimestamp("date_time").toLocalDateTime(), // dateTime
                         rs.getBoolean("true_false"),  // trueFalse
                         rs.getTimestamp("start_time").toLocalDateTime().toLocalDate(), // startTime
                         rs.getTimestamp("finish_time").toLocalDateTime().toLocalDate(), // finishTime

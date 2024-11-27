@@ -7,7 +7,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../assets/css/style.css">
+        <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
         <title>アーティスト申請確認ページ</title>
     </head>
     <body>
@@ -58,15 +58,15 @@
                     <div class="reservation-details-container">
                         <h2>予約詳細</h2>
                         <ul class="reservation-details-container-info">
-                            <li>予約者名:${user.us_name }</li>
-                            <li>予約日時:${application.date_time }</li>
+                            <li>予約者名:${application.us_name }</li>
+                            <li>予約日時:${application.datetime }</li>
                             <li>前払い金額: 8000円</li>
                         </ul>
                     </div>
                 </div>
                 <div class="application_confirmation-btn">
-                    <button class="approve-btn" onclick="location.href='application_list.html'">戻る</button>
-                    <button class="decline-btn" onclick="location.href='application_approval.html'">承認</button>
+                    <button class="approve-btn" onclick="location.href='application_confirmation.jsp'">戻る</button>
+                    <button class="decline-btn" onclick="location.href='application_approval.jsp'">承認</button>
                 </div>
             </div>
         </main>
