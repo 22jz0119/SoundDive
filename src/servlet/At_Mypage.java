@@ -179,7 +179,6 @@ public class At_Mypage extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("errorMessage", "サーバーでエラーが発生しました。もう一度お試しください。");
         }
-
         doGet(request, response);
     }
 }
