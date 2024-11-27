@@ -70,21 +70,31 @@ public class Member_tableDAO {
         }
     }
 
-    // メンバーを削除するメソッド
+ // メンバーを削除するメソッド
     public boolean deleteMemberById(int id) {
         String sql = "DELETE FROM member_table WHERE id = ?";
         try (Connection connection = dbManager.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             int rowsAffected = pstmt.executeUpdate();
-            System.out.println("[deleteMemberById] Member ID: " + id + ", Rows Affected: " + rowsAffected);
+            
+            // 追跡ログ
+            System.out.println("[deleteMemberById] Attempting to delete member with ID: " + id);
+            System.out.println("[deleteMemberById] Rows affected: " + rowsAffected);
+            
             return rowsAffected > 0;
         } catch (SQLException e) {
-            System.err.println("[deleteMemberById] Error deleting member with ID: " + id);
+            // エラー追跡ログ
+        	
+            System.err.println("[deleteMemberById] Error occurred while trying to delete member with ID: " + id);
             e.printStackTrace();
             return false;
+            
         }
+        
     }
+    
+
 
     // グループIDに関連するメンバーを取得するメソッド
     public List<Member> getMembersByArtistGroupId(int artistGroupId) {

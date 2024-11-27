@@ -35,7 +35,6 @@ public class Artist_groupDAO {
 
     // アーティストグループを新規作成し、成功時にIDを返すメソッド
     public int createAndReturnId(Artist_group artistGroup, List<Member> members) {
-        System.out.println("[createAndReturnId] Start creating artist group with UserID: " + artistGroup.getUser_id());
         String sql = "INSERT INTO artist_group (user_id, account_name, picture_image_movie, group_genre, band_years, create_date, update_date, rating_star) "
                    + "VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?)";
         try (Connection conn = dbManager.getConnection()) {
@@ -48,20 +47,17 @@ public class Artist_groupDAO {
                 pstmt.setInt(5, artistGroup.getBand_years());
                 pstmt.setString(6, artistGroup.getRating_star());
                 int affectedRows = pstmt.executeUpdate();
-                System.out.println("[createAndReturnId] Rows affected: " + affectedRows);
 
                 if (affectedRows > 0) {
                     try (ResultSet rs = pstmt.getGeneratedKeys()) {
                         if (rs.next()) {
                             int groupId = rs.getInt(1);
-                            System.out.println("[createAndReturnId] Generated GroupID: " + groupId);
 
                             // 同じConnectionを使ってメンバーを挿入
                             Member_tableDAO memberDAO = Member_tableDAO.getInstance(dbManager); // Member_tableDAOもシングルトンにするべき
                             memberDAO.insertMembers(groupId, members);
 
                             conn.commit(); // 成功時にコミット
-                            System.out.println("[createAndReturnId] Transaction committed successfully.");
 
                             // キャッシュに追加
                             artistGroup.setId(groupId);
@@ -71,15 +67,11 @@ public class Artist_groupDAO {
                     }
                 }
                 conn.rollback(); // 挿入失敗時にロールバック
-                System.out.println("[createAndReturnId] Transaction rolled back.");
             } catch (Exception e) {
                 conn.rollback(); // エラー発生時にロールバック
-                System.err.println("[createAndReturnId] Error during transaction: " + e.getMessage());
-                e.printStackTrace();
                 throw e; // エラーを再スロー
             }
         } catch (SQLException e) {
-            System.err.println("[createAndReturnId] Database error: " + e.getMessage());
             e.printStackTrace();
         }
         return -1; // エラー時
@@ -87,7 +79,6 @@ public class Artist_groupDAO {
 
     // アーティストグループを更新するメソッド
     public boolean updateArtistGroupByUserId(int userId, Artist_group updatedGroup) {
-        System.out.println("[updateArtistGroupByUserId] Updating artist group for UserID: " + userId);
         String sql = "UPDATE artist_group SET account_name = ?, picture_image_movie = ?, group_genre = ?, band_years = ?, update_date = NOW(), rating_star = ? WHERE user_id = ?";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -98,7 +89,6 @@ public class Artist_groupDAO {
             pstmt.setString(5, updatedGroup.getRating_star());
             pstmt.setInt(6, userId);
             int rowsUpdated = pstmt.executeUpdate();
-            System.out.println("[updateArtistGroupByUserId] Rows affected: " + rowsUpdated);
 
             if (rowsUpdated > 0) {
                 // キャッシュを更新
@@ -106,7 +96,6 @@ public class Artist_groupDAO {
                 return true;
             }
         } catch (SQLException e) {
-            System.err.println("[updateArtistGroupByUserId] Error updating artist group: " + e.getMessage());
             e.printStackTrace();
         }
         return false; // エラーが発生した場合はfalse
@@ -114,11 +103,8 @@ public class Artist_groupDAO {
 
     // user_id に紐づくアーティストグループを取得するメソッド
     public Artist_group getGroupByUserId(int userId) {
-        System.out.println("[getGroupByUserId] Retrieving artist group for UserID: " + userId);
-
         // キャッシュを確認
         if (groupCacheByUserId.containsKey(userId)) {
-            System.out.println("[Cache] Returning cached group for UserID: " + userId);
             return groupCacheByUserId.get(userId);
         }
 
@@ -133,7 +119,6 @@ public class Artist_groupDAO {
                 return group;
             }
         } catch (SQLException e) {
-            System.err.println("[getGroupByUserId] Error retrieving artist group: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -143,7 +128,6 @@ public class Artist_groupDAO {
     private void addToCache(Artist_group group) {
         groupCacheByUserId.put(group.getUser_id(), group);
         groupCacheById.put(group.getId(), group);
-        System.out.println("[Cache] Group added to cache: " + group);
     }
 
     public void clearCacheForUserId(int userId) {
@@ -170,7 +154,6 @@ public class Artist_groupDAO {
         String group_genre = rs.getString("group_genre");
         int band_years = rs.getInt("band_years");
 
-        System.out.println("[rs2model] Mapping ResultSet to Artist_group: ID: " + id + ", UserID: " + user_id);
         return new Artist_group(
                 id,
                 user_id,
