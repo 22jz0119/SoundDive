@@ -41,7 +41,8 @@
                         </div>
                         <ul class="confirmation-info">
                             <h2>${application.accountName}</h2>
-                            <h3>ジャンル:${application.groupGenre}</h3>
+                            <h1>ジャンル:${application.groupGenre}</h1>
+                            <h1>メンバー</h1>
                             <c:forEach var="member" items="${members}">
 							    <li class="confirmation-name">${member.member_position}: ${member.member_name}</li>
 							</c:forEach>
@@ -62,9 +63,14 @@
                     </div>
                 </div>
                 <div class="application_confirmation-btn">
-                    <button class="approve-btn" onclick="location.href='application_list.jsp'">戻る</button>
-                    <button class="decline-btn" onclick="location.href='application_approval.jsp'">承認</button>
-                </div>
+				    <!-- 戻るボタン -->
+				    <button class="approve-btn" onclick="location.href='navigate?action=list'">戻る</button>
+				    
+				    <!-- 承認ボタン -->
+				    <button class="decline-btn" onclick="location.href='navigate?action=approval'">承認</button>
+				</div>
+
+
             </div>
         </main>
     </body>

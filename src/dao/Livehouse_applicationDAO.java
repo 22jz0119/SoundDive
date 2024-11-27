@@ -333,6 +333,28 @@ public class Livehouse_applicationDAO {
         }
         return null;
     }
+    
+    
+    //カレンダー申請件数表示
+    public Map<String, Integer> getReservationCountsForMonth(int year, int month) throws SQLException {
+        String query = "SELECT DATE_FORMAT(date_time, '%Y-%m-%d') AS date, COUNT(*) AS count " +
+                       "FROM livehouse_application_table " +
+                       "WHERE YEAR(date_time) = ? AND MONTH(date_time) = ? " +
+                       "GROUP BY DATE(date_time)";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, year);
+            stmt.setInt(2, month);
+            ResultSet rs = stmt.executeQuery();
+
+            Map<String, Integer> result = new HashMap<>();
+            while (rs.next()) {
+                result.put(rs.getString("date"), rs.getInt("count"));
+            }
+            return result;
+        }
+    }
+
 
     // Livehouse_applicationの情報を表示するメソッド
     public void printLivehouse_application(Livehouse_application livehouse_application) {
@@ -350,4 +372,5 @@ public class Livehouse_applicationDAO {
             System.out.println("該当するライブハウス申請情報が見つかりませんでした。");
         }
     }
+    
 }

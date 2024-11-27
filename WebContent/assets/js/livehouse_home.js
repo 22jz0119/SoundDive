@@ -8,49 +8,69 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // カレンダーをレンダリング
     function renderCalendar(year, month) {
-        const firstDay = new Date(year, month - 1, 1); // 1日
-        const lastDay = new Date(year, month, 0); // 月末
-        const daysInMonth = lastDay.getDate();
-        const startDayOfWeek = firstDay.getDay(); // 日曜日=0
+        fetch(`Livehouse_home?year=${year}&month=${month}`)
+            .then(response => response.json())
+            .then(reservationCounts => {
+                const firstDay = new Date(year, month - 1, 1); // 1日
+                const lastDay = new Date(year, month, 0); // 月末
+                const daysInMonth = lastDay.getDate();
+                const startDayOfWeek = firstDay.getDay(); // 日曜日=0
 
-        let html = "<table border='1'><tr>";
-        const daysOfWeek = ["日", "月", "火", "水", "木", "金", "土"];
+                let html = "<table border='1'><tr>";
+                const daysOfWeek = ["日", "月", "火", "水", "木", "金", "土"];
 
-        // 曜日ヘッダー
-        daysOfWeek.forEach(day => {
-            html += `<th>${day}</th>`;
-        });
-        html += "</tr><tr>";
+                // 曜日ヘッダー
+                daysOfWeek.forEach(day => {
+                    html += `<th>${day}</th>`;
+                });
+                html += "</tr><tr>";
 
-        // 空白セル (1日の曜日に対応するまで)
-        for (let i = 0; i < startDayOfWeek; i++) {
-            html += "<td></td>";
-        }
+                // 空白セル (1日の曜日に対応するまで)
+                for (let i = 0; i < startDayOfWeek; i++) {
+                    html += "<td></td>";
+                }
 
-        // 日付セル
-        for (let day = 1; day <= daysInMonth; day++) {
-            if ((startDayOfWeek + day - 1) % 7 === 0 && day !== 1) {
-                html += "</tr><tr>"; // 新しい行を開始
-            }
-            html += `<td class="calendar-day" data-day="${day}" data-year="${year}" data-month="${month}">${day}</td>`;
-        }
+                // 日付セル
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateKey = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                    const reservationCount = reservationCounts[dateKey] || 0; // 件数がない場合は0
 
-        // 空白セル (月末の残り)
-        const remainingCells = (7 - (startDayOfWeek + daysInMonth) % 7) % 7;
-        for (let i = 0; i < remainingCells; i++) {
-            html += "<td></td>";
-        }
+                    if ((startDayOfWeek + day - 1) % 7 === 0 && day !== 1) {
+                        html += "</tr><tr>"; // 新しい行を開始
+                    }
 
-        html += "</tr></table>";
-        calendarDiv.innerHTML = html;
+                    html += `<td class="calendar-day" data-day="${day}" data-year="${year}" data-month="${month}">
+                                ${day}
+                                <br>
+                                <span class="reservation-count">${reservationCount}件</span>
+                             </td>`;
+                }
 
-        // 日付セルのクリックイベントを設定
+                // 空白セル (月末の残り)
+                const remainingCells = (7 - (startDayOfWeek + daysInMonth) % 7) % 7;
+                for (let i = 0; i < remainingCells; i++) {
+                    html += "<td></td>";
+                }
+
+                html += "</tr></table>";
+                calendarDiv.innerHTML = html;
+
+                // 日付セルのクリックイベントを設定
+                setDayClickEvents();
+            })
+            .catch(error => {
+                console.error("Error fetching reservation counts:", error);
+            });
+    }
+
+    // 日付セルのクリックイベントを設定
+    function setDayClickEvents() {
         document.querySelectorAll(".calendar-day").forEach(cell => {
             cell.addEventListener("click", function () {
                 const year = this.getAttribute("data-year");
                 const month = this.getAttribute("data-month");
                 const day = this.getAttribute("data-day");
-                
+
                 console.log(`Selected Date: ${year}-${month}-${day}`); // デバッグ用ログ
                 fetchReservations(year, month, day);
             });
@@ -116,5 +136,4 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         renderCalendar(currentYear, currentMonth);
     });
-    
 });

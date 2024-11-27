@@ -58,6 +58,17 @@ public class Application_confirmation extends HttpServlet {
             System.err.println("No application ID provided in the request");
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "アプリケーションIDがリクエストに含まれていません");
         }
+        String action = request.getParameter("action");
+        if ("list".equals(action)) {
+            // application_list.jsp へ遷移
+            request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_list.jsp").forward(request, response);
+        } else if ("approval".equals(action)) {
+            // application_approval.jsp へ遷移
+            request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_approval.jsp").forward(request, response);
+        } else {
+            // デフォルトは application_list.jsp
+            response.sendRedirect("navigate?action=list");
+        }
     }
 
     @Override
