@@ -19,7 +19,7 @@ public class New_Acount extends HttpServlet {
 
     // GETリクエスト処理 - 登録ページにフォワード
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("WEB-INF/jsp/new_acount.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/jsp/login/new_acount.jsp").forward(request, response);
     }
 
     // POSTリクエスト処理 - フォームデータを受け取り、新規ユーザーを登録
@@ -49,11 +49,11 @@ public class New_Acount extends HttpServlet {
         if (isRegistered) {
             // 登録成功時 - メッセージを設定して登録完了ページへフォワード
             request.setAttribute("successMessage", "登録が完了しました。");
-            request.getRequestDispatcher("WEB-INF/jsp/top.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/jsp/top/top.jsp").forward(request, response);
         } else {
             // 登録失敗時 - エラーメッセージを設定し、再度登録ページへフォワード
             request.setAttribute("errorMessage", "登録に失敗しました。再度お試しください。");
-            request.getRequestDispatcher("WEB-INF/jsp/new_acount.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/jsp/login/new_acount.jsp").forward(request, response);
         }
     }
 }

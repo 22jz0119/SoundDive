@@ -29,7 +29,7 @@ public class Application_list extends HttpServlet {
         request.setAttribute("applicationList", applicationList);
 
         // JSPページにフォワード
-        request.getRequestDispatcher("/WEB-INF/jsp/application_list.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_list.jsp").forward(request, response);
     }
 
     @Override
