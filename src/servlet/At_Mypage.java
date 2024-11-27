@@ -81,32 +81,34 @@ public class At_Mypage extends HttpServlet {
             return;
         }
 
-        // 削除処理のリクエストを判定
-        String deleteMemberIdParam = request.getParameter("delete_member_id");
-        if (deleteMemberIdParam != null && !deleteMemberIdParam.trim().isEmpty()) {
-            try {
-                int deleteMemberId = Integer.parseInt(deleteMemberIdParam);
-                boolean isDeleted = memberTableDAO.deleteMemberById(deleteMemberId);
-
-                if (isDeleted) {
-                    request.setAttribute("successMessage", "メンバーが正常に削除されました。");
-                } else {
-                    request.setAttribute("errorMessage", "メンバーの削除中にエラーが発生しました。");
+        // 削除対象メンバーの処理
+        String[] deletedMemberIds = request.getParameterValues("deleted_member_ids[]");
+        List<Integer> deletedMemberIdList = new ArrayList<>();
+        if (deletedMemberIds != null) {
+            for (String id : deletedMemberIds) {
+                try {
+                    deletedMemberIdList.add(Integer.parseInt(id));
+                } catch (NumberFormatException e) {
+                    System.out.println("[Error] 無効な削除ID: " + id);
                 }
-            } catch (NumberFormatException e) {
-                request.setAttribute("errorMessage", "無効な削除IDが指定されました。");
             }
-
-            doGet(request, response);
-            return;
         }
 
-        // 更新・登録処理
+        // 新規メンバーの処理
+        String[] memberNames = request.getParameterValues("member_name[]");
+        String[] memberRoles = request.getParameterValues("member_role[]");
+
+        List<Member> newMembers = new ArrayList<>();
+        if (memberNames != null && memberRoles != null && memberNames.length == memberRoles.length) {
+            for (int i = 0; i < memberNames.length; i++) {
+                newMembers.add(new Member(0, 0, memberNames[i], memberRoles[i]));
+            }
+        }
+
+        // バンド情報の更新
         String accountName = request.getParameter("account_name");
         String groupGenre = request.getParameter("group_genre");
         String bandYearsParam = request.getParameter("band_years");
-        String[] memberNames = request.getParameterValues("member_name[]");
-        String[] memberRoles = request.getParameterValues("member_role[]");
 
         int bandYears = 0;
         if (bandYearsParam != null && !bandYearsParam.trim().isEmpty()) {
@@ -119,13 +121,7 @@ public class At_Mypage extends HttpServlet {
             }
         }
 
-        List<Member> members = new ArrayList<>();
-        if (memberNames != null && memberRoles != null && memberNames.length == memberRoles.length) {
-            for (int i = 0; i < memberNames.length; i++) {
-                members.add(new Member(0, 0, memberNames[i], memberRoles[i]));
-            }
-        }
-
+        // 画像処理
         Part profileImagePart = request.getPart("picture_image_movie");
         String pictureImagePath = null;
 
@@ -148,6 +144,7 @@ public class At_Mypage extends HttpServlet {
                 return;
             }
         }
+
         try (Connection conn = DBManager.getInstance().getConnection()) {
             conn.setAutoCommit(false);
 
@@ -163,20 +160,31 @@ public class At_Mypage extends HttpServlet {
                 boolean isUpdated = artistGroupDAO.updateArtistGroupByUserId(userId, existingGroup);
 
                 if (isUpdated) {
+                    // 既存メンバーを取得
                     List<Member> existingMembers = memberTableDAO.getMembersByArtistGroupId(existingGroup.getId());
-                    memberTableDAO.updateExistingMembers(members, existingMembers);
 
-                    List<Member> newMembers = new ArrayList<>();
-                    for (Member newMember : members) {
-                        boolean isExisting = existingMembers.stream()
-                                .anyMatch(existing -> newMember.getMember_name().equals(existing.getMember_name()) &&
-                                        newMember.getMember_position().equals(existing.getMember_position()));
-                        if (!isExisting) {
-                            newMember.setArtist_group_id(existingGroup.getId());
-                            newMembers.add(newMember);
-                        }
+                    // **1. 削除処理**
+                    for (int memberId : deletedMemberIdList) {
+                        memberTableDAO.deleteMemberById(memberId);
                     }
-                    memberTableDAO.insertMembers(existingGroup.getId(), newMembers);
+
+                    // 削除済みメンバーを除外したリストを作成
+                    List<Member> filteredNewMembers = newMembers.stream()
+                            .filter(newMember -> existingMembers.stream()
+                                    .noneMatch(existingMember -> deletedMemberIdList.contains(existingMember.getId())))
+                            .toList();
+
+                    // **2. 更新処理**
+                    memberTableDAO.updateExistingMembers(filteredNewMembers, existingMembers);
+
+                    // **3. 挿入処理**
+                    List<Member> membersToInsert = filteredNewMembers.stream()
+                            .filter(member -> member.getId() == 0) // 新規挿入するメンバーのみ
+                            .toList();
+
+                    if (!membersToInsert.isEmpty()) {
+                        memberTableDAO.insertMembers(existingGroup.getId(), membersToInsert);
+                    }
 
                     conn.commit();
                     request.setAttribute("successMessage", "プロフィールが正常に更新されました。");
