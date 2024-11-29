@@ -263,23 +263,18 @@ public class Livehouse_applicationDAO {
     }
 
     // リスト表示
-    public List<LivehouseApplicationWithGroup> getReservationsByDate(int applicationId, int year, int month, int day) {
+    public List<LivehouseApplicationWithGroup> getReservationsWithTrueFalseZero() {
         String sql = "SELECT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
                      "ag.id AS group_id, ag.account_name, ag.group_genre, ag.band_years, " +
                      "la.user_id, u.us_name " +
                      "FROM livehouse_application_table la " +
                      "JOIN user u ON la.user_id = u.id " +
-                     "JOIN artist_group ag ON la.user_id = ag.user_id " + // user_id を基準に結合
-                     "WHERE la.id = ? AND YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND DAY(la.date_time) = ?";
+                     "JOIN artist_group ag ON la.user_id = ag.user_id " +
+                     "WHERE la.true_false = 0"; // ここで true_false = 0 のみを取得
 
         List<LivehouseApplicationWithGroup> reservations = new ArrayList<>();
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, applicationId); // livehouse_application_table の ID を指定
-            pstmt.setInt(2, year);
-            pstmt.setInt(3, month);
-            pstmt.setInt(4, day);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
@@ -311,6 +306,7 @@ public class Livehouse_applicationDAO {
         }
         return reservations;
     }
+
 
 
 

@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.Artist_groupDAO;
 import dao.DBManager;
-import dao.Livehouse_applicationDAO;
 import model.Artist_group;
 
 @WebServlet("/Application_approval")
@@ -19,7 +19,7 @@ public class Application_approval extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // DBManagerインスタンスを取得してArtist_groupDAOを作成
         DBManager dbManager = DBManager.getInstance();
-        Livehouse_applicationDAO artistGroupDAO = new Livehouse_applicationDAO(dbManager);
+        Artist_groupDAO artistGroupDAO = new Artist_groupDAO(dbManager);
 
         // サンプルとして、IDが1のアーティストグループ情報を取得
         int artistGroupId = 1;  // 取得したいArtist_groupのIDを指定
