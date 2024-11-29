@@ -354,6 +354,46 @@ public class Livehouse_applicationDAO {
             return result;
         }
     }
+    
+    
+    
+
+        // `true_false`を更新するメソッド.
+    
+    public String updateTrueFalse(int applicationId, int trueFalseValue) {
+        // `true_false`の現在の値を確認するクエリ
+        String selectQuery = "SELECT true_false FROM livehouse_application_table WHERE id = ?";
+        String updateQuery = "UPDATE livehouse_application_table SET true_false = ? WHERE id = ?";
+        
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement selectStmt = connection.prepareStatement(selectQuery);
+             PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
+            
+            // 現在の値を取得
+            selectStmt.setInt(1, applicationId);
+            ResultSet rs = selectStmt.executeQuery();
+            if (rs.next()) {
+                int currentValue = rs.getInt("true_false");
+                if (currentValue == 1) {
+                    return "already_approved"; // すでに承認済み
+                }
+            }
+
+            // 値を更新
+            updateStmt.setInt(1, trueFalseValue);
+            updateStmt.setInt(2, applicationId);
+            int rowsUpdated = updateStmt.executeUpdate();
+            return rowsUpdated > 0 ? "approval_success" : "update_failed";
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "error";
+        }
+    }
+
+        
+        
+
 
 
     // Livehouse_applicationの情報を表示するメソッド

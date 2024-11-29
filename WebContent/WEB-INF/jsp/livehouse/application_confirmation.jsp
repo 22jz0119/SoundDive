@@ -65,9 +65,9 @@
                 <div class="application_confirmation-btn">
 				    <!-- 戻るボタン -->
 				    <button class="approve-btn" onclick="location.href='navigate?action=list'">戻る</button>
-				    
 				    <!-- 承認ボタン -->
-				    <button class="decline-btn" onclick="location.href='navigate?action=approval'">承認</button>
+					<button class="decline-btn" onclick="location.href='Application_confirmation?action=approval&id=${application.applicationId}'">承認</button>
+
 				</div>
 
 
