@@ -34,7 +34,7 @@ public class Application_approval extends HttpServlet {
         }
 
         // JSPページにフォワード
-        request.getRequestDispatcher("WEB-INF/jsp/application_approval.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/jsp/livehouse/application_approval.jsp").forward(request, response);
     }
 
     @Override

@@ -18,12 +18,12 @@ public class Livehouse_informationDAO {
     }
     
     public boolean insertLivehouse_information(Livehouse_information livehouse_information) {
-    	String sql = "INSERT INTO livehouse_information (id, oner_name, equipment_information, livehouse_explanation_information,livehouse_detailed_information, livehouse_name, live_address, live_tel_number, createDate, updateDate) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    	String sql = "INSERT INTO livehouse_information (id, owner_name, equipment_information, livehouse_explanation_information,livehouse_detailed_information, livehouse_name, live_address, live_tel_number, createDate, updateDate) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     	try (Connection conn = dbManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)){
     		
     		pstmt.setInt(1, livehouse_information.getId());
-    		pstmt.setString(2, livehouse_information.getOner_name());
+    		pstmt.setString(2, livehouse_information.getOwner_name());
     		pstmt.setString(3, livehouse_information.getEquipment_information());
     		pstmt.setString(4, livehouse_information.getLivehouse_explanation_information());
     		pstmt.setString(5, livehouse_information.getLivehouse_detailed_information());
@@ -54,7 +54,7 @@ public class Livehouse_informationDAO {
                ResultSet rs = pstmt.executeQuery();
 
                if (rs.next()) {
-                   String oner_name = rs.getString("oner_name");
+                   String owner_name = rs.getString("owner_name");
                    String equipment_information = rs.getString("equipment_information");
                    String livehouse_explanation_information = rs.getString("livehouse_explanation_information");
                    String livehouse_detailed_information = rs.getString("livehouse_detailed_information");
@@ -64,7 +64,7 @@ public class Livehouse_informationDAO {
                    Date createDate = rs.getDate("create_date");
                    Date updateDate = rs.getDate("update_date");
                    
-                   return new Livehouse_information(id, oner_name, equipment_information, livehouse_explanation_information, livehouse_detailed_information, livehouse_name, live_address, live_tel_number, createDate, updateDate);
+                   return new Livehouse_information(id, owner_name, equipment_information, livehouse_explanation_information, livehouse_detailed_information, livehouse_name, live_address, live_tel_number, createDate, updateDate);
                    
                }
            } catch (SQLException e) {
@@ -75,7 +75,7 @@ public class Livehouse_informationDAO {
     
      public void printLivehouse_informatinon(Livehouse_information livehouse_information) {
     	 if (livehouse_information != null) {
-    		 System.out.println("オーナー名 :" + livehouse_information.getOner_name());
+    		 System.out.println("オーナー名 :" + livehouse_information.getOwner_name());
     		 System.out.println("機材情報 :" + livehouse_information.getEquipment_information());
     		 System.out.println("ライブハウス説明情報 :" + livehouse_information.getLivehouse_explanation_information());
     		 System.out.println("ライブハウス詳細情報 :" + livehouse_information.getLivehouse_detailed_information());
@@ -102,7 +102,7 @@ public class Livehouse_informationDAO {
     	        // データをリストに格納
     	        while (rs.next()) {
     	            int id = rs.getInt("id");
-    	            String oner_name = rs.getString("oner_name");
+    	            String owner_name = rs.getString("owner_name");
     	            String equipment_information = rs.getString("equipment_information");
     	            String livehouse_explanation_information = rs.getString("livehouse_explanation_information");
     	            String livehouse_detailed_information = rs.getString("livehouse_detailed_information");
@@ -113,7 +113,7 @@ public class Livehouse_informationDAO {
     	            Date updateDate = rs.getDate("update_date");
 
     	            // Livehouse_information オブジェクトを作成してリストに追加
-    	            Livehouse_information livehouse = new Livehouse_information(id, oner_name, equipment_information, 
+    	            Livehouse_information livehouse = new Livehouse_information(id, owner_name, equipment_information, 
     	                    livehouse_explanation_information, livehouse_detailed_information, livehouse_name, 
     	                    live_address, live_tel_number, createDate, updateDate);
     	            list.add(livehouse);
@@ -124,7 +124,54 @@ public class Livehouse_informationDAO {
 
     	    return list;
     	}
-    
-    
+     //エラーハンドリング
+     private void handleSQLException(SQLException e, String message) {
+    	    System.err.println(message);
+    	    System.err.println("SQLState: " + e.getSQLState());
+    	    System.err.println("Error Code: " + e.getErrorCode());
+    	    e.printStackTrace(); // 本番環境ではロギングライブラリを使用してください
+    	}
 
+     //データ削除
+     public boolean deleteLivehouse_informationById(int id) {
+    	    String sql = "DELETE FROM livehouse_information WHERE id = ?";
+    	    try (Connection conn = dbManager.getConnection();
+    	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+    	        pstmt.setInt(1, id);
+
+    	        int rowsAffected = pstmt.executeUpdate();
+    	        return rowsAffected > 0;
+    	    } catch (SQLException e) {
+    	        handleSQLException(e, "Error deleting Livehouse_information with ID: " + id);
+    	    }
+    	    return false;
+    	}
+
+     //データ更新
+     public boolean updateLivehouse_information(Livehouse_information livehouse_information, String profileImagePath, String interiorImagePath, String exteriorImagePath) {
+    	    String sql = "UPDATE livehouse_information SET owner_name = ?, equipment_information = ?, livehouse_explanation_information = ?, livehouse_detailed_information = ?, livehouse_name = ?, live_address = ?, live_tel_number = ?, profile_image = ?, interior_image = ?, exterior_image = ?, updateDate = ? WHERE id = ?";
+    	    try (Connection conn = dbManager.getConnection();
+    	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+    	        pstmt.setString(1, livehouse_information.getOwner_name());
+    	        pstmt.setString(2, livehouse_information.getEquipment_information());
+    	        pstmt.setString(3, livehouse_information.getLivehouse_explanation_information());
+    	        pstmt.setString(4, livehouse_information.getLivehouse_detailed_information());
+    	        pstmt.setString(5, livehouse_information.getLivehouse_name());
+    	        pstmt.setString(6, livehouse_information.getLive_address());
+    	        pstmt.setString(7, livehouse_information.getLive_tel_number());
+    	        pstmt.setString(8, profileImagePath); // プロフィール画像のパス
+    	        pstmt.setString(9, interiorImagePath); // 内観画像のパス
+    	        pstmt.setString(10, exteriorImagePath); // 外観画像のパス
+    	        pstmt.setDate(11, new java.sql.Date(livehouse_information.getUpdateDate().getTime()));
+    	        pstmt.setInt(12, livehouse_information.getId());
+
+    	        int rowsAffected = pstmt.executeUpdate();
+    	        return rowsAffected > 0;
+    	    } catch (SQLException e) {
+    	        handleSQLException(e, "Error updating Livehouse_information with ID: " + livehouse_information.getId());
+    	    }
+    	    return false;
+    	}
 }

@@ -4,7 +4,7 @@ import java.sql.Date;
 
 public class Livehouse_information{
 	private int id;
-    private String oner_name;
+    private String owner_name;
     private String equipment_information;
     private String livehouse_explanation_information;
     private String livehouse_detailed_information;
@@ -19,11 +19,11 @@ public class Livehouse_information{
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getOner_name() {
-		return oner_name;
+	public String getOwner_name() {
+		return owner_name;
 	}
-	public void setOner_name(String oner_name) {
-		this.oner_name = oner_name;
+	public void setOwner_name(String owner_name) {
+		this.owner_name = owner_name;
 	}
 	public String getEquipment_information() {
 		return equipment_information;
@@ -73,12 +73,12 @@ public class Livehouse_information{
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
 	}
-	public Livehouse_information(int id, String oner_name, String equipment_information,
+	public Livehouse_information(int id, String owner_name, String equipment_information,
 			String livehouse_explanation_information, String livehouse_detailed_information, String livehouse_name,
 			String live_address, String live_tel_number, java.util.Date createDate2, java.util.Date updateDate2) {
 		super();
 		this.id = id;
-		this.oner_name = oner_name;
+		this.owner_name = owner_name;
 		this.equipment_information = equipment_information;
 		this.livehouse_explanation_information = livehouse_explanation_information;
 		this.livehouse_detailed_information = livehouse_detailed_information;

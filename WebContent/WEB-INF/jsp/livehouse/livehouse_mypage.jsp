@@ -1,120 +1,137 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
-	<title>ライブハウスマイページ</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ライブハウスマイページ</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
 </head>
 <body>
-	<header class="main-header">
-            <div class="header-container">
-                <div class="main-title">
-                    <h1 class="main-title-h1">Sound Dive</h1>
-                </div>
-                <nav class="header-nav">
-                    <ul class="header-nav-ul">
-                        <li><a href="livehouse_home.html">HOME</a></li>
-                        <li><a href="livehouse_mypage.html">MY PAGE</a></li>
-                        <li><a href="">000</a></li>
-                        <li><a href="">000</a></li>
-                    </ul>
-                </nav>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="main-title">
+                <h1 class="main-title-h1">Sound Dive</h1>
             </div>
-        </header>
-        <main>
-            <form action="<%= request.getContextPath() %>/Livehouse_mypage" method="POST" enctype="multipart/form-data">
-            <div class="profile-container">
-                <label class="profile-icon" for="fileInput">
-                    <!-- デフォルトのテキストを中央に表示 -->
-                    <span class="placeholder-text" id="placeholderText">アイコンをアップロード</span>
-                    <!-- プロフィール画像がアップロードされた後に表示される -->
-                    <img id="profileImage" src="" alt="">
-                </label>
-                <input type="file" id="fileInput" accept="image/*" style="display: none;">
-            </div>
-        
-            <script>
-                document.getElementById('fileInput').addEventListener('change', function(event) {
-                    const file = event.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            const img = document.getElementById('profileImage');
-                            const placeholderText = document.getElementById('placeholderText');
-        
-                            // 画像を表示し、プレースホルダーテキストを隠す
-                            img.src = e.target.result;
-                            img.style.display = 'block';  // 画像を表示
-                            placeholderText.style.display = 'none'; // テキストを非表示
-                        }
-                        reader.readAsDataURL(file);
+            <nav class="header-nav">
+                <ul class="header-nav-ul">
+                    <li><a href="livehouse_home.html">HOME</a></li>
+                    <li><a href="livehouse_mypage.html">MY PAGE</a></li>
+                    <li><a href="">000</a></li>
+                    <li><a href="">000</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <div class="profile-container">
+            <label class="profile-icon" for="fileInput">
+                <!-- デフォルトのテキストを中央に表示 -->
+                <span class="placeholder-text" id="placeholderText">アイコンをアップロード</span>
+                <!-- プロフィール画像がアップロードされた後に表示される -->
+                <img id="profileImage" src="" alt="">
+            </label>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+        </div>
+        <script>
+            document.getElementById('fileInput').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.getElementById('profileImage');
+                        const placeholderText = document.getElementById('placeholderText');
+    
+                        // 画像を表示し、プレースホルダーテキストを隠す
+                        img.src = e.target.result;
+                        img.style.display = 'block';  // 画像を表示
+                        placeholderText.style.display = 'none'; // テキストを非表示
                     }
-                });
-            </script>
-            
-                <button class="edit-btn">編集する</button>
-                <div class="live-my-inputcontener">
-                    <input class="livehouse-name" type="text" name="" placeholder="ライブハウス名を入力してください"><br>
-                    <input class="livehouse-owner" type="text" name="" placeholder="オーナー名を入力してください">
-                </div>
-        
-                <div class="livehouse-info">
-                    <h3 class="subsubtitle">ライブハウス主要情報</h3>
-                    <textarea class="main-text" id="message" name="message" placeholder="※ここに入力" rows="4" cols="50"></textarea>
-                    <h3 class="live-exterior-interior">ライブハウスの外観内観・動画</h3>
-
-                    
-                    <!-- <figure class="livehouse-picture">
-                        <img src="../assets/img/ライブハウス内観.jpg" alt="内観の写真" class="gaikan">
-                        <img src="../assets/img/ライブハウス外観.jpg" alt="外観の写真" class="naikan">
-                    </figure> -->
-
-
-                    <figure class="livehouse-picture">
-                        <!-- 内観の画像 -->
-                        <div class="image-container">
-                            <img id="naikan-preview" src="../assets/img/ライブハウス内観.jpg" alt="内観の写真" class="gaikan">
-                            <input type="file" accept="image/*" id="naikan-input" onchange="previewImage(event, 'naikan-preview')">
-                            <label for="naikan-input">内観画像を選択</label>
-                        </div>
-                        
-                        <!-- 外観の画像 -->
-                        <div class="image-container">
-                            <img id="gaikan-preview" src="../assets/img/ライブハウス外観.jpg" alt="外観の写真" class="naikan">
-                            <input type="file" accept="image/*" id="gaikan-input" onchange="previewImage(event, 'gaikan-preview')">
-                            <label for="gaikan-input">外観画像を選択</label>
-                        </div>
-                    </figure>
-                    
-                    <script>
-                        function previewImage(event, previewId) {
-                            const input = event.target;
-                            if (input.files && input.files[0]) {
-                                const reader = new FileReader();
-                                
-                                reader.onload = function(e) {
-                                    const previewImage = document.getElementById(previewId);
-                                    previewImage.src = e.target.result;
-                                };
-                                
-                                reader.readAsDataURL(input.files[0]);
-                            }
-                        }
-                    </script>
-                    
-                    
-
-                    <h3 class="live-detail-info">ライブハウス詳細情報</h3>
-                    <textarea class="livehouse-detail" id="message" name="message" rows="4" cols="50" placeholder="※機材情報などここに入力"></textarea>
-                </div>
-                <div class="live-mypage-keep">
-                    <button class="keep-btn">保存</button>
-                </div>
-            </div>
+                    reader.readAsDataURL(file);
+                }
+            });
+        </script>
+        <button class="edit-btn">編集する</button>
+        <div class="livehouse_mypage-inputfield-containar">
+            <ul class="livehouse_mypage-inputfield-ul1">
+                <li class="livehouse_mypage-inputfield-livehouse-name">
+                    <form>
+                        <label for="username" class="livehouse_mypage-guide-livehousename">ライブハウス名</label>
+                        <input type="text" id="livehouse-mypage-livehousename" name="textbox">
+                    </form>
+                </li>
+                <li class="livehouse_mypage-inputfield-onername">
+                    <form>  
+                        <label for="username" class="livehouse_mypage-guide-onername">オーナー名</label>       
+                        <input type="text" id="livehouse-mypage-onername" name="textbox">
+                    </form>
+                </li>
+                <li class="livehouse_mypage-inputfield-tel">
+                    <form>
+                        <label for="username" class="livehouse_mypage-guide-tel">電話番号</label>
+                        <input type="tel" id="livehouse-mypage-tel" name="phone" required>
+                    </form>
+                </li>
+            </ul>
+        </div>
+        <div class="livehouse-mypage-livehouseDetail">
+            <form>
+                <label for="livehouse-mp-livehouse-detail">ライブハウス説明情報</label>
+                <input type="text" id="livehouse-mypage-livehousename" name="textbox" style="width: 500px; height: 150px;">
             </form>
-        </main>
+        </div>
+        <div class="livehouse-mypage-livehouseDiscription"> 
+            <form>
+                <label for="livehouse-mp-livehouse-description">ライブハウス詳細情報</label>
+                <input type="text" id="livehouse-mypage-livehousename" name="textbox" style="width: 500px; height: 150px;">
+            </form>
+        </div>
+        <div class="livehouse-mypage-gearinfo">
+            <form>
+                <label for="livehouse-mp-gearinfo">機材情報</label>
+                <input type="text" id="livehouse-mypage-onername" name="textbox" style="width: 500px; height: 150px;">
+            </form>
+        </div>
+        <div>
+            <h1>ライブハウスの外観内観・動画</h1>
+        </div>
+
+        <figure class="livehouse-picture">
+            <!-- 内観の画像 -->
+            <div class="image-container">
+                <img id="naikan-preview" src="../assets/img/ライブハウス内観.jpg" alt="内観の写真" class="gaikan">
+                <input type="file" accept="image/*" id="naikan-input" onchange="previewImage(event, 'naikan-preview')">
+                <label for="naikan-input">内観画像を選択</label>
+            </div>
+            
+            <!-- 外観の画像 -->
+            <div class="image-container">
+                <img id="gaikan-preview" src="../assets/img/ライブハウス外観.jpg" alt="外観の写真" class="naikan">
+                <input type="file" accept="image/*" id="gaikan-input" onchange="previewImage(event, 'gaikan-preview')">
+                <label for="gaikan-input">外観画像を選択</label>
+            </div>
+        </figure>
+        
+        <script>
+            function previewImage(event, previewId) {
+                const input = event.target;
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const previewImage = document.getElementById(previewId);
+                        previewImage.src = e.target.result;
+                    };
+                    
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        </script>
+        <div class="live-mypage-keep">
+            <button class="keep-btn">登録</button>
+        </div>
+    </main>
 </body>
 </html>
