@@ -12,6 +12,7 @@ import java.util.Map;
 
 import model.LivehouseApplicationWithGroup;
 import model.Livehouse_application;
+import model.Livehouse_information;
 import model.Member;
 
 
@@ -25,7 +26,7 @@ public class Livehouse_applicationDAO {
     // Livehouse_applicationを挿入するメソッド
     public boolean insertLivehouse_application(Livehouse_application livehouse_application) {
         // AUTO_INCREMENTの場合、idを除外
-        String sql = "INSERT INTO livehouse_application (livehouse_information_id, user_id, date_time, true_false, start_time, finish_time, create_date, update_date) " +
+        String sql = "INSERT INTO livehouse_application_table (livehouse_information_id, user_id, date_time, true_false, start_time, finish_time, create_date, update_date) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = dbManager.getConnection();
@@ -34,7 +35,7 @@ public class Livehouse_applicationDAO {
             // 各パラメータを設定
             pstmt.setInt(1, livehouse_application.getLivehouse_information_id());
             pstmt.setInt(2, livehouse_application.getUser_id());
-            pstmt.setDate(3, Date.valueOf(livehouse_application.getDate_time()));  // LocalDate -> Date
+            pstmt.setDate(3, Date.valueOf(livehouse_application.getDatetime()));  // LocalDate -> Date
             pstmt.setBoolean(4, livehouse_application.isTrueFalse());
             pstmt.setDate(5, Date.valueOf(livehouse_application.getStart_time()));  // LocalDate -> Date
             pstmt.setDate(6, Date.valueOf(livehouse_application.getFinish_time()));  // LocalDate -> Date
@@ -56,14 +57,18 @@ public class Livehouse_applicationDAO {
 
     // IDでLivehouse_applicationを取得するメソッド
     public Livehouse_application getLivehouse_applicationById(int id) {
-        String sql = "SELECT * FROM livehouse_application WHERE id = ?";
+        String sql = "SELECT * FROM livehouse_application_table WHERE id = ?";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            System.err.println("Executing query to fetch Livehouse_application with ID: " + id);
 
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
+                System.err.println("Data found for ID: " + id);
+                
                 int livehouse_information_id = rs.getInt("livehouse_information_id");
                 int user_id = rs.getInt("user_id");  // user_id を取得
                 Date date_time = rs.getDate("date_time");
@@ -72,6 +77,12 @@ public class Livehouse_applicationDAO {
                 Date finish_time = rs.getDate("finish_time");
                 Date create_date = rs.getDate("create_date");
                 Date update_date = rs.getDate("update_date");
+
+                System.err.println("Fetched data: livehouse_information_id=" + livehouse_information_id +
+                                   ", user_id=" + user_id + ", date_time=" + date_time +
+                                   ", true_false=" + true_false + ", start_time=" + start_time +
+                                   ", finish_time=" + finish_time + ", create_date=" + create_date +
+                                   ", update_date=" + update_date);
 
                 return new Livehouse_application(
                     id, 
@@ -84,12 +95,75 @@ public class Livehouse_applicationDAO {
                     create_date.toLocalDate(),
                     update_date.toLocalDate()
                 );
+            } else {
+                System.err.println("No data found for ID: " + id);
             }
         } catch (SQLException e) {
+            System.err.println("SQL Exception occurred while fetching Livehouse_application with ID: " + id);
             e.printStackTrace();
         }
+
+        System.err.println("Returning null for ID: " + id);
         return null;
     }
+    
+ // livehouse_information_idでLivehouse_applicationを取得するメソッド
+    public List<Livehouse_application> getLivehouse_applicationsByLivehouseId(int livehouseInformationId) {
+        String sql = "SELECT * FROM livehouse_application_table WHERE livehouse_information_id = ?";
+        List<Livehouse_application> applications = new ArrayList<>();
+        
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            System.err.println("Executing query to fetch Livehouse_application with livehouse_information_id: " + livehouseInformationId);
+
+            pstmt.setInt(1, livehouseInformationId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                System.err.println("Data found for livehouse_information_id: " + livehouseInformationId);
+                
+                int id = rs.getInt("id");
+                int user_id = rs.getInt("user_id");
+                Date date_time = rs.getDate("date_time");
+                boolean true_false = rs.getBoolean("true_false");
+                Date start_time = rs.getDate("start_time");
+                Date finish_time = rs.getDate("finish_time");
+                Date create_date = rs.getDate("create_date");
+                Date update_date = rs.getDate("update_date");
+
+                System.err.println("Fetched data: id=" + id + ", user_id=" + user_id + 
+                                   ", date_time=" + date_time + ", true_false=" + true_false +
+                                   ", start_time=" + start_time + ", finish_time=" + finish_time +
+                                   ", create_date=" + create_date + ", update_date=" + update_date);
+
+                Livehouse_application application = new Livehouse_application(
+                    id,
+                    livehouseInformationId,
+                    user_id,
+                    date_time.toLocalDate(),
+                    true_false,
+                    start_time.toLocalDate(),
+                    finish_time.toLocalDate(),
+                    create_date.toLocalDate(),
+                    update_date.toLocalDate()
+                );
+
+                applications.add(application);
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL Exception occurred while fetching Livehouse_application with livehouse_information_id: " + livehouseInformationId);
+            e.printStackTrace();
+        }
+
+        if (applications.isEmpty()) {
+            System.err.println("No data found for livehouse_information_id: " + livehouseInformationId);
+        }
+
+        return applications;
+    }
+
+
 
     // 申請したグループ情報を結合
     public List<LivehouseApplicationWithGroup> getApplicationsWithGroups() {
@@ -330,6 +404,39 @@ public class Livehouse_applicationDAO {
         }
         return null;
     }
+    public Map<Integer, Boolean> getDailyReservationStatus(Livehouse_information livehouse, int year, int month) {
+        int livehouseInformationId = livehouse.getId();  // Livehouse_informationからIDを取得
+
+        // SQLクエリのテーブル名を修正
+        String sql = "SELECT DAY(date_time) AS day, true_false " +
+                     "FROM livehouse_application_table " +  // 修正：テーブル名を livehouse_application_table に変更
+                     "WHERE livehouse_information_id = ? " +
+                     "AND YEAR(date_time) = ? " +
+                     "AND MONTH(date_time) = ?";
+
+        Map<Integer, Boolean> reservationStatus = new HashMap<>();
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, livehouseInformationId); // Livehouse_informationからIDを取得
+            pstmt.setInt(2, year);
+            pstmt.setInt(3, month);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int day = rs.getInt("day"); // 日付
+                    boolean status = rs.getInt("true_false") == 1; // true_falseが1なら予約済み、0なら空き
+                    reservationStatus.put(day, status); // 予約状態を保存
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return reservationStatus;
+    }
+    
 
     // Livehouse_applicationの情報を表示するメソッド
     public void printLivehouse_application(Livehouse_application livehouse_application) {
@@ -337,7 +444,7 @@ public class Livehouse_applicationDAO {
             System.out.println("ID: " + livehouse_application.getId());
             System.out.println("ユーザーID" + livehouse_application.getUser_id());
             System.out.println("ライブハウス情報ID: " + livehouse_application.getLivehouse_information_id());
-            System.out.println("日時: " + livehouse_application.getDate_time());
+            System.out.println("日時: " + livehouse_application.getDatetime());
             System.out.println("承認: " + livehouse_application.isTrueFalse()); // フラグの表示を追加
             System.out.println("開始時間: " + livehouse_application.getStart_time());
             System.out.println("終了時間: " + livehouse_application.getFinish_time());
@@ -347,4 +454,14 @@ public class Livehouse_applicationDAO {
             System.out.println("該当するライブハウス申請情報が見つかりませんでした。");
         }
     }
+    
+    
+
+    
+   
+
+
+
+    
+    
 }

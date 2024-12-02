@@ -26,7 +26,7 @@ public class Top extends HttpServlet {
         }
 
         // ログイン画面を表示
-        request.getRequestDispatcher("WEB-INF/jsp/top.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/jsp/top/top.jsp").forward(request, response);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class Top extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/At_Home");
         } else {
             request.setAttribute("msg", "ログインに失敗しました。ユーザー名またはパスワードを確認してください。");
-            request.getRequestDispatcher("WEB-INF/jsp/top.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/jsp/top/top.jsp").forward(request, response);
         }
     }
 
