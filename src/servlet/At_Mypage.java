@@ -160,7 +160,7 @@ public class At_Mypage extends HttpServlet {
                 existingGroup.setGroup_genre(groupGenre);
                 existingGroup.setBand_years(bandYears);
                 existingGroup.setUpdate_date(LocalDate.now());
-
+                
                 boolean isUpdated = artistGroupDAO.updateArtistGroupByUserId(userId, existingGroup);
                 if (!isUpdated) {
                     conn.rollback();

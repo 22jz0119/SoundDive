@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,29 +101,46 @@ public class Artist_groupDAO {
         }
         return false; // エラーが発生した場合はfalse
     }
-
-    // user_id に紐づくアーティストグループを取得するメソッド
-    public Artist_group getGroupByUserId(int userId) {
-        // キャッシュを確認
-        if (groupCacheByUserId.containsKey(userId)) {
-            return groupCacheByUserId.get(userId);
-        }
-
-        String sql = "SELECT * FROM artist_group WHERE user_id = ?";
+    
+    public Artist_group getGroupById(int id) {
+        String sql = "SELECT * FROM artist_group WHERE id = ?"; // id を使用
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, userId);
+            pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                Artist_group group = rs2model(rs);
-                addToCache(group);
-                return group;
+                return rs2model(rs); // ResultSet をモデルに変換するメソッド
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null; // 該当するグループがない場合
+    }
+
+
+    // user_id に紐づくアーティストグループを取得するメソッド
+    public Artist_group getGroupByUserId(int userId) {
+        String sql = "SELECT * FROM artist_group WHERE user_id = ?";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            System.out.println("[DEBUG] Executing SQL: " + sql + " with userId=" + userId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    Artist_group group = rs2model(rs);
+                    System.out.println("[DEBUG] Group found: " + group.getAccount_name());
+                    return group;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[ERROR] SQL Exception in getGroupByUserId");
+            e.printStackTrace();
+        }
+        System.out.println("[DEBUG] No group found for userId=" + userId);
         return null;
     }
+
 
     // キャッシュ操作メソッド
     private void addToCache(Artist_group group) {
@@ -141,6 +159,100 @@ public class Artist_groupDAO {
         groupCacheByUserId.clear();
         groupCacheById.clear();
     }
+    
+ // Artist_groupDAO.java
+    public List<Artist_group> getAllGroups() {
+        String sql = "SELECT * FROM artist_group";
+        List<Artist_group> groups = new ArrayList<>();
+        System.out.println("[DEBUG] getAllGroups: クエリ実行開始: " + sql);
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                Artist_group group = rs2model(rs);
+                groups.add(group);
+                // 各取得したグループの情報をログに表示
+                System.out.println("[DEBUG] Retrieved Group: ID=" + group.getId() + ", Name=" + group.getAccount_name());
+            }
+            System.out.println("[DEBUG] getAllGroups: グループ数: " + groups.size());
+        } catch (SQLException e) {
+            System.err.println("[ERROR] getAllGroups: データ取得中にエラーが発生しました: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return groups;
+    }
+    
+    public boolean updateApprovalStatus(int groupId, boolean status) {
+        String sql = "UPDATE アーティストグループ SET 承認 = ? WHERE ID = ?";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setBoolean(1, status);
+            pstmt.setInt(2, groupId);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public boolean getApprovalStatus(int groupId) {
+        String sql = "SELECT 承認 FROM アーティストグループ WHERE ID = ?";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, groupId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getBoolean("承認");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // デフォルトで未承認
+    }
+
+
+    
+    public Map<Integer, Integer> getMemberCounts() {
+        String sql = "SELECT artist_group_id, COUNT(*) AS member_count FROM member_table GROUP BY artist_group_id";
+        Map<Integer, Integer> memberCounts = new HashMap<>();
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                memberCounts.put(rs.getInt("artist_group_id"), rs.getInt("member_count"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return memberCounts;
+    }
+    
+    public List<Artist_group> searchGroupsByName(String accountName) {
+        String sql = "SELECT * FROM artist_group WHERE account_name LIKE ?";
+        List<Artist_group> groups = new ArrayList<>();
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, "%" + accountName + "%"); // 部分一致検索用
+            System.out.println("[searchGroupsByName] Executing: " + sql + " with accountName=" + accountName);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    groups.add(rs2model(rs)); // rs2modelでArtist_groupオブジェクトを作成
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[searchGroupsByName] Error occurred while searching by name: " + accountName);
+            e.printStackTrace();
+        }
+
+        return groups;
+    }
+
+
 
     // ResultSetからArtist_groupオブジェクトを作成するメソッド
     private Artist_group rs2model(ResultSet rs) throws SQLException {
@@ -153,6 +265,7 @@ public class Artist_groupDAO {
         String rating_star = rs.getString("rating_star");
         String group_genre = rs.getString("group_genre");
         int band_years = rs.getInt("band_years");
+        boolean at_true_false = rs.getBoolean("at_true_false");
 
         return new Artist_group(
                 id,
@@ -163,7 +276,8 @@ public class Artist_groupDAO {
                 band_years,
                 create_date != null ? create_date.toLocalDate() : null,
                 update_date != null ? update_date.toLocalDate() : null,
-                rating_star
+                rating_star,
+                at_true_false
         );
     }
 }
