@@ -64,7 +64,7 @@
                             <li class="application-artist-list-ul4-li1"><audio class="sound-source" controls src="water.mp3" type="audio/mp3">とまとまん</audio></li>
                         </ul>
                         <li class="application-artist-list-ul5-li1">
-						    <a href="<c:url value='/Application_confirmation' />?id=${application.id}" class="application-artist-list-ul5-li1-a">対バンを申し込む</a>
+						    <a href="<c:url value='/Application_confirmation' />?id=${application.id}" class="application-artist-list-ul5-li1-a">詳細を見る</a>
 						</li>
 
                         
