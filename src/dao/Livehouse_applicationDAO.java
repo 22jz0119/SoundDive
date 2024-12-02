@@ -404,7 +404,7 @@ public class Livehouse_applicationDAO {
         }
         return null;
     }
-<<<<<<< HEAD
+
     public Map<Integer, Boolean> getDailyReservationStatus(Livehouse_information livehouse, int year, int month) {
         int livehouseInformationId = livehouse.getId();  // Livehouse_informationからIDを取得
 
@@ -438,7 +438,7 @@ public class Livehouse_applicationDAO {
         return reservationStatus;
     }
     
-=======
+
     
     
     //カレンダー申請件数表示
