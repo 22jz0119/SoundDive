@@ -53,6 +53,7 @@ public class At_Cogig extends HttpServlet {
         request.getRequestDispatcher("WEB-INF/jsp/artist/at_cogig.jsp").forward(request, response);
     }
 
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
