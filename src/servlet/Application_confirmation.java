@@ -1,6 +1,9 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -10,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.DBManager;
-import dao.Livehouse_applicationDAO;  // Livehouse_applicationDAOをインポート
+import dao.Livehouse_applicationDAO;
 import model.LivehouseApplicationWithGroup;
 import model.Member;
 
@@ -25,10 +28,22 @@ public class Application_confirmation extends HttpServlet {
 
         // リクエストパラメータの取得
         String idParam = request.getParameter("id");
+        String action = request.getParameter("action");
 
         if (idParam != null) {
             try {
                 int applicationId = Integer.parseInt(idParam);
+
+                // 承認ボタンが押された場合の処理
+                if ("approval".equals(action)) {
+                    // `true_false`を1に更新
+                    updateTrueFalse(applicationId, dbManager);
+
+                    // 承認ページに遷移
+                    request.setAttribute("applicationId", applicationId);
+                    request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_approval.jsp").forward(request, response);
+                    return;
+                }
 
                 // アプリケーション詳細データを取得
                 LivehouseApplicationWithGroup applicationDetails = livehouseApplicationDAO.getApplicationDetailsById(applicationId);
@@ -38,11 +53,11 @@ public class Application_confirmation extends HttpServlet {
                     request.setAttribute("application", applicationDetails);
 
                     // applicationDetailsからgroupIdを取得
-                    int groupId = applicationDetails.getGroupId();  // グループIDを取得する
+                    int groupId = applicationDetails.getGroupId();
 
                     // Livehouse_applicationDAOを使ってメンバー情報を取得
-                    List<Member> members = livehouseApplicationDAO.getMembersByGroupId(groupId); // メンバー情報をDAOから取得
-                    request.setAttribute("members", members); // メンバー情報をリクエストスコープに設定
+                    List<Member> members = livehouseApplicationDAO.getMembersByGroupId(groupId);
+                    request.setAttribute("members", members);
 
                     // JSPにフォワード
                     request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_confirmation.jsp").forward(request, response);
@@ -58,15 +73,11 @@ public class Application_confirmation extends HttpServlet {
             System.err.println("No application ID provided in the request");
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "アプリケーションIDがリクエストに含まれていません");
         }
-        String action = request.getParameter("action");
+
+        // デフォルトアクション
         if ("list".equals(action)) {
-            // application_list.jsp へ遷移
             request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_list.jsp").forward(request, response);
-        } else if ("approval".equals(action)) {
-            // application_approval.jsp へ遷移
-            request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_approval.jsp").forward(request, response);
         } else {
-            // デフォルトは application_list.jsp
             response.sendRedirect("navigate?action=list");
         }
     }
@@ -74,5 +85,20 @@ public class Application_confirmation extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
+    }
+
+    /**
+     * `true_false`を1に更新するメソッド
+     */
+    private void updateTrueFalse(int applicationId, DBManager dbManager) {
+        String updateQuery = "UPDATE livehouse_application_table SET true_false = 1 WHERE id = ?";
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(updateQuery)) {
+            stmt.setInt(1, applicationId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to update true_false in the database", e);
+        }
     }
 }

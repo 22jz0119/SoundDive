@@ -22,8 +22,8 @@ public class Application_list extends HttpServlet {
         DBManager dbManager = DBManager.getInstance();
         Livehouse_applicationDAO livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
 
-        // 申請リストを取得
-        List<LivehouseApplicationWithGroup> applicationList = livehouseApplicationDAO.getApplicationsWithGroups();
+        // true_false = 0 の申請リストを取得
+        List<LivehouseApplicationWithGroup> applicationList = livehouseApplicationDAO.getReservationsWithTrueFalseZero();
 
         // リクエストスコープに設定
         request.setAttribute("applicationList", applicationList);

@@ -264,23 +264,18 @@ public class Livehouse_applicationDAO {
     }
 
     // リスト表示
-    public List<LivehouseApplicationWithGroup> getReservationsByDate(int applicationId, int year, int month, int day) {
+    public List<LivehouseApplicationWithGroup> getReservationsWithTrueFalseZero() {
         String sql = "SELECT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
                      "ag.id AS group_id, ag.account_name, ag.group_genre, ag.band_years, " +
                      "la.user_id, u.us_name " +
                      "FROM livehouse_application_table la " +
                      "JOIN user u ON la.user_id = u.id " +
-                     "JOIN artist_group ag ON la.user_id = ag.user_id " + // user_id を基準に結合
-                     "WHERE la.id = ? AND YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND DAY(la.date_time) = ?";
+                     "JOIN artist_group ag ON la.user_id = ag.user_id " +
+                     "WHERE la.true_false = 0"; // ここで true_false = 0 のみを取得
 
         List<LivehouseApplicationWithGroup> reservations = new ArrayList<>();
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, applicationId); // livehouse_application_table の ID を指定
-            pstmt.setInt(2, year);
-            pstmt.setInt(3, month);
-            pstmt.setInt(4, day);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
@@ -312,6 +307,7 @@ public class Livehouse_applicationDAO {
         }
         return reservations;
     }
+
 
 
 
@@ -355,6 +351,46 @@ public class Livehouse_applicationDAO {
             return result;
         }
     }
+    
+    
+    
+
+        // `true_false`を更新するメソッド.
+    
+    public String updateTrueFalse(int applicationId, int trueFalseValue) {
+        // `true_false`の現在の値を確認するクエリ
+        String selectQuery = "SELECT true_false FROM livehouse_application_table WHERE id = ?";
+        String updateQuery = "UPDATE livehouse_application_table SET true_false = ? WHERE id = ?";
+        
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement selectStmt = connection.prepareStatement(selectQuery);
+             PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
+            
+            // 現在の値を取得
+            selectStmt.setInt(1, applicationId);
+            ResultSet rs = selectStmt.executeQuery();
+            if (rs.next()) {
+                int currentValue = rs.getInt("true_false");
+                if (currentValue == 1) {
+                    return "already_approved"; // すでに承認済み
+                }
+            }
+
+            // 値を更新
+            updateStmt.setInt(1, trueFalseValue);
+            updateStmt.setInt(2, applicationId);
+            int rowsUpdated = updateStmt.executeUpdate();
+            return rowsUpdated > 0 ? "approval_success" : "update_failed";
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "error";
+        }
+    }
+
+        
+        
+
 
     public int createApplication(int userId, int artistId) {
         String sql = "INSERT INTO livehouse_application_table (user_id, artist_id, application_date) VALUES (?, ?, NOW())";
