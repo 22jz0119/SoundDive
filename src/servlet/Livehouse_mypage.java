@@ -1,74 +1,85 @@
 package servlet;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.util.Date;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 
+import dao.DBManager; // 必要に応じてDBManagerをインポート
+import dao.Livehouse_informationDAO;
+import model.Livehouse_information;
+
+/**
+ * Servlet implementation class Livehouse_mypage
+ */
 @WebServlet("/Livehouse_mypage")
-@MultipartConfig(maxFileSize = 16177215) // 16MB
 public class Livehouse_mypage extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private Livehouse_informationDAO dao; // DAOのインスタンスをクラスメンバとして保持
 
-    // データベース接続情報
-    private String dbURL = "jdbc:mysql://localhost:8080/your_database";
-    private String dbUser = "your_username";
-    private String dbPass = "your_password";
+    @Override
+    public void init() throws ServletException {
+        // DBManagerのインスタンスを取得してDAOを初期化
+        DBManager dbManager = DBManager.getInstance(); // シングルトン実装
+        dao = new Livehouse_informationDAO(dbManager);
+    }
 
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int userId = 1; // セッションなどからユーザーIDを取得する（仮のIDを指定）
+
+        // DAOでデータを取得
+        Livehouse_information livehouse = dao.getLivehouse_informationById(userId);
+
+        // 取得したデータをリクエストスコープにセット
+        request.setAttribute("livehouse", livehouse);
+
+        // JSPにフォワード
+        request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // フォームから送信されたデータを取得
+        // 入力値の取得
         String livehouseName = request.getParameter("livehouseName");
         String ownerName = request.getParameter("ownerName");
-        String mainInfo = request.getParameter("mainInfo");
-        String detailInfo = request.getParameter("detailInfo");
+        String equipmentInfo = request.getParameter("equipmentInfo");
+        String explanation = request.getParameter("message");
+        String detailedInfo = request.getParameter("detailedMessage");
 
-        // ファイルパラメータの取得
-        Part iconImagePart = request.getPart("iconImage");
-        Part naikanImagePart = request.getPart("naikanImage");
-        Part gaikanImagePart = request.getPart("gaikanImage");
+        // モデルオブジェクトを作成
+        Livehouse_information livehouse = new Livehouse_information(
+            0, // IDは自動生成される場合は0またはnullを指定
+            ownerName,
+            equipmentInfo,
+            explanation,
+            detailedInfo,
+            livehouseName,
+            "未入力", // 必要に応じてフォームから取得
+            "未入力", // 必要に応じてフォームから取得
+            new Date(), // 現在時刻
+            new Date()  // 現在時刻
+        );
 
-        try (Connection conn = DriverManager.getConnection(dbURL, dbUser, dbPass)) {
-            // SQL文を準備
-            String sql = "INSERT INTO livehouse_profile (livehouse_name, owner_name, main_info, detail_info, icon_image, naikan_image, gaikan_image) "
-                       + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1, livehouseName);
-            statement.setString(2, ownerName);
-            statement.setString(3, mainInfo);
-            statement.setString(4, detailInfo);
+        // DAOで保存処理
+        boolean isInserted = dao.insertLivehouse_information(livehouse);
 
-            // 画像ファイルをバイトストリームとして設定
-            if (iconImagePart != null) {
-                InputStream iconImageStream = iconImagePart.getInputStream();
-                statement.setBlob(5, iconImageStream);
-            }
-            if (naikanImagePart != null) {
-                InputStream naikanImageStream = naikanImagePart.getInputStream();
-                statement.setBlob(6, naikanImageStream);
-            }
-            if (gaikanImagePart != null) {
-                InputStream gaikanImageStream = gaikanImagePart.getInputStream();
-                statement.setBlob(7, gaikanImageStream);
-            }
-
-            // SQLを実行
-            int row = statement.executeUpdate();
-            if (row > 0) {
-                response.getWriter().println("ライブハウス情報が保存されました！");
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            response.getWriter().println("エラーが発生しました: " + ex.getMessage());
+        // 結果に応じた処理
+        if (isInserted) {
+            response.sendRedirect("/WEB-INF/jsp/livehouse/livehouse_home.jsp");
+        } else {
+            request.setAttribute("errorMessage", "データの保存に失敗しました。");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp");
+            dispatcher.forward(request, response);
         }
     }
 }
