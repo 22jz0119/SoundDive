@@ -1,3 +1,6 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -39,19 +42,25 @@
 
             <div class="application-approval-div1">
             	<c:choose>
-            		<ul class="application-approval-ul-2">a
-                    <li class="application-approval-li-1"><p>予約者名</p></li>
-                    <li class="application-approval-li-2"><p>${User.name}</p></li>
-                </ul>
-                <ul class="application-approval-ul-2">
-                    <li class="application-approval-li-1"><p>予約日時</p></li>
-                    <li class="application-approval-li-2"><p><%= request.getAttribute("start_time") %>p></li>
-                </ul>
-                <ul class="application-approval-ul-2">
-                    <li class="application-approval-li-1"><p>前払い金額</p></li>
-                    <li class="application-approval-li-2"><p>4000円</p></li>
-                </ul>
-            	</c:choose>
+			    <c:when test="${application != null}">
+			        <ul class="application-approval-ul-2">
+			            <li class="application-approval-li-1"><p>予約者名</p></li>
+			            <li class="application-approval-li-2"><p>${application.us_name}</p></li>
+			        </ul>
+			        <ul class="application-approval-ul-2">
+			            <li class="application-approval-li-1"><p>予約日時</p></li>
+			            <li class="application-approval-li-2"><p>${application.datetime}</p></li>
+			        </ul>
+			        <ul class="application-approval-ul-2">
+			            <li class="application-approval-li-1"><p>前払い金額</p></li>
+			            <li class="application-approval-li-2"><p>4000円</p></li>
+			        </ul>
+			    </c:when>
+			    <c:otherwise>
+        <p>データがありません。</p>
+    </c:otherwise>
+</c:choose>
+            	
                 
             </div>
             <div class="application-approval-div2">

@@ -9,8 +9,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
+
 
 /**
  * Servlet implementation class Livehouse_home
@@ -33,31 +36,29 @@ public class Livehouse_home extends HttpServlet {
         String monthParam = request.getParameter("month");
 
         try {
-            // パラメータが不足している場合、現在の年月を使用
-            int year = (yearParam != null) ? Integer.parseInt(yearParam) : java.time.YearMonth.now().getYear();
-            int month = (monthParam != null) ? Integer.parseInt(monthParam) : java.time.YearMonth.now().getMonthValue();
+            int year = Integer.parseInt(yearParam);
+            int month = Integer.parseInt(monthParam);
 
-            // 予約データを取得
-            Map<Integer, Integer> reservationCounts = dao.getReservationCountByMonth(year, month);
+            // 月の範囲（1-12）をチェック
+            if (month < 1 || month > 12) {
+                throw new IllegalArgumentException("月の値が不正です: " + month);
+            }
 
-            // JSPに渡すデータを設定
-            request.setAttribute("reservationCounts", reservationCounts);
-            request.setAttribute("year", year);
-            request.setAttribute("month", month);
+            // 該当月の予約件数を取得
+            Map<String, Integer> reservationCounts = dao.getReservationCountsForMonth(year, month);
 
-            // JSPにフォワード
-            request.getRequestDispatcher("WEB-INF/jsp/livehouse_home.jsp").forward(request, response);
+            // JSON形式で結果を返す
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
 
-        } catch (NumberFormatException e) {
-            // 数値パラメータが無効な場合
-            request.setAttribute("error", "不正な年または月のパラメータが渡されました。");
-            request.getRequestDispatcher("WEB-INF/jsp/livehouse_home.jsp").forward(request, response);
+            String json = new Gson().toJson(reservationCounts);
+            response.getWriter().write(json);
+
         } catch (Exception e) {
-            // その他のエラー
-            request.setAttribute("error", "予期しないエラーが発生しました。");
-            e.printStackTrace();
-            request.getRequestDispatcher("WEB-INF/jsp/livehouse_home.jsp").forward(request, response);
+            log("エラー: ", e);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "リクエスト処理中にエラーが発生しました");
         }
     }
+
 
 }

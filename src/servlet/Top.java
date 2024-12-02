@@ -24,10 +24,12 @@ public class Top extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/At_Home");
             return;
         }
+        
 
         // ログイン画面を表示
         request.getRequestDispatcher("WEB-INF/jsp/top/top.jsp").forward(request, response);
     }
+    
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
