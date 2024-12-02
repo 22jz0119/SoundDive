@@ -1,5 +1,6 @@
 package dao;
 
+import java.beans.Statement;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -355,6 +356,35 @@ public class Livehouse_applicationDAO {
         }
     }
 
+    public int createApplication(int userId, int artistId) {
+        String sql = "INSERT INTO livehouse_application_table (user_id, artist_id, application_date) VALUES (?, ?, NOW())";
+        
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, artistId);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            
+            // インサートが成功した場合、生成されたIDを取得
+            if (rowsAffected > 0) {
+                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1); // 生成されたIDを返す
+                    } else {
+                        throw new SQLException("Creating application failed, no ID obtained.");
+                    }
+                }
+            } else {
+                throw new SQLException("Insert failed, no rows affected.");
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1; // エラー時に-1を返す
+        }
+    }
 
     // Livehouse_applicationの情報を表示するメソッド
     public void printLivehouse_application(Livehouse_application livehouse_application) {

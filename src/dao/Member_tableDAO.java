@@ -146,6 +146,23 @@ public class Member_tableDAO {
         }
         System.out.println("[updateExistingMembers] End");
     }
+    
+ // メンバー数をカウントするメソッド
+    public int countMembersByGroupId(int groupId) {
+        String sql = "SELECT COUNT(*) AS member_count FROM member_table WHERE artist_group_id = ?";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, groupId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("member_count");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0; // エラー時や該当メンバーがいない場合は 0 を返す
+    }
 
     // ResultSetからMemberオブジェクトを作成するヘルパーメソッド
     private Member rs2model(ResultSet rs) throws SQLException {

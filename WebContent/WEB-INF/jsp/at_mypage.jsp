@@ -134,10 +134,17 @@
             memberDetail.innerHTML = `
                 <input type="text" class="profile-card" name="member_name[]" placeholder="氏名" required><br>
                 <input type="text" class="profile-card p-c-sub" name="member_role[]" placeholder="役割 例: ボーカル" required><br>
+                <button type="button" class="remove-member-button" onclick="removeMember(this)">閉じる</button>
             `;
 
             container.appendChild(memberDetail);
         }
+
+        function removeMember(button) {
+            const memberDetail = button.parentElement; // ボタンの親要素（メンバーフィールド全体）を取得
+            memberDetail.remove(); // フィールドを削除
+        }
+
     </script>
 </body>
 </html>

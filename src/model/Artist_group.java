@@ -13,6 +13,7 @@ public class Artist_group {
     private int band_years;
     private LocalDate create_date;
     private LocalDate update_date;
+    private boolean at_true_false;
 
     public int getId() {
         return id;
@@ -89,12 +90,20 @@ public class Artist_group {
     public String getgroup_genre() {  
         return group_genre;
     }
+    
 
+    public boolean isAt_true_false() {
+		return at_true_false;
+	}
 
-    // picture_image_movieフィールドとJanruフィールドを含むコンストラクタ
+	public void setAt_true_false(boolean at_true_false) {
+		this.at_true_false = at_true_false;
+	}
+
+	// picture_image_movieフィールドとJanruフィールドを含むコンストラクタ
     public Artist_group(int id, int user_id, String account_name, String picture_image_movie,
                         String group_genre, int band_years, LocalDate create_date,
-                        LocalDate update_date, String rating_star) {
+                        LocalDate update_date, String rating_star, boolean at_true_false) {
         super();
         this.id = id;
         this.user_id = user_id;
@@ -105,5 +114,6 @@ public class Artist_group {
         this.create_date = create_date;
         this.update_date = update_date;
         this.rating_star = rating_star;
+        this.at_true_false = at_true_false;
     }
 }
