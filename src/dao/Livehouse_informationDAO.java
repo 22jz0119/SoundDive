@@ -125,37 +125,6 @@ public class Livehouse_informationDAO {
         }
         return false;
     }
-    
-    public int createApplication(int userId, int artistId) {
-        String insertSql = "INSERT INTO livehouse_application_table (user_id, artist_id, application_date) VALUES (?, ?, NOW())";
-        String retrieveIdSql = "SELECT LAST_INSERT_ID()";
-
-        try (Connection conn = dbManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(insertSql);
-             PreparedStatement idStmt = conn.prepareStatement(retrieveIdSql)) {
-
-            // INSERT クエリのパラメータをセット
-            pstmt.setInt(1, userId);
-            pstmt.setInt(2, artistId);
-
-            // クエリ実行
-            int rowsAffected = pstmt.executeUpdate();
-
-            if (rowsAffected > 0) {
-                // LAST_INSERT_ID を取得
-                try (ResultSet rs = idStmt.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getInt(1); // 最後に挿入された ID を返す
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("[ERROR] Failed to create livehouse application.");
-            e.printStackTrace();
-        }
-
-        return -1; // 作成失敗時
-    }
 
     // ユーティリティ: ResultSetをLivehouse_informationオブジェクトにマッピング
     private Livehouse_information mapResultSetToLivehouse(ResultSet rs) throws SQLException {
