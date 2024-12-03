@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,32 +26,39 @@ public class Livehouse_informationDAO {
         e.printStackTrace();
     }
 
-    // ライブハウス情報を挿入する
+    // ライブハウス情報を挿入する 昆
     public boolean insertLivehouse_information(Livehouse_information livehouse_information) {
-        String sql = "INSERT INTO livehouse_information (id, owner_name, equipment_information, " +
+        String sql = "INSERT INTO livehouse_information (owner_name, equipment_information, " +
                      "livehouse_explanation_information, livehouse_detailed_information, " +
                      "livehouse_name, live_address, live_tel_number, create_date, update_date) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = dbManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            pstmt.setInt(1, livehouse_information.getId());
-            pstmt.setString(2, livehouse_information.getOwner_name());
-            pstmt.setString(3, livehouse_information.getEquipment_information());
-            pstmt.setString(4, livehouse_information.getLivehouse_explanation_information());
-            pstmt.setString(5, livehouse_information.getLivehouse_detailed_information());
-            pstmt.setString(6, livehouse_information.getLivehouse_name());
-            pstmt.setString(7, livehouse_information.getLive_address());
-            pstmt.setString(8, livehouse_information.getLive_tel_number());
-            pstmt.setTimestamp(9, new java.sql.Timestamp(livehouse_information.getCreateDate().getTime()));
-            pstmt.setTimestamp(10, new java.sql.Timestamp(livehouse_information.getUpdateDate().getTime()));
+            pstmt.setString(1, livehouse_information.getOwner_name());
+            pstmt.setString(2, livehouse_information.getEquipment_information());
+            pstmt.setString(3, livehouse_information.getLivehouse_explanation_information());
+            pstmt.setString(4, livehouse_information.getLivehouse_detailed_information());
+            pstmt.setString(5, livehouse_information.getLivehouse_name());
+            pstmt.setString(6, livehouse_information.getLive_address());
+            pstmt.setString(7, livehouse_information.getLive_tel_number());
+            pstmt.setTimestamp(8, new java.sql.Timestamp(livehouse_information.getCreateDate().getTime()));
+            pstmt.setTimestamp(9, new java.sql.Timestamp(livehouse_information.getUpdateDate().getTime()));
 
-            return pstmt.executeUpdate() > 0;
+            int rows = pstmt.executeUpdate();
+            if (rows > 0) {
+                ResultSet rs = pstmt.getGeneratedKeys();
+                if (rs.next()) {
+                    livehouse_information.setId(rs.getInt(1));
+                }
+                return true;
+            }
         } catch (SQLException e) {
             handleSQLException(e, "Error inserting Livehouse_information");
         }
         return false;
     }
+
 
     
     // IDでライブハウス情報を取得する

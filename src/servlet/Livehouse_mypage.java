@@ -48,24 +48,26 @@ public class Livehouse_mypage extends HttpServlet {
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 入力値の取得
         String livehouseName = request.getParameter("livehouseName");
         String ownerName = request.getParameter("ownerName");
-        String equipmentInfo = request.getParameter("equipmentInfo");
-        String explanation = request.getParameter("message");
-        String detailedInfo = request.getParameter("detailedMessage");
+        String liveTelNumber = request.getParameter("liveTelNumber");
+        String livehouseExplanation = request.getParameter("livehouseExplanation");
+        String livehouseDetailed = request.getParameter("livehouseDetailed");
+        String equipmentInformation = request.getParameter("equipmentInformation");
 
         // モデルオブジェクトを作成
         Livehouse_information livehouse = new Livehouse_information(
             0, // IDは自動生成される場合は0またはnullを指定
             ownerName,
-            equipmentInfo,
-            explanation,
-            detailedInfo,
+            equipmentInformation,
+            livehouseExplanation,
+            livehouseDetailed,
             livehouseName,
             "未入力", // 必要に応じてフォームから取得
-            "未入力", // 必要に応じてフォームから取得
+            liveTelNumber,
             new Date(), // 現在時刻
             new Date()  // 現在時刻
         );
@@ -75,11 +77,20 @@ public class Livehouse_mypage extends HttpServlet {
 
         // 結果に応じた処理
         if (isInserted) {
-            response.sendRedirect("/WEB-INF/jsp/livehouse/livehouse_home.jsp");
+            // 保存後のデータを取得して再表示
+            Livehouse_information savedLivehouse = dao.getLivehouse_informationById(livehouse.getId());
+            request.setAttribute("livehouse", savedLivehouse);
+
+            // JSPにフォワード
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp");
+            dispatcher.forward(request, response);
         } else {
+            // エラーメッセージを設定して再表示
             request.setAttribute("errorMessage", "データの保存に失敗しました。");
             RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp");
             dispatcher.forward(request, response);
         }
     }
+
+
 }

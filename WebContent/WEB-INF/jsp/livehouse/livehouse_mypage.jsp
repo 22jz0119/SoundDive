@@ -26,6 +26,7 @@
         </div>
     </header>
     <main>
+    <form action="<%= request.getContextPath() %>/WEB-INF/jsp/livehouse/livehouse_mypage.jsp" method="POST">
         <div class="profile-container">
             <label class="profile-icon" for="fileInput">
                 <!-- デフォルトのテキストを中央に表示 -->
@@ -58,40 +59,40 @@
             <ul class="livehouse_mypage-inputfield-ul1">
                 <li class="livehouse_mypage-inputfield-livehouse-name">
                     <form>
-                        <label for="username" class="livehouse_mypage-guide-livehousename">ライブハウス名</label>
-                        <input type="text" id="livehouse-mypage-livehousename" name="textbox">
+                        <label for="livehouseName" class="livehouse_mypage-guide-livehousename">ライブハウス名</label>
+                        <input type="text" id="livehouseName" name="livehouseName">
                     </form>
                 </li>
                 <li class="livehouse_mypage-inputfield-onername">
                     <form>  
-                        <label for="username" class="livehouse_mypage-guide-onername">オーナー名</label>       
-                        <input type="text" id="livehouse-mypage-onername" name="textbox">
+                        <label for="ownerName" class="livehouse_mypage-guide-onername">オーナー名</label>       
+                        <input type="text" id="ownerName" name="ownerName">
                     </form>
                 </li>
                 <li class="livehouse_mypage-inputfield-tel">
                     <form>
-                        <label for="username" class="livehouse_mypage-guide-tel">電話番号</label>
-                        <input type="tel" id="livehouse-mypage-tel" name="phone" required>
+                        <label for="liveTelNumber" class="livehouse_mypage-guide-tel">電話番号</label>
+                        <input type="tel" id="liveTelNumber" name="liveTelNumber" required>
                     </form>
                 </li>
             </ul>
         </div>
-        <div class="livehouse-mypage-livehouseDetail">
+        <div class="livehouseDetailed">
             <form>
                 <label for="livehouse-mp-livehouse-detail">ライブハウス説明情報</label>
-                <input type="text" id="livehouse-mypage-livehousename" name="textbox" style="width: 500px; height: 150px;">
+                <input type="text" id="livehouseDetailed" name="livehouseDetailed" style="width: 500px; height: 150px;">
             </form>
         </div>
         <div class="livehouse-mypage-livehouseDiscription"> 
             <form>
-                <label for="livehouse-mp-livehouse-description">ライブハウス詳細情報</label>
-                <input type="text" id="livehouse-mypage-livehousename" name="textbox" style="width: 500px; height: 150px;">
+                <label for="livehouseDetailed">ライブハウス詳細情報</label>
+                <input type="text" id="livehouseDetailed" name="livehouseDetailed" style="width: 500px; height: 150px;">
             </form>
         </div>
         <div class="livehouse-mypage-gearinfo">
             <form>
-                <label for="livehouse-mp-gearinfo">機材情報</label>
-                <input type="text" id="livehouse-mypage-onername" name="textbox" style="width: 500px; height: 150px;">
+                <label for="equipmentInformation">機材情報</label>
+                <input type="text" id="equipmentInformation" name="equipmentInformation" style="width: 500px; height: 150px;">
             </form>
         </div>
         <div>
@@ -130,8 +131,9 @@
             }
         </script>
         <div class="live-mypage-keep">
-            <button class="keep-btn">登録</button>
+            <button type= submit="keep-btn">登録</button>
         </div>
+        </form>
     </main>
 </body>
 </html>
