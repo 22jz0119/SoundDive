@@ -52,6 +52,7 @@ public class Livehouse_informationDAO {
         return false;
     }
 
+    
     // IDでライブハウス情報を取得する
     public Livehouse_information getLivehouse_informationById(int id) {
         String sql = "SELECT * FROM livehouse_information WHERE id = ?";
@@ -109,6 +110,7 @@ public class Livehouse_informationDAO {
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+        	
             pstmt.setString(1, livehouse_information.getOwner_name());
             pstmt.setString(2, livehouse_information.getEquipment_information());
             pstmt.setString(3, livehouse_information.getLivehouse_explanation_information());

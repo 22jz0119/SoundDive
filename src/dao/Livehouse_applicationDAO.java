@@ -79,7 +79,7 @@ public class Livehouse_applicationDAO {
                 Date update_date = rs.getDate("update_date");
 
                 System.err.println("Fetched data: livehouse_information_id=" + livehouse_information_id +
-                                   ", user_id=" + user_id + ", date_time=" + date_time +
+                                   ", user_id=" + user_id + ", date_time=" + datetime +
                                    ", true_false=" + true_false + ", start_time=" + start_time +
                                    ", finish_time=" + finish_time + ", create_date=" + create_date +
                                    ", update_date=" + update_date);
