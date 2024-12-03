@@ -45,6 +45,7 @@ public class Livehouse_mypage extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
     }
 
+    
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
