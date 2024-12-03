@@ -1,6 +1,5 @@
 package dao;
 
-import java.beans.Statement;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -404,7 +403,6 @@ public class Livehouse_applicationDAO {
         }
         return null;
     }
-<<<<<<< HEAD
     public Map<Integer, Boolean> getDailyReservationStatus(Livehouse_information livehouse, int year, int month) {
         int livehouseInformationId = livehouse.getId();  // Livehouse_informationからIDを取得
 
@@ -437,8 +435,6 @@ public class Livehouse_applicationDAO {
 
         return reservationStatus;
     }
-    
-=======
     
     
     //カレンダー申請件数表示
@@ -530,7 +526,6 @@ public class Livehouse_applicationDAO {
             return -1; // エラー時に-1を返す
         }
     }
->>>>>>> branch 'main' of https://github.com/22jz0119/SoundDive.git
 
     // Livehouse_applicationの情報を表示するメソッド
     public void printLivehouse_application(Livehouse_application livehouse_application) {
@@ -549,16 +544,4 @@ public class Livehouse_applicationDAO {
         }
     }
     
-<<<<<<< HEAD
-    
-
-    
-   
-
-
-
-    
-    
-=======
->>>>>>> branch 'main' of https://github.com/22jz0119/SoundDive.git
 }
