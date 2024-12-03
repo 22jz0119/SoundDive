@@ -79,7 +79,7 @@ public class Livehouse_applicationDAO {
                 Date update_date = rs.getDate("update_date");
 
                 System.err.println("Fetched data: livehouse_information_id=" + livehouse_information_id +
-                                   ", user_id=" + user_id + ", date_time=" + date_time +
+                                   ", user_id=" + user_id + ", date_time=" + datetime +
                                    ", true_false=" + true_false + ", start_time=" + start_time +
                                    ", finish_time=" + finish_time + ", create_date=" + create_date +
                                    ", update_date=" + update_date);
@@ -245,9 +245,6 @@ public class Livehouse_applicationDAO {
         return members;
     }
 
-
-
-
  // 指定されたIDで申請の詳細を取得するメソッド
     public LivehouseApplicationWithGroup getApplicationDetailsById(int applicationId) {
         String sql = "SELECT " +
@@ -403,10 +400,7 @@ public class Livehouse_applicationDAO {
         }
         return null;
     }
-<<<<<<< HEAD
 
-=======
->>>>>>> branch 'main' of https://github.com/22jz0119/SoundDive.git
     public Map<Integer, Boolean> getDailyReservationStatus(Livehouse_information livehouse, int year, int month) {
         int livehouseInformationId = livehouse.getId();  // Livehouse_informationからIDを取得
 
@@ -440,12 +434,7 @@ public class Livehouse_applicationDAO {
         return reservationStatus;
     }
     
-<<<<<<< HEAD
 
-    
-=======
->>>>>>> branch 'main' of https://github.com/22jz0119/SoundDive.git
-    
     //カレンダー申請件数表示
     public Map<String, Integer> getReservationCountsForMonth(int year, int month) throws SQLException {
         String query = "SELECT DATE_FORMAT(date_time, '%Y-%m-%d') AS date, COUNT(*) AS count " +
@@ -465,10 +454,6 @@ public class Livehouse_applicationDAO {
             return result;
         }
     }
-    
-    
-    
-
         // `true_false`を更新するメソッド.
     
     public String updateTrueFalse(int applicationId, int trueFalseValue) {
@@ -501,10 +486,6 @@ public class Livehouse_applicationDAO {
             return "error";
         }
     }
-
-        
-        
-
 
     public int createApplication(int userId, int artistId) {
         String sql = "INSERT INTO livehouse_application_table (user_id, artist_id, application_date) VALUES (?, ?, NOW())";
@@ -552,5 +533,4 @@ public class Livehouse_applicationDAO {
             System.out.println("該当するライブハウス申請情報が見つかりませんでした。");
         }
     }
-    
 }

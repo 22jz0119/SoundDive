@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import dao.Artist_groupDAO;
 import dao.DBManager;
+import dao.Livehouse_informationDAO;
 import dao.NoticeDAO;
 import model.Artist_group;
 import model.Notice;
@@ -68,17 +70,23 @@ public class At_Cogig extends HttpServlet {
                     int userId = Integer.parseInt(userIdParam);
                     System.out.println("[DEBUG] Parsed userId: " + userId);
 
+                    // DAO の初期化
+                    DBManager dbManager = DBManager.getInstance();
+                    Livehouse_informationDAO Livehouse_applicationDAO = new Livehouse_informationDAO(dbManager);
+
                     // 対象のアーティストを取得
                     Artist_group artist = artistGroupDAO.getGroupByUserId(userId);
                     if (artist != null) {
                         System.out.println("[DEBUG] Artist found: " + artist.getAccount_name());
 
                         // ライブハウス申請を作成（申請IDは後で通知に使う）
-                        int livehouseApplicationId = livehouseApplicationDAO.createApplication(userId, artist.getId());
+                        int livehouseApplicationId = Livehouse_applicationDAO.createApplication(userId, artist.getId());
 
                         // 通知を作成して挿入（まだlivehouse_application_idはnull）
                         String message = artist.getAccount_name() + " から対バン申請がありました。";
-                        Notice notice = new Notice(0, null, null, null, message, false); // `livehouse_application_id` はまだnull
+                        LocalDate now = LocalDate.now();
+                        Notice notice = new Notice(0, livehouseApplicationId, now, now, message, false); // `livehouse_application_id` を設定
+
                         boolean success = noticeDAO.addNotice(notice);
 
                         if (success) {
@@ -119,4 +127,5 @@ public class At_Cogig extends HttpServlet {
         // 他のアクションは GET にリダイレクト
         doGet(request, response);
     }
+
 }
