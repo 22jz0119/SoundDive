@@ -91,6 +91,7 @@ public class Livehouse_mypage extends HttpServlet {
             // 成功メッセージを設定
             request.setAttribute("successMessage", "データが正常に保存されました。");
             request.setAttribute("livehouse", livehouse);
+            request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
 
         } else {
             // エラーメッセージを設定
