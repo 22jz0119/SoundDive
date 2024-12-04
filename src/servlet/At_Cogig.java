@@ -1,7 +1,6 @@
 package servlet;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,23 +14,21 @@ import javax.servlet.http.HttpServletResponse;
 import dao.Artist_groupDAO;
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
-import dao.NoticeDAO;
 import model.Artist_group;
-import model.Notice;
 
 @WebServlet("/At_Cogig")
 public class At_Cogig extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private Artist_groupDAO artistGroupDAO;
-    private NoticeDAO noticeDAO;
+    private Livehouse_applicationDAO livehouseApplicationDAO;
 
     @Override
     public void init() throws ServletException {
         super.init();
         DBManager dbManager = DBManager.getInstance();
         artistGroupDAO = Artist_groupDAO.getInstance(dbManager);
-        noticeDAO = NoticeDAO.getInstance(dbManager); // NoticeDAO の初期化を追加
+        livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager); // Livehouse_applicationDAO の初期化を追加
         System.out.println("[DEBUG] At_Cogig Servlet Initialized.");
     }
 
@@ -82,11 +79,6 @@ public class At_Cogig extends HttpServlet {
                     int artistId = Integer.parseInt(applicationIdParam);
                     System.out.println("[DEBUG] Parsed artistId: " + artistId);
 
-                    // DAO初期化
-                    DBManager dbManager = DBManager.getInstance();
-                    Artist_groupDAO artistGroupDAO = Artist_groupDAO.getInstance(dbManager);
-                    Livehouse_applicationDAO livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
-
                     // アーティスト情報を取得
                     Artist_group artist = artistGroupDAO.getGroupById(artistId);
                     if (artist != null) {
@@ -94,51 +86,44 @@ public class At_Cogig extends HttpServlet {
 
                         // ライブハウス申請をデータベースに保存
                         int livehouseApplicationId = livehouseApplicationDAO.createApplication(
-                        	    artist.getUser_id(), // user_id
-                        	    artistId,            // livehouseInformationId
-                        	    null,                // datetime: nullにする
-                        	    false,               // trueFalse
-                        	    null,                // startTime: nullにする
-                        	    null                 // finishTime: nullにする
-                        	);
+                            artist.getUser_id(),           // user_id
+                            artistId,                      // livehouseInformationId
+                            null,                          // datetime: nullの場合
+                            false,                         // trueFalse
+                            null,                          // startTime: nullの場合
+                            null,                          // finishTime: nullの場合
+                            2,                             // cogigOrSolo: 1（例として固定）
+                            artist.getId()                 // artistGroupId
+                        );
 
                         if (livehouseApplicationId > 0) {
                             System.out.println("[DEBUG] Created livehouse application with ID: " + livehouseApplicationId);
 
-                            // 通知を作成
-                            String message = artist.getAccount_name() + " から対バン申請がありました。";
-                            Notice notice = new Notice(0, livehouseApplicationId, LocalDate.now(), LocalDate.now(), message, false);
-
-                            NoticeDAO noticeDAO = NoticeDAO.getInstance(dbManager);
-                            boolean success = noticeDAO.addNotice(notice);
-
-                            if (success) {
-                                System.out.println("[DEBUG] Notice added successfully.");
-                                response.sendRedirect(request.getContextPath() + "/At_Cogig?success=通知を送信しました。");
-                            } else {
-                                System.err.println("[ERROR] Failed to add notice.");
-                                response.sendRedirect(request.getContextPath() + "/At_Cogig?error=通知の送信に失敗しました。");
-                            }
+                            // 成功メッセージをリクエストスコープに追加
+                            request.setAttribute("successMessage", "ライブハウス申請が作成されました。");
                         } else {
                             System.err.println("[ERROR] Failed to create livehouse application.");
-                            response.sendRedirect(request.getContextPath() + "/At_Cogig?error=ライブハウス申請の作成に失敗しました。");
+                            request.setAttribute("errorMessage", "ライブハウス申請の作成に失敗しました。");
                         }
                     } else {
                         System.err.println("[ERROR] Artist not found for id: " + artistId);
-                        response.sendRedirect(request.getContextPath() + "/At_Cogig?error=対象のアーティストが見つかりません。");
+                        request.setAttribute("errorMessage", "対象のアーティストが見つかりません。");
                     }
                 } catch (NumberFormatException e) {
                     System.err.println("[ERROR] Invalid applicationId format: " + applicationIdParam);
-                    response.sendRedirect(request.getContextPath() + "/At_Cogig?error=無効なIDです。");
+                    request.setAttribute("errorMessage", "無効なIDです。");
                 } catch (Exception e) {
                     System.err.println("[ERROR] Exception occurred while processing the request.");
                     e.printStackTrace();
-                    response.sendRedirect(request.getContextPath() + "/At_Cogig?error=処理中にエラーが発生しました。");
+                    request.setAttribute("errorMessage", "処理中にエラーが発生しました。");
                 }
             } else {
                 System.err.println("[ERROR] applicationId is null.");
-                response.sendRedirect(request.getContextPath() + "/At_Cogig?error=IDが指定されていません。");
+                request.setAttribute("errorMessage", "IDが指定されていません。");
             }
+
+            // 現在のページを再表示
+            doGet(request, response);
         } else {
             doGet(request, response);
         }

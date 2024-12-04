@@ -5,7 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -94,7 +94,7 @@ public class Livehouse_applicationDAO {
                     start_time.toLocalDate(),
                     finish_time.toLocalDate(),
                     create_date.toLocalDate(),
-                    update_date.toLocalDate()
+                    update_date.toLocalDate(), user_id, user_id
                 );
             } else {
                 System.err.println("No data found for ID: " + id);
@@ -147,7 +147,7 @@ public class Livehouse_applicationDAO {
                     start_time.toLocalDate(),
                     finish_time.toLocalDate(),
                     create_date.toLocalDate(),
-                    update_date.toLocalDate()
+                    update_date.toLocalDate(), user_id, user_id
                 );
 
                 applications.add(application);
@@ -484,43 +484,68 @@ public class Livehouse_applicationDAO {
     }
     
     //梅島
-    public int createApplication(int userId, int livehouseInformationId, LocalDate datetime, 
-            		boolean trueFalse, LocalDate startTime, LocalDate finishTime) {
-    	String sql = "INSERT INTO livehouse_application_table " +
-    				 "(user_id, livehouse_information_id, datetime, true_false, start_time, finish_time, create_date, update_date) " +
-    				 "VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
+    public int createApplication(int userId, int livehouseInformationId, LocalDateTime date_time, 
+            boolean trueFalse, LocalDateTime startTime, LocalDateTime finishTime, 
+            int cogigOrSolo, int artistGroupId) {
+String sql = "INSERT INTO livehouse_application_table " +
+"(user_id, livehouse_information_id, date_time, true_false, start_time, finish_time, " +
+"cogig_or_solo, artist_group_id, create_date, update_date) " +
+"VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
-    	try (Connection conn = dbManager.getConnection();
-    			PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+try (Connection conn = dbManager.getConnection();
+PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-				// パラメータをセット
-				pstmt.setInt(1, userId);
-				pstmt.setInt(2, livehouseInformationId);
-				pstmt.setDate(3, java.sql.Date.valueOf(datetime));
-				pstmt.setBoolean(4, trueFalse);
-				pstmt.setDate(5, java.sql.Date.valueOf(startTime));
-				pstmt.setDate(6, java.sql.Date.valueOf(finishTime));
+// パラメータをセット
+pstmt.setInt(1, userId);
+pstmt.setInt(2, livehouseInformationId);
 
-				int rowsAffected = pstmt.executeUpdate();
-				
-				// 成功時に生成されたIDを返す
-				if (rowsAffected > 0) {
-					try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-						if (generatedKeys.next()) {
-							return generatedKeys.getInt(1); // 生成されたIDを返す
-						} else {
-							throw new SQLException("Creating application failed, no ID obtained.");
-						}
-					}
-				} else {
-					throw new SQLException("Insert failed, no rows affected.");
-				}
-
-    	} catch (SQLException e) {
-    		e.printStackTrace();
-    		return -1; // エラー時に-1を返す
-    	}
+// datetime の null チェック
+if (date_time != null) {
+pstmt.setTimestamp(3, java.sql.Timestamp.valueOf(date_time)); // LocalDateTime -> java.sql.Timestamp 変換
+} else {
+pstmt.setNull(3, java.sql.Types.TIMESTAMP); // datetimeがnullの場合、NULLを挿入
 }
+
+pstmt.setBoolean(4, trueFalse);
+
+// start_time の null チェック
+if (startTime != null) {
+pstmt.setTimestamp(5, java.sql.Timestamp.valueOf(startTime)); // LocalDateTime -> java.sql.Timestamp 変換
+} else {
+pstmt.setNull(5, java.sql.Types.TIMESTAMP); // start_timeがnullの場合、NULLを挿入
+}
+
+// finish_time の null チェック
+if (finishTime != null) {
+pstmt.setTimestamp(6, java.sql.Timestamp.valueOf(finishTime)); // LocalDateTime -> java.sql.Timestamp 変換
+} else {
+pstmt.setNull(6, java.sql.Types.TIMESTAMP); // finish_timeがnullの場合、NULLを挿入
+}
+
+pstmt.setInt(7, cogigOrSolo); // cogigOrSolo の値をセット
+pstmt.setInt(8, artistGroupId); // artistGroupId の値をセット
+
+int rowsAffected = pstmt.executeUpdate();
+
+// 成功時に生成されたIDを返す
+if (rowsAffected > 0) {
+try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+if (generatedKeys.next()) {
+   return generatedKeys.getInt(1); // 生成されたIDを返す
+} else {
+   throw new SQLException("Creating application failed, no ID obtained.");
+}
+}
+} else {
+throw new SQLException("Insert failed, no rows affected.");
+}
+
+} catch (SQLException e) {
+e.printStackTrace();
+return -1; // エラー時に-1を返す
+}
+}
+
 
     // Livehouse_applicationの情報を表示するメソッド
     public void printLivehouse_application(Livehouse_application livehouse_application) {

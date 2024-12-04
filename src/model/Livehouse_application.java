@@ -6,7 +6,7 @@ public class Livehouse_application {
     private int id;
     private int user_id;
     private int livehouse_information_id;
-    private LocalDate datetime;
+    private LocalDate date_time;
     private boolean true_false;
     private LocalDate start_time;
     private LocalDate finish_time;
@@ -40,11 +40,11 @@ public class Livehouse_application {
     }
 
     public LocalDate getDatetime() {
-        return datetime;
+        return date_time;
     }
 
     public void setDatetime(LocalDate datetime) {
-        this.datetime = datetime;           
+        this.date_time = datetime;           
     }
 
     public boolean isTrueFalse() {
@@ -111,7 +111,7 @@ public class Livehouse_application {
         this.id = id;
         this.user_id = user_id;
         this.livehouse_information_id = livehouse_information_id;
-        this.datetime = datetime;
+        this.date_time = datetime;
         this.true_false = true_false;
         this.start_time = start_time;
         this.finish_time = finish_time;

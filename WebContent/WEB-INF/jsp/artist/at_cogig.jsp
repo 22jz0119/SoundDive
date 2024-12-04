@@ -31,6 +31,14 @@
             <h2 class="artist-co-gig-title-h2">対バンライブ申請</h2>
         </div>
 
+        <!-- 成功・失敗メッセージの表示 -->
+        <c:if test="${not empty successMessage}">
+            <div class="success-message">${successMessage}</div>
+        </c:if>
+        <c:if test="${not empty errorMessage}">
+            <div class="error-message">${errorMessage}</div>
+        </c:if>
+
         <div class="artist-search-form">
 		    <form action="<%= request.getContextPath() %>/At_Cogig" method="get">
 		        <div class="artist-search-box">
@@ -81,5 +89,10 @@
 		    </div>
 		</c:forEach>
 	</div>
+
+    <!-- 次へボタン -->
+    <div class="next-button-container">
+        <a href="<%= request.getContextPath() %>//At-livehouse_search" class="next-button">次へ</a>
+    </div>
 </body>
 </html>

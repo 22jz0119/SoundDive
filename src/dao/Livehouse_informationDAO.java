@@ -235,45 +235,36 @@ public class Livehouse_informationDAO {
             pstmt.setInt(1, userId);
             pstmt.setInt(2, livehouseInformationId);
 
-            // date_time の設定
+            // date_time の null チェック
             if (datetime != null) {
-                pstmt.setDate(3, java.sql.Date.valueOf(datetime));
+                pstmt.setDate(3, java.sql.Date.valueOf(datetime)); // LocalDate -> java.sql.Date への変換
             } else {
-                pstmt.setNull(3, java.sql.Types.NULL);
+                pstmt.setNull(3, java.sql.Types.DATE); // datetimeがnullの場合、NULLを挿入
             }
 
             pstmt.setBoolean(4, trueFalse);
 
-            // start_time の設定
+            // start_time の null チェック
             if (startTime != null) {
-                pstmt.setDate(5, java.sql.Date.valueOf(startTime));
+                pstmt.setDate(5, java.sql.Date.valueOf(startTime)); // LocalDate -> java.sql.Date 変換
             } else {
-                pstmt.setNull(5, java.sql.Types.NULL);
+                pstmt.setNull(5, java.sql.Types.DATE); // start_timeがnullの場合、NULLを挿入
             }
 
-            // finish_time の設定
+            // finish_time の null チェック
             if (finishTime != null) {
-                pstmt.setDate(6, java.sql.Date.valueOf(finishTime));
+                pstmt.setDate(6, java.sql.Date.valueOf(finishTime)); // LocalDate -> java.sql.Date 変換
             } else {
-                pstmt.setNull(6, java.sql.Types.NULL);
+                pstmt.setNull(6, java.sql.Types.DATE); // finish_timeがnullの場合、NULLを挿入
             }
-
-            // デバッグ情報を表示
-            System.out.println("[DEBUG] SQL Parameters:");
-            System.out.println("  userId: " + userId);
-            System.out.println("  livehouseInformationId: " + livehouseInformationId);
-            System.out.println("  datetime: " + datetime);
-            System.out.println("  trueFalse: " + trueFalse);
-            System.out.println("  startTime: " + startTime);
-            System.out.println("  finishTime: " + finishTime);
 
             int rowsAffected = pstmt.executeUpdate();
 
-            // 生成されたキーを取得
+            // インサートが成功した場合、生成されたIDを取得
             if (rowsAffected > 0) {
                 try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        return generatedKeys.getInt(1); // 生成された ID を返す
+                        return generatedKeys.getInt(1); // 生成されたIDを返す
                     } else {
                         throw new SQLException("Creating application failed, no ID obtained.");
                     }
@@ -283,11 +274,12 @@ public class Livehouse_informationDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("[ERROR] Failed to create livehouse application.");
             e.printStackTrace();
-            return -1; // エラー時に -1 を返す
+            return -1; // エラー時に-1を返す
         }
     }
+
+
         	
     // ユーティリティ: ResultSetをLivehouse_informationオブジェクトにマッピング
     private Livehouse_information mapResultSetToLivehouse(ResultSet rs) throws SQLException {
