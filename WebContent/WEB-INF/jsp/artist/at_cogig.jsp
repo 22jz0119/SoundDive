@@ -45,7 +45,7 @@
     </section>
 
     <div class="co-gig-group">
-        <!-- アーティストグループのリストを表示 -->
+        <!-- ユニークなアーティストグループのリストを表示 -->
 		<c:forEach var="artist" items="${artistGroups}">
 		    <div class="co-gig-one">
 		        <form action="<%= request.getContextPath() %>/At_Cogig" method="post">
@@ -81,26 +81,5 @@
 		    </div>
 		</c:forEach>
 	</div>
-
-    <h2 class="co-gig-situation">申請状況</h2>
-    <div class="artist-cogig-result">
-        <!-- 申請状況をリストで表示 -->
-        <c:forEach var="application" items="${applications}">
-            <div class="table-wrapper">
-                <table class="result-table">
-                    <tr class="a">
-                        <th class="b">アーティスト名</th>
-                        <th class="b">状態</th>
-                    </tr>
-                    <tr class="a">
-                        <td class="b">${application.artistName}</td>
-                        <td class="b">${application.status}</td>
-                    </tr>
-                </table>
-            </div>
-        </c:forEach>
-    </div>
-
-    <a href="./artist_livehouse_search.html" class="co-gig-btn">次へ</a>
 </body>
 </html>
