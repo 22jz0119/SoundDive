@@ -6,15 +6,15 @@ public class Livehouse_information {
 
     // フィールド定義
     private int id;
-    private String owner_name;  // 修正されたフィールド名
+    private String owner_name;
     private String equipment_information;
     private String livehouse_explanation_information;
     private String livehouse_detailed_information;
     private String livehouse_name;
     private String live_address;
     private String live_tel_number;
-    private Date createDate;  // java.util.Date
-    private Date updateDate;  // java.util.Date
+    private Date createDate;
+    private Date updateDate;
 
     // コンストラクタ
     public Livehouse_information(int id, String owner_name, String equipment_information,
@@ -32,7 +32,8 @@ public class Livehouse_information {
         this.updateDate = updateDate;
     }
 
-    // ゲッターとセッター
+
+    // GetterとSetter
     public int getId() {
         return id;
     }

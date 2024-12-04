@@ -396,6 +396,7 @@ public class Livehouse_applicationDAO {
         }
         return null;
     }
+
     public Map<Integer, Boolean> getDailyReservationStatus(Livehouse_information livehouse, int year, int month) {
         int livehouseInformationId = livehouse.getId();  // Livehouse_informationからIDを取得
 
@@ -429,6 +430,7 @@ public class Livehouse_applicationDAO {
         return reservationStatus;
     }
     
+
     //カレンダー申請件数表示
     public Map<String, Integer> getReservationCountsForMonth(int year, int month) throws SQLException {
         String query = "SELECT DATE_FORMAT(date_time, '%Y-%m-%d') AS date, COUNT(*) AS count " +
