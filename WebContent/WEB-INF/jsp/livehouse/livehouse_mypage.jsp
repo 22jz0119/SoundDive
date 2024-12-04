@@ -213,6 +213,7 @@
         </script>
     </form>
     
+    
     <!-- エラーメッセージの表示 -->
     <c:if test="${not empty errorMessage}">
         <div class="error-message">
