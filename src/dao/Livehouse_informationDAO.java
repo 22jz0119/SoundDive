@@ -27,40 +27,39 @@ public class Livehouse_informationDAO {
     }
 
     // ライブハウス情報を挿入する 昆
-    public boolean insertLivehouse_information(Livehouse_information livehouse_information) {
+    public boolean insertLivehouse_information(Livehouse_information livehouse) {
         String sql = "INSERT INTO livehouse_information (owner_name, equipment_information, " +
                      "livehouse_explanation_information, livehouse_detailed_information, " +
-                     "livehouse_name, live_address, live_tel_number, create_date, update_date) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     "livehouse_name, live_tel_number, create_date, update_date) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            pstmt.setString(1, livehouse_information.getOwner_name());
-            pstmt.setString(2, livehouse_information.getEquipment_information());
-            pstmt.setString(3, livehouse_information.getLivehouse_explanation_information());
-            pstmt.setString(4, livehouse_information.getLivehouse_detailed_information());
-            pstmt.setString(5, livehouse_information.getLivehouse_name());
-            pstmt.setString(6, livehouse_information.getLive_address());
-            pstmt.setString(7, livehouse_information.getLive_tel_number());
-            pstmt.setTimestamp(8, new java.sql.Timestamp(livehouse_information.getCreateDate().getTime()));
-            pstmt.setTimestamp(9, new java.sql.Timestamp(livehouse_information.getUpdateDate().getTime()));
+            pstmt.setString(1, livehouse.getOwner_name());
+            pstmt.setString(2, livehouse.getEquipment_information());
+            pstmt.setString(3, livehouse.getLivehouse_explanation_information());
+            pstmt.setString(4, livehouse.getLivehouse_detailed_information());
+            pstmt.setString(5, livehouse.getLivehouse_name());
+            pstmt.setString(6, livehouse.getLive_tel_number());
+            pstmt.setTimestamp(7, new java.sql.Timestamp(livehouse.getCreateDate().getTime()));
+            pstmt.setTimestamp(8, new java.sql.Timestamp(livehouse.getUpdateDate().getTime()));
 
             int rows = pstmt.executeUpdate();
             if (rows > 0) {
                 try (ResultSet rs = pstmt.getGeneratedKeys()) {
                     if (rs.next()) {
-                        livehouse_information.setId(rs.getInt(1));
+                        livehouse.setId(rs.getInt(1));
                     }
                 }
                 return true;
             }
         } catch (SQLException e) {
-            handleSQLException(e, "Error inserting Livehouse_information");
-            System.err.println("Failed SQL: " + sql);
+            e.printStackTrace();
+            System.err.println("SQL Error: " + e.getMessage());
         }
-
         return false;
     }
+
 
 
 
