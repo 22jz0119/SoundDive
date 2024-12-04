@@ -94,14 +94,13 @@ public class At_Cogig extends HttpServlet {
 
                         // ライブハウス申請をデータベースに保存
                         int livehouseApplicationId = livehouseApplicationDAO.createApplication(
-                        	    artist.getUser_id(),   // user_id
-                        	    artistId,              // livehouse_information_id
-                        	    LocalDate.now(),       // datetime (現在の日付を設定)
-                        	    false,                 // true_false (未承認)
-                        	    null,                  // start_time
-                        	    null                   // finish_time
+                        	    artist.getUser_id(), // user_id
+                        	    artistId,            // livehouseInformationId
+                        	    null,                // datetime: nullにする
+                        	    false,               // trueFalse
+                        	    null,                // startTime: nullにする
+                        	    null                 // finishTime: nullにする
                         	);
-
 
                         if (livehouseApplicationId > 0) {
                             System.out.println("[DEBUG] Created livehouse application with ID: " + livehouseApplicationId);
