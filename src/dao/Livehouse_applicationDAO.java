@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -378,11 +379,6 @@ public class Livehouse_applicationDAO {
         return reservations;
     }
 
-
-
-
-
-    
  // ユーザーIDからus_nameを取得
     public String getUserNameByUserId(int userId) {
         String sql = "SELECT us_name FROM user WHERE id = ?";
@@ -484,36 +480,45 @@ public class Livehouse_applicationDAO {
             return "error";
         }
     }
+    
+    //梅島
+    public int createApplication(int userId, int livehouseInformationId, LocalDate datetime, 
+            		boolean trueFalse, LocalDate startTime, LocalDate finishTime) {
+    	String sql = "INSERT INTO livehouse_application_table " +
+    				 "(user_id, livehouse_information_id, datetime, true_false, start_time, finish_time, create_date, update_date) " +
+    				 "VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
-    public int createApplication(int userId, int artistId) {
-        String sql = "INSERT INTO livehouse_application_table (user_id, artist_id, application_date) VALUES (?, ?, NOW())";
-        
-        try (Connection conn = dbManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            
-            pstmt.setInt(1, userId);
-            pstmt.setInt(2, artistId);
-            
-            int rowsAffected = pstmt.executeUpdate();
-            
-            // インサートが成功した場合、生成されたIDを取得
-            if (rowsAffected > 0) {
-                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        return generatedKeys.getInt(1); // 生成されたIDを返す
-                    } else {
-                        throw new SQLException("Creating application failed, no ID obtained.");
-                    }
-                }
-            } else {
-                throw new SQLException("Insert failed, no rows affected.");
-            }
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return -1; // エラー時に-1を返す
-        }
-    }
+    	try (Connection conn = dbManager.getConnection();
+    			PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+
+				// パラメータをセット
+				pstmt.setInt(1, userId);
+				pstmt.setInt(2, livehouseInformationId);
+				pstmt.setDate(3, java.sql.Date.valueOf(datetime));
+				pstmt.setBoolean(4, trueFalse);
+				pstmt.setDate(5, java.sql.Date.valueOf(startTime));
+				pstmt.setDate(6, java.sql.Date.valueOf(finishTime));
+
+				int rowsAffected = pstmt.executeUpdate();
+				
+				// 成功時に生成されたIDを返す
+				if (rowsAffected > 0) {
+					try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+						if (generatedKeys.next()) {
+							return generatedKeys.getInt(1); // 生成されたIDを返す
+						} else {
+							throw new SQLException("Creating application failed, no ID obtained.");
+						}
+					}
+				} else {
+					throw new SQLException("Insert failed, no rows affected.");
+				}
+
+    	} catch (SQLException e) {
+    		e.printStackTrace();
+    		return -1; // エラー時に-1を返す
+    	}
+}
 
     // Livehouse_applicationの情報を表示するメソッド
     public void printLivehouse_application(Livehouse_application livehouse_application) {
