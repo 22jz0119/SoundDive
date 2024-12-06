@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import dao.DBManager; // 必要に応じてDBManagerをインポート
 import dao.Livehouse_informationDAO;
@@ -50,9 +51,10 @@ public class Livehouse_mypage extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	request.setCharacterEncoding("UTF-8"); // リクエストの文字エンコーディングを設定
-        response.setContentType("text/html; charset=UTF-8"); // レスポンスの文字セットを設定
-        response.setCharacterEncoding("UTF-8");
+    	request.setCharacterEncoding("UTF-8");
+    	response.setCharacterEncoding("UTF-8");
+    	response.setContentType("text/html; charset=UTF-8");
+
     	
     	// 入力値の取得
         String livehouseName = request.getParameter("livehouseName");
@@ -62,9 +64,24 @@ public class Livehouse_mypage extends HttpServlet {
         String livehouseDetailed = request.getParameter("livehouseDetailed");
         String equipmentInformation = request.getParameter("equipmentInformation");
 
+        // 画像の取得
+        Part naikanImage = request.getPart("naikanImage");
+        Part gaikanImage = request.getPart("gaikanImage");
+
         // 入力値のバリデーション
-        if (livehouseName == null || livehouseName.isEmpty() || ownerName == null || ownerName.isEmpty()) {
-            request.setAttribute("errorMessage", "ライブハウス名またはオーナー名を入力してください。");
+        if (livehouseName == null || livehouseName.isEmpty() ||
+            ownerName == null || ownerName.isEmpty() ||
+            liveTelNumber == null || liveTelNumber.isEmpty() ||
+            livehouseExplanation == null || livehouseExplanation.isEmpty() ||
+            livehouseDetailed == null || livehouseDetailed.isEmpty() ||
+            equipmentInformation == null || equipmentInformation.isEmpty() ||
+            naikanImage == null || naikanImage.getSize() == 0 || // 内観画像のチェック
+            gaikanImage == null || gaikanImage.getSize() == 0) { // 外観画像のチェック
+
+            // エラーメッセージをリクエストスコープに設定
+            request.setAttribute("errorMessage", "すべての必須項目と画像を記入してください。");
+            
+            // JSPにフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
             return;
         }
@@ -90,15 +107,11 @@ public class Livehouse_mypage extends HttpServlet {
         if (isInserted) {
             // 成功メッセージを設定
             request.setAttribute("successMessage", "データが正常に保存されました。");
-            request.setAttribute("livehouse", livehouse);
             request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
-
         } else {
             // エラーメッセージを設定
             request.setAttribute("errorMessage", "データの保存に失敗しました。");
+            request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
         }
-
-        // JSPにフォワード
-        request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
     }
 }
