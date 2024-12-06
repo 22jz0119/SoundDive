@@ -31,6 +31,14 @@
             <h2 class="artist-co-gig-title-h2">対バンライブ申請</h2>
         </div>
 
+        <!-- 成功・失敗メッセージの表示 -->
+        <c:if test="${not empty successMessage}">
+            <div class="success-message">${successMessage}</div>
+        </c:if>
+        <c:if test="${not empty errorMessage}">
+            <div class="error-message">${errorMessage}</div>
+        </c:if>
+
         <div class="artist-search-form">
 		    <form action="<%= request.getContextPath() %>/At_Cogig" method="get">
 		        <div class="artist-search-box">
@@ -45,7 +53,7 @@
     </section>
 
     <div class="co-gig-group">
-        <!-- アーティストグループのリストを表示 -->
+        <!-- ユニークなアーティストグループのリストを表示 -->
 		<c:forEach var="artist" items="${artistGroups}">
 		    <div class="co-gig-one">
 		        <form action="<%= request.getContextPath() %>/At_Cogig" method="post">
@@ -82,25 +90,15 @@
 		</c:forEach>
 	</div>
 
-    <h2 class="co-gig-situation">申請状況</h2>
-    <div class="artist-cogig-result">
-        <!-- 申請状況をリストで表示 -->
-        <c:forEach var="application" items="${applications}">
-            <div class="table-wrapper">
-                <table class="result-table">
-                    <tr class="a">
-                        <th class="b">アーティスト名</th>
-                        <th class="b">状態</th>
-                    </tr>
-                    <tr class="a">
-                        <td class="b">${application.artistName}</td>
-                        <td class="b">${application.status}</td>
-                    </tr>
-                </table>
-            </div>
-        </c:forEach>
+    <!-- 次へボタン -->
+    <div class="next-button-container">
+        <%
+            Integer livehouseApplicationId = (Integer) session.getAttribute("livehouseApplicationId");
+            String nextPageUrl = livehouseApplicationId != null 
+                ? request.getContextPath() + "/At-livehouse_search?applicationId=" + livehouseApplicationId
+                : request.getContextPath() + "/At-livehouse_search";
+        %>
+        <a href="<%= nextPageUrl %>" class="next-button">次へ</a>
     </div>
-
-    <a href="./artist_livehouse_search.html" class="co-gig-btn">次へ</a>
 </body>
 </html>

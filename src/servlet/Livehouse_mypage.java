@@ -3,7 +3,6 @@ package servlet;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -45,29 +44,43 @@ public class Livehouse_mypage extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
     }
 
+    
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 入力値の取得
+    	request.setCharacterEncoding("UTF-8"); // リクエストの文字エンコーディングを設定
+        response.setContentType("text/html; charset=UTF-8"); // レスポンスの文字セットを設定
+        response.setCharacterEncoding("UTF-8");
+    	
+    	// 入力値の取得
         String livehouseName = request.getParameter("livehouseName");
         String ownerName = request.getParameter("ownerName");
-        String equipmentInfo = request.getParameter("equipmentInfo");
-        String explanation = request.getParameter("message");
-        String detailedInfo = request.getParameter("detailedMessage");
+        String liveTelNumber = request.getParameter("liveTelNumber");
+        String livehouseExplanation = request.getParameter("livehouseExplanation");
+        String livehouseDetailed = request.getParameter("livehouseDetailed");
+        String equipmentInformation = request.getParameter("equipmentInformation");
+
+        // 入力値のバリデーション
+        if (livehouseName == null || livehouseName.isEmpty() || ownerName == null || ownerName.isEmpty()) {
+            request.setAttribute("errorMessage", "ライブハウス名またはオーナー名を入力してください。");
+            request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
+            return;
+        }
 
         // モデルオブジェクトを作成
         Livehouse_information livehouse = new Livehouse_information(
-            0, // IDは自動生成される場合は0またはnullを指定
+            0, // 自動生成される場合
             ownerName,
-            equipmentInfo,
-            explanation,
-            detailedInfo,
+            equipmentInformation,
+            livehouseExplanation,
+            livehouseDetailed,
             livehouseName,
-            "未入力", // 必要に応じてフォームから取得
-            "未入力", // 必要に応じてフォームから取得
+            "未入力",
+            liveTelNumber,
             new Date(), // 現在時刻
-            new Date()  // 現在時刻
+            new Date()
         );
 
         // DAOで保存処理
@@ -75,11 +88,17 @@ public class Livehouse_mypage extends HttpServlet {
 
         // 結果に応じた処理
         if (isInserted) {
-            response.sendRedirect("/WEB-INF/jsp/livehouse/livehouse_home.jsp");
+            // 成功メッセージを設定
+            request.setAttribute("successMessage", "データが正常に保存されました。");
+            request.setAttribute("livehouse", livehouse);
+            request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
+
         } else {
+            // エラーメッセージを設定
             request.setAttribute("errorMessage", "データの保存に失敗しました。");
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp");
-            dispatcher.forward(request, response);
         }
+
+        // JSPにフォワード
+        request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
     }
 }

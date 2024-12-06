@@ -121,6 +121,8 @@ public class Artist_groupDAO {
     // user_id に紐づくアーティストグループを取得するメソッド
     public Artist_group getGroupByUserId(int userId) {
         String sql = "SELECT * FROM artist_group WHERE user_id = ?";
+        System.out.println("[DEBUG] Executing SQL: SELECT * FROM artist_group WHERE user_id = ? with user_id=" + userId);
+
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, userId);

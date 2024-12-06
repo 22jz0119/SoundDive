@@ -19,12 +19,10 @@ public class Livehouse_information {
     private Date updateDate;
 
 
-
     // コンストラクタ
     public Livehouse_information(int id, String owner_name, String equipment_information,
-                                  String livehouse_explanation_information, String livehouse_detailed_information,
-                                  String livehouse_name, String live_address, String live_tel_number,
-                                  Date createDate, Date updateDate) {
+            String livehouse_explanation_information, String livehouse_detailed_information, String livehouse_name,
+            String live_address, String live_tel_number, Date createDate, Date updateDate) {
         this.id = id;
         this.owner_name = owner_name;
         this.equipment_information = equipment_information;
@@ -36,6 +34,8 @@ public class Livehouse_information {
         this.createDate = createDate;
         this.updateDate = updateDate;
     }
+
+
 
     // GetterとSetter
     public int getId() {
