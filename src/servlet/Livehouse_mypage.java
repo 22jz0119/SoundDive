@@ -1,9 +1,12 @@
 package servlet;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +21,7 @@ import model.Livehouse_information;
  * Servlet implementation class Livehouse_mypage
  */
 @WebServlet("/Livehouse_mypage")
+@MultipartConfig
 public class Livehouse_mypage extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Livehouse_informationDAO dao; // DAOのインスタンスをクラスメンバとして保持
@@ -67,6 +71,30 @@ public class Livehouse_mypage extends HttpServlet {
         // 画像の取得
         Part naikanImage = request.getPart("naikanImage");
         Part gaikanImage = request.getPart("gaikanImage");
+        
+        // 画像処理
+        Part profileImagePart = request.getPart("picture_image_movie");
+        String pictureImagePath = null;
+
+        if (profileImagePart != null && profileImagePart.getSize() > 0) {
+            String fileName = System.currentTimeMillis() + "_" + profileImagePart.getSubmittedFileName();
+            String uploadDir = getServletContext().getRealPath("/uploads/");
+            File uploadDirFile = new File(uploadDir);
+
+            if (!uploadDirFile.exists()) {
+                uploadDirFile.mkdirs();
+            }
+
+            pictureImagePath = "/uploads/" + fileName;
+
+            try (InputStream inputStream = profileImagePart.getInputStream()) {
+                java.nio.file.Files.copy(inputStream, java.nio.file.Paths.get(uploadDir + File.separator + fileName));
+            } catch (IOException e) {
+                request.setAttribute("errorMessage", "画像アップロード中にエラーが発生しました。");
+                request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
+                return;
+            }
+        }
 
         // 入力値のバリデーション
         if (livehouseName == null || livehouseName.isEmpty() ||

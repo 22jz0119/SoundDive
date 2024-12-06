@@ -30,12 +30,10 @@
             <!-- プロフィール画像 -->
             <div class="profile-container">
 	            <label class="profile-icon" for="fileInput">
-	                <!-- デフォルトのテキストを中央に表示 -->
-	                <span class="placeholder-text" id="placeholderText">アイコンをアップロード</span>
-	                <!-- プロフィール画像がアップロードされた後に表示される -->
-	                <img id="profileImage" src="" alt="">
+	                <span class="placeholder-text">アイコンをアップロード</span>
+	                <img id="profileImage" src="" alt="" style="display: none;">
 	            </label>
-	            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+	            <input type="file" id="fileInput" name="profile_icon" accept="image/*" style="display: none;" onchange="previewImage()">
 	        </div>
 
             <!-- 基本情報入力 -->
@@ -55,6 +53,20 @@
                     </li>
                 </ul>
             </div>
+            <div class="livehouse-mypage-livehouseDetail">
+            
+                <label for="livehouse-mp-livehouse-detail">ライブハウス説明情報</label>
+                <input type="text" id="livehouse-mypage-livehousename" name="livehouse-mypage-livehousename" style="width: 500px; height: 150px; " required>
+        </div>
+        <div class="livehouse-mypage-livehouseDiscription"> 
+            
+                <label for="livehouse-mp-livehouse-description">ライブハウス詳細情報</label>
+                <input type="text" id="livehouse-mypage-livehousename" name="livehouse-mypage-livehousename" style="width: 500px; height: 150px;" required>
+        </div>
+        <div class="livehouse-mypage-gearinfo">
+                <label for="livehouse-mp-gearinfo">機材情報</label>
+                <input type="text" id="livehouse-mypage-onername" name="livehouse-mypage-onername" style="width: 500px; height: 150px;" required>
+        </div>
 
             <!-- 画像アップロード -->
             <figure class="livehouse-picture">
@@ -89,21 +101,21 @@
         <!-- スクリプト -->
         <script>
             // プロフィール画像プレビュー
-            document.getElementById('fileInput').addEventListener('change', function(event) {
-                const input = event.target; // ファイル入力要素を取得
-                if (input.files && input.files[0]) {
-                    const reader = new FileReader(); // FileReaderオブジェクトを作成
-                    reader.onload = function(e) {
-                        const profileImage = document.getElementById('profileImage'); // プレビュー画像要素
-                        const placeholderText = document.getElementById('placeholderText'); // プレースホルダー
-                        
-                        profileImage.src = e.target.result; // プレビュー画像を設定
-                        profileImage.style.display = 'block'; // プレビュー画像を表示
-                        placeholderText.style.display = 'none'; // プレースホルダーを非表示
-                    };
-                    reader.readAsDataURL(input.files[0]); // ファイルをDataURLとして読み込む
-                }
-            });
+	        document.getElementById('fileInput').addEventListener('change', function(event) {
+	            const input = event.target; // ファイル入力要素を取得
+	            if (input.files && input.files[0]) {
+	                const reader = new FileReader(); // FileReaderオブジェクトを作成
+	                reader.onload = function(e) {
+	                    const profileImage = document.getElementById('profileImage'); // プレビュー画像要素
+	                    const placeholderText = document.getElementById('placeholderText'); // プレースホルダー
+	                    
+	                    profileImage.src = e.target.result; // プレビュー画像を設定
+	                    profileImage.style.display = 'block'; // プレビュー画像を表示
+	                    placeholderText.style.display = 'none'; // プレースホルダーを非表示
+	                };
+	                reader.readAsDataURL(input.files[0]); // ファイルをDataURLとして読み込む
+	            }
+	        });
 
             // 汎用的なプレビュー関数
             function previewImage(event, previewId) {
