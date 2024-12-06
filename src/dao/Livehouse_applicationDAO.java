@@ -71,7 +71,7 @@ public class Livehouse_applicationDAO {
                 
                 int livehouse_information_id = rs.getInt("livehouse_information_id");
                 int user_id = rs.getInt("user_id");  // user_id を取得
-                Date datetime = rs.getDate("datetime");
+                Date datetime = rs.getDate("date_time");
                 boolean true_false = rs.getBoolean("true_false");
                 Date start_time = rs.getDate("start_time");
                 Date finish_time = rs.getDate("finish_time");
@@ -121,6 +121,8 @@ public class Livehouse_applicationDAO {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
+            	System.out.println("applications size: " + applications.size());
+
                 System.err.println("Data found for livehouse_information_id: " + livehouseInformationId);
                 
                 int id = rs.getInt("id");

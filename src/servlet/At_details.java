@@ -2,7 +2,6 @@ package servlet;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -51,29 +50,12 @@ public class At_details extends HttpServlet {
                 return;
             }
 
-            // 年と月のパラメータを取得
-            String yearParam = request.getParameter("year");
-            String monthParam = request.getParameter("month");
-
-            int year = (yearParam != null && !yearParam.isEmpty())
-                    ? Integer.parseInt(yearParam)
-                    : java.time.LocalDate.now().getYear();
-            int month = (monthParam != null && !monthParam.isEmpty())
-                    ? Integer.parseInt(monthParam)
-                    : java.time.LocalDate.now().getMonthValue();
-
-            // 日ごとの予約状況を取得
-            Map<Integer, Boolean> reservationStatus = livehouseAppDao.getDailyReservationStatus(livehouseInfo, year, month);
-
-            // 申請詳細情報を取得
+            // ライブハウスIDに関連する申請情報を取得
             List<Livehouse_application> applications = livehouseAppDao.getLivehouse_applicationsByLivehouseId(livehouseId);
 
             // リクエストスコープにデータを保存
             request.setAttribute("livehouse", livehouseInfo);
-            request.setAttribute("reservationStatus", reservationStatus);
             request.setAttribute("applications", applications);
-            request.setAttribute("year", year);
-            request.setAttribute("month", month);
 
             // JSPにフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at_details.jsp").forward(request, response);

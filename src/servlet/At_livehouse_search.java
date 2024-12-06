@@ -27,23 +27,18 @@ public class At_livehouse_search extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
-            // 修正: get() メソッドを使用
-            List<Livehouse_information> livehouseList = livehouseInformationDAO.get();
-
-            if (livehouseList == null || livehouseList.isEmpty()) {
-                System.err.println("ライブハウス情報が見つかりませんでした。");
-            } else {
-                System.err.println("ライブハウス情報が取得されました: " + livehouseList.size() + " 件");
-            }
-
-            request.setAttribute("livehouseList", livehouseList);
-            request.getRequestDispatcher("/WEB-INF/jsp/artist/at-livehouse-search.jsp").forward(request, response);
-        } catch (Exception e) {
-            System.err.println("ライブハウス情報の取得中にエラーが発生しました。");
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ライブハウス情報の取得中にエラーが発生しました。");
-        }
+    	try {
+    	    List<Livehouse_information> livehouseList = livehouseInformationDAO.get();
+    	    if (livehouseList == null || livehouseList.isEmpty()) {
+    	        System.err.println("ライブハウス情報が見つかりませんでした。");
+    	    }
+    	    request.setAttribute("livehouseList", livehouseList);
+    	    request.getRequestDispatcher("/WEB-INF/jsp/artist/at-livehouse-search.jsp").forward(request, response);
+    	} catch (Exception e) {
+    	    System.err.println("エラー: " + e.getMessage()); // エラーメッセージを出力
+    	    e.printStackTrace(); // 詳細なスタックトレース
+    	    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ライブハウス情報の取得中にエラー: " + e.getMessage());
+    	}
     }
 
     @Override

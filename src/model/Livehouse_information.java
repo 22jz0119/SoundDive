@@ -6,40 +6,19 @@ public class Livehouse_information {
 
     // フィールド定義
     private int id;
-<<<<<<< HEAD
+
     private String owner_name;
-=======
-    private String owner_name;  // 修正されたフィールド名
->>>>>>> branch 'main' of https://github.com/22jz0119/SoundDive.git
+
     private String equipment_information;
     private String livehouse_explanation_information;
     private String livehouse_detailed_information;
     private String livehouse_name;
     private String live_address;
     private String live_tel_number;
-<<<<<<< HEAD
     private Date createDate;
     private Date updateDate;
-=======
-    private Date createDate;  // java.util.Date
-    private Date updateDate;  // java.util.Date
 
-    // コンストラクタ
-    public Livehouse_information(int id, String owner_name, String equipment_information,
-            String livehouse_explanation_information, String livehouse_detailed_information, String livehouse_name,
-            String live_address, String live_tel_number, Date createDate, Date updateDate) {
-        this.id = id;
-        this.owner_name = owner_name;
-        this.equipment_information = equipment_information;
-        this.livehouse_explanation_information = livehouse_explanation_information;
-        this.livehouse_detailed_information = livehouse_detailed_information;
-        this.livehouse_name = livehouse_name;
-        this.live_address = live_address;
-        this.live_tel_number = live_tel_number;
-        this.createDate = createDate;
-        this.updateDate = updateDate;
-    }
->>>>>>> branch 'main' of https://github.com/22jz0119/SoundDive.git
+
 
     // コンストラクタ
     public Livehouse_information(int id, String owner_name, String equipment_information,
