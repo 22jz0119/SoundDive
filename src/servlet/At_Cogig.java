@@ -99,6 +99,9 @@ public class At_Cogig extends HttpServlet {
                         if (livehouseApplicationId > 0) {
                             System.out.println("[DEBUG] Created livehouse application with ID: " + livehouseApplicationId);
 
+                            // セッションに保存
+                            request.getSession().setAttribute("livehouseApplicationId", livehouseApplicationId);
+
                             // 成功メッセージをリクエストスコープに追加
                             request.setAttribute("successMessage", "ライブハウス申請が作成されました。");
                         } else {
@@ -128,4 +131,5 @@ public class At_Cogig extends HttpServlet {
             doGet(request, response);
         }
     }
+
 }

@@ -26,6 +26,44 @@ public class Livehouse_informationDAO {
         System.err.println("Error Code: " + e.getErrorCode());
         e.printStackTrace();
     }
+    
+ // ライブハウス情報IDでライブハウス申請情報を取得するメソッド梅島
+    public List<Livehouse_information> getApplicationsByInformationId(int livehouseInformationId) {
+        List<Livehouse_information> applications = new ArrayList<>();
+        String sql = "SELECT * FROM livehouse_application_table WHERE livehouse_information_id = ?";
+        
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, livehouseInformationId);
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("livehouse_information_id");
+                int userId = rs.getInt("user_id");
+                Date dateTime = rs.getTimestamp("date_time");
+                boolean trueFalse = rs.getBoolean("true_false");
+                Date startTime = rs.getTimestamp("start_time");
+                Date finishTime = rs.getTimestamp("finish_time");
+                Date createDate = rs.getTimestamp("create_date");
+                Date updateDate = rs.getTimestamp("update_date");
+                int artistGroupId = rs.getInt("artist_group_id");
+                int cogigOrSolo = rs.getInt("cogig_or_solo");
+
+                Livehouse_information application = new Livehouse_information(
+                    id, null, null, null, null, null, null, null, createDate, updateDate
+                );
+                // 必要に応じて Livehouse_information に追加プロパティを設定する
+                
+                applications.add(application);
+            }
+        } catch (SQLException e) {
+            handleSQLException(e, "Error fetching Livehouse applications by information ID: " + livehouseInformationId);
+        }
+
+        return applications;
+    }
+
 
     // ライブハウス情報を挿入する 昆
     public boolean insertLivehouse_information(Livehouse_information livehouse) {
@@ -61,10 +99,6 @@ public class Livehouse_informationDAO {
         return false;
     }
 
-
-
-
-
     // IDでライブハウス情報を取得するメソッド
     public Livehouse_information getLivehouse_informationById(int id) {
         String sql = "SELECT * FROM livehouse_information WHERE id = ?";
@@ -95,8 +129,6 @@ public class Livehouse_informationDAO {
         return null;
     }
     
-    
-
     // ライブハウス情報を表示するメソッド
     public void printLivehouse_information(Livehouse_information livehouse_information) {
         if (livehouse_information != null) {

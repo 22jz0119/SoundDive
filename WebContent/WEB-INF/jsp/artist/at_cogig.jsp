@@ -92,7 +92,13 @@
 
     <!-- 次へボタン -->
     <div class="next-button-container">
-        <a href="<%= request.getContextPath() %>//At-livehouse_search" class="next-button">次へ</a>
+        <%
+            Integer livehouseApplicationId = (Integer) session.getAttribute("livehouseApplicationId");
+            String nextPageUrl = livehouseApplicationId != null 
+                ? request.getContextPath() + "/At-livehouse_search?applicationId=" + livehouseApplicationId
+                : request.getContextPath() + "/At-livehouse_search";
+        %>
+        <a href="<%= nextPageUrl %>" class="next-button">次へ</a>
     </div>
 </body>
 </html>
