@@ -56,16 +56,16 @@
             <div class="livehouse-mypage-livehouseDetail">
             
                 <label for="livehouse-mp-livehouse-detail">ライブハウス説明情報</label>
-                <input type="text" id="livehouse-mypage-livehousename" name="livehouse-mypage-livehousename" style="width: 500px; height: 150px; " required>
+                <input type="text" id="livehouseExplanation" name="livehouseExplanation" style="width: 500px; height: 150px; " required>
         </div>
         <div class="livehouse-mypage-livehouseDiscription"> 
             
                 <label for="livehouse-mp-livehouse-description">ライブハウス詳細情報</label>
-                <input type="text" id="livehouse-mypage-livehousename" name="livehouse-mypage-livehousename" style="width: 500px; height: 150px;" required>
+                <input type="text" id="livehouseDetailed" name="livehouseDetailed" style="width: 500px; height: 150px;" required>
         </div>
         <div class="livehouse-mypage-gearinfo">
                 <label for="livehouse-mp-gearinfo">機材情報</label>
-                <input type="text" id="livehouse-mypage-onername" name="livehouse-mypage-onername" style="width: 500px; height: 150px;" required>
+                <input type="text" id="equipmentInformation" name="equipmentInformation" style="width: 500px; height: 150px;" required>
         </div>
 
             <!-- 画像アップロード -->

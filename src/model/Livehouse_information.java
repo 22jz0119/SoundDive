@@ -15,6 +15,7 @@ public class Livehouse_information {
     private String livehouse_name;
     private String live_address;
     private String live_tel_number;
+    private String picture_image_naigaikan;
     private Date createDate;
     private Date updateDate;
 
@@ -22,7 +23,7 @@ public class Livehouse_information {
     // コンストラクタ
     public Livehouse_information(int id, String owner_name, String equipment_information,
             String livehouse_explanation_information, String livehouse_detailed_information, String livehouse_name,
-            String live_address, String live_tel_number, Date createDate, Date updateDate) {
+            String live_address, String live_tel_number, String picture_image_naigaikan, Date createDate, Date updateDate) {
         this.id = id;
         this.owner_name = owner_name;
         this.equipment_information = equipment_information;
@@ -31,6 +32,7 @@ public class Livehouse_information {
         this.livehouse_name = livehouse_name;
         this.live_address = live_address;
         this.live_tel_number = live_tel_number;
+        this.picture_image_naigaikan = picture_image_naigaikan ;
         this.createDate = createDate;
         this.updateDate = updateDate;
     }
@@ -100,6 +102,14 @@ public class Livehouse_information {
 
     public void setLive_tel_number(String live_tel_number) {
         this.live_tel_number = live_tel_number;
+    }
+    
+    public String getPicture_image_naigaikan() {
+        return picture_image_naigaikan;
+    }
+    
+    public void setPicture_image_naigaikan(String picture_image_naigaikan) {
+        this.picture_image_naigaikan = picture_image_naigaikan;
     }
 
     public Date getCreateDate() {

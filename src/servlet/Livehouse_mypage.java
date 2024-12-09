@@ -67,13 +67,14 @@ public class Livehouse_mypage extends HttpServlet {
         String livehouseExplanation = request.getParameter("livehouseExplanation");
         String livehouseDetailed = request.getParameter("livehouseDetailed");
         String equipmentInformation = request.getParameter("equipmentInformation");
+        String picture_image_naigaikan = request.getParameter("Picture_image_naigaikan");
 
         // 画像の取得
         Part naikanImage = request.getPart("naikanImage");
         Part gaikanImage = request.getPart("gaikanImage");
         
         // 画像処理
-        Part profileImagePart = request.getPart("picture_image_movie");
+        Part profileImagePart = request.getPart("picture_image_naigaikan");
         String pictureImagePath = null;
 
         if (profileImagePart != null && profileImagePart.getSize() > 0) {
@@ -115,6 +116,7 @@ public class Livehouse_mypage extends HttpServlet {
         }
 
         // モデルオブジェクトを作成
+     // モデルオブジェクトを作成
         Livehouse_information livehouse = new Livehouse_information(
             0, // 自動生成される場合
             ownerName,
@@ -122,11 +124,13 @@ public class Livehouse_mypage extends HttpServlet {
             livehouseExplanation,
             livehouseDetailed,
             livehouseName,
-            "未入力",
-            liveTelNumber,
+            "未入力", // 未入力の場合の住所デフォルト値（文字列型）
+            liveTelNumber, // 数値型
+            pictureImagePath, // アップロードした画像のパス
             new Date(), // 現在時刻
             new Date()
         );
+
 
         // DAOで保存処理
         boolean isInserted = dao.insertLivehouse_information(livehouse);
