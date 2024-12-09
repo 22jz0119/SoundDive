@@ -131,6 +131,7 @@ public class Livehouse_mypage extends HttpServlet {
             new Date()
         );
 
+        
 
         // DAOで保存処理
         boolean isInserted = dao.insertLivehouse_information(livehouse);
