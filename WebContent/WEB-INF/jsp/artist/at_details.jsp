@@ -9,31 +9,63 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
     <title>${livehouse.livehouse_name} - ライブハウス詳細画面</title>
     <style>
-        .calendar-table {
+        .calendar-container {
             width: 100%;
-            border-collapse: collapse;
+            padding: 20px;
         }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-header button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+        }
+
         .calendar-cell {
-            width: 14%;
-            height: 80px;
-            text-align: center;
-            vertical-align: middle;
+            width: 100%;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             border: 1px solid #ddd;
+            background-color: #f9f9f9;
         }
-        .calendar-day {
-            position: relative;
+
+        .calendar-cell.disabled {
+            background-color: #eaeaea;
+            pointer-events: none;
         }
-        .status {
+
+        .calendar-cell a {
+            text-decoration: none;
+            font-size: 1.5em;
+            color: black;
+        }
+
+        .calendar-cell .status {
+            font-size: 1.2em;
             position: absolute;
             bottom: 5px;
             width: 100%;
             text-align: center;
-            font-size: 18px;
         }
-        .status.x {
+
+        .calendar-cell .status.reserved {
             color: red;
         }
-        .status.o {
+
+        .calendar-cell .status.available {
             color: green;
         }
     </style>
@@ -93,6 +125,7 @@
         </section>
 
         <!-- カレンダーと空き状況 -->
+       
         <section class="calendar-section">
             <div>
             <h2 class="OpenSpots-Reserve">空き状況・予約</h2>
@@ -100,16 +133,22 @@
             <p class="Notes-or-Cautions">※誰も予約していない〇
                 ※確定していないが予約者多数△</p>
         </div>
-
-        <div class="a-t-detail-calendar-containar">
-            <button id="prev-month" type="button">前の月</button>
-            <button id="next-month" type="button">次の月</button>
-        </div>
-        <div id="calendar-container"></div>
-    </main>
-
-    <script src="/assets/js/A-t-Description.js"></script> <!-- JavaScriptファイルをリンク -->
+		<section class="calendar-section">
+            <div>
+                <h2 class="OpenSpots-Reserve">空き状況・予約</h2>
+                <p class="OpenSpots-Reserve-detile">空いてる日にちを選択して、予約に進んでください</p>
+                <p class="Notes-or-Cautions">※誰も予約していない〇 ※確定していないが予約者多数△</p>
+            </div>
+            <div class="custom-calendar-container">
+                <div class="custom-calendar-header">
+                    <button id="prev-month-btn">前の月</button>
+                    <h2 id="current-month-label"></h2>
+                    <button id="next-month-btn">次の月</button>
+                </div>
+                <div class="custom-calendar-grid" id="custom-calendar"></div>
+            </div>
         </section>
+<<<<<<< HEAD
     </main>
 
     <!-- サーバーから渡された予約状況を JavaScript に埋め込む -->
@@ -122,5 +161,65 @@
     <!-- カレンダー用JavaScript -->
     <script src="<%= request.getContextPath() %>/assets/js/at_calendar.js"></script>
 
+<!-- サーブレットから渡されたLivehouse_applicationデータを使用 -->
+	    <script>
+	        const applications = ${applications};
+	
+	        // 予約データを日付ベースでマッピング
+	        const reservationData = {};
+	        applications.forEach(application => {
+	            const date = new Date(application.date_time); // datetimeを取得
+	            const day = date.getDate();
+	            reservationData[day] = application.true_false; // true_falseの状態を日付に紐づけ
+	        });
+	    </script>
+        <!-- JavaScriptファイルの読み込み -->
+        <script src="<%= request.getContextPath() %>/assets/js/A-t-Description.js"></script>
+        
+		<c:choose>
+        <c:when test="${not empty applications}">
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ライブハウス情報ID</th>
+                        <th>ユーザーID</th>
+                        <th>申請日時</th>
+                        <th>予約状態</th>
+                        <th>開始時間</th>
+                        <th>終了時間</th>
+                        <th>作成日時</th>
+                        <th>更新日時</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="application" items="${applications}">
+                        <tr>
+                            <td>${application.id}</td>
+                            <td>${application.livehouse_information_id}</td>
+                            <td>${application.user_id}</td>
+                            <td>${application.datetime}</td>
+                            <td>${application.trueFalse ? '予約済み' : '空き'}</td>
+                            <td>${application.start_time}</td>
+                            <td>${application.finish_time}</td>
+                            <td>${application.create_date}</td>
+                            <td>${application.update_date}</td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </c:when>
+        <c:otherwise>
+            <p>現在、このライブハウスには申請がありません。</p>
+        </c:otherwise>
+    </c:choose>
+    	<
+   		<c:forEach var="application" items="${applications}">
+    		<p>${application.datetime} - ${application.trueFalse}</p>
+		</c:forEach>
+
+	</main>
+		
+>>>>>>> branch 'main' of https://github.com/22jz0119/SoundDive.git
 </body>
 </html>

@@ -68,6 +68,7 @@ public class At_details extends HttpServlet {
             int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
 
             // 日ごとの予約状況を取得
+            // ライブハウスIDに関連する申請情報を取得
             List<Livehouse_application> applications = livehouseAppDao.getLivehouse_applicationsByLivehouseId(livehouseId);
             Map<Integer, String> reservationStatus = new HashMap<>();
 
@@ -98,6 +99,7 @@ public class At_details extends HttpServlet {
             request.setAttribute("daysInMonth", daysInMonth);
             request.setAttribute("year", year);
             request.setAttribute("month", month);
+            request.setAttribute("applications", applications);
 
             // JSPにフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at_details.jsp").forward(request, response);
