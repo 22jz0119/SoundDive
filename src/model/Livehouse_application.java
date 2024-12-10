@@ -39,19 +39,19 @@ public class Livehouse_application {
         this.livehouse_information_id = livehouse_information_id;
     }
 
-    public LocalDate getDatetime() {
+    public LocalDate getDate_time() {
         return date_time;
     }
 
-    public void setDatetime(LocalDate datetime) {
-        this.date_time = datetime;           
+    public void setDatetime(LocalDate date_time) {
+        this.date_time = date_time;           
     }
 
-    public boolean isTrueFalse() {
+    public boolean isTrue_False() {
         return true_false;
     }
 
-    public void setTrueFalse(boolean true_false) {
+    public void setTrue_False(boolean true_false) {
         this.true_false = true_false;
     }
 
@@ -105,13 +105,13 @@ public class Livehouse_application {
     }
 
     // コンストラクタにartist_group_idとcogig_or_soloを追加
-    public Livehouse_application(int id, int user_id, int livehouse_information_id, LocalDate datetime, Boolean true_false, LocalDate start_time, LocalDate finish_time, 
+    public Livehouse_application(int id, int user_id, int livehouse_information_id, LocalDate date_time, Boolean true_false, LocalDate start_time, LocalDate finish_time, 
                                  LocalDate create_date, LocalDate update_date, int cogig_or_solo, int artist_group_id) {
         super();
         this.id = id;
         this.user_id = user_id;
         this.livehouse_information_id = livehouse_information_id;
-        this.date_time = datetime;
+        this.date_time = date_time;
         this.true_false = true_false;
         this.start_time = start_time;
         this.finish_time = finish_time;

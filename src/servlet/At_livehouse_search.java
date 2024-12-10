@@ -13,7 +13,7 @@ import dao.DBManager;
 import dao.Livehouse_informationDAO;
 import model.Livehouse_information;
 
-@WebServlet("/At-livehouse_search")
+@WebServlet("/At_livehouse_search")
 public class At_livehouse_search extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Livehouse_informationDAO livehouseInformationDAO;
@@ -28,7 +28,23 @@ public class At_livehouse_search extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            // 修正: get() メソッドを使用
+            // クエリパラメータで送信された userId を取得
+            String userIdParam = request.getParameter("userId");
+            Integer userId = null;
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try {
+                    userId = Integer.parseInt(userIdParam);
+                    System.out.println("[DEBUG] Received userId: " + userId);
+                } catch (NumberFormatException e) {
+                    System.err.println("[ERROR] Invalid userId format: " + userIdParam);
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な userId 形式です。");
+                    return;
+                }
+            } else {
+                System.err.println("[WARN] userId が指定されていません。");
+            }
+
+            // 修正: get() メソッドを使用してライブハウス情報を取得
             List<Livehouse_information> livehouseList = livehouseInformationDAO.get();
 
             if (livehouseList == null || livehouseList.isEmpty()) {
@@ -37,8 +53,18 @@ public class At_livehouse_search extends HttpServlet {
                 System.err.println("ライブハウス情報が取得されました: " + livehouseList.size() + " 件");
             }
 
+            // userId をリクエストスコープに保存（次の画面に渡すため）
+            if (userId != null) {
+                request.setAttribute("userId", userId);
+            }
+
+            // ライブハウス情報をリクエストスコープに保存
             request.setAttribute("livehouseList", livehouseList);
+
+
+            // JSPにフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at-livehouse-search.jsp").forward(request, response);
+
         } catch (Exception e) {
             System.err.println("ライブハウス情報の取得中にエラーが発生しました。");
             e.printStackTrace();
@@ -46,10 +72,26 @@ public class At_livehouse_search extends HttpServlet {
         }
     }
 
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             request.setCharacterEncoding("UTF-8");
+
+            // クエリパラメータで送信された userId を取得
+            String userIdParam = request.getParameter("userId");
+            Integer userId = null;
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try {
+                    userId = Integer.parseInt(userIdParam);
+                    System.out.println("[DEBUG] Received userId: " + userId);
+                } catch (NumberFormatException e) {
+                    System.err.println("[ERROR] Invalid userId format: " + userIdParam);
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な userId 形式です。");
+                    return;
+                }
+            }
+
             String searchQuery = request.getParameter("q");
             System.err.println("検索クエリ: " + searchQuery);
 
@@ -57,6 +99,15 @@ public class At_livehouse_search extends HttpServlet {
             List<Livehouse_information> livehouseList = livehouseInformationDAO.searchLivehouses(searchQuery);
 
             request.setAttribute("livehouseList", livehouseList);
+
+            // 次の画面にリダイレクト
+            if (userId != null) {
+                String nextPageUrl = request.getContextPath() + "/At_details?userId=" + userId;
+                System.out.println("[DEBUG] Redirecting to: " + nextPageUrl);
+                response.sendRedirect(nextPageUrl);
+                return;
+            }
+
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at-livehouse-search.jsp").forward(request, response);
         } catch (Exception e) {
             System.err.println("ライブハウス検索中にエラーが発生しました。");
@@ -64,4 +115,5 @@ public class At_livehouse_search extends HttpServlet {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ライブハウス検索中にエラーが発生しました。");
         }
     }
+
 }

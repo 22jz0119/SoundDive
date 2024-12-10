@@ -1,6 +1,8 @@
 package servlet;
 
 import java.io.IOException;
+import java.time.YearMonth;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,16 +64,38 @@ public class At_details extends HttpServlet {
                     ? Integer.parseInt(monthParam)
                     : java.time.LocalDate.now().getMonthValue();
 
-            // 日ごとの予約状況を取得
-            Map<Integer, Boolean> reservationStatus = livehouseAppDao.getDailyReservationStatus(livehouseInfo, year, month);
+            // 指定された年と月の日数を計算
+            int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
 
-            // 申請詳細情報を取得
+            // 日ごとの予約状況を取得
             List<Livehouse_application> applications = livehouseAppDao.getLivehouse_applicationsByLivehouseId(livehouseId);
+            Map<Integer, String> reservationStatus = new HashMap<>();
+
+            // 日付の初期化
+            for (int i = 1; i <= daysInMonth; i++) {
+                reservationStatus.put(i, "〇"); // 初期値は空き（〇）
+            }
+
+            // アプリケーションデータを反映
+            for (Livehouse_application application : applications) {
+                if (application.getDate_time() != null &&
+                        application.getDate_time().getMonthValue() == month &&
+                        application.getDate_time().getYear() == year) {
+                    int day = application.getDate_time().getDayOfMonth();
+                    reservationStatus.put(day, application.isTrue_False() ? "×" : "〇");
+                }
+            }
+
+            // デバッグ用ログを出力
+            System.out.println("[DEBUG] Reservation Status Map: ");
+            reservationStatus.forEach((day, status) -> 
+                System.out.println("Day " + day + ": " + status)
+            );
 
             // リクエストスコープにデータを保存
             request.setAttribute("livehouse", livehouseInfo);
             request.setAttribute("reservationStatus", reservationStatus);
-            request.setAttribute("applications", applications);
+            request.setAttribute("daysInMonth", daysInMonth);
             request.setAttribute("year", year);
             request.setAttribute("month", month);
 
@@ -80,7 +104,7 @@ public class At_details extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ライブハウス情報の取得中にエラーが発生しました。");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "エラーが発生しました。");
         }
     }
 

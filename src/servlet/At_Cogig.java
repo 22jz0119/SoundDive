@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import dao.Artist_groupDAO;
 import dao.DBManager;
@@ -68,6 +69,10 @@ public class At_Cogig extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (!isLoggedIn(request, response)) {
+            return; // ログインしていなければ処理を中断
+        }
+
         String action = request.getParameter("action");
 
         if ("apply".equals(action)) {
@@ -76,8 +81,12 @@ public class At_Cogig extends HttpServlet {
 
             if (applicationIdParam != null) {
                 try {
-                    int artistId = Integer.parseInt(applicationIdParam);
+                    int artistId = Integer.parseInt(applicationIdParam); // 申請先のアーティストID
                     System.out.println("[DEBUG] Parsed artistId: " + artistId);
+
+                    // ログイン中のユーザーIDをセッションから取得
+                    Integer userId = (Integer) request.getSession().getAttribute("userId");
+                    System.out.println("[DEBUG] Logged-in userId: " + userId);
 
                     // アーティスト情報を取得
                     Artist_group artist = artistGroupDAO.getGroupById(artistId);
@@ -85,25 +94,23 @@ public class At_Cogig extends HttpServlet {
                         System.out.println("[DEBUG] Artist found: " + artist.getAccount_name() + " (id: " + artist.getId() + ")");
 
                         // ライブハウス申請をデータベースに保存
-                        int livehouseApplicationId = livehouseApplicationDAO.createApplication(
-                            artist.getUser_id(),           // user_id
-                            artistId,                      // livehouseInformationId
-                            null,                          // datetime: nullの場合
-                            false,                         // trueFalse
-                            null,                          // startTime: nullの場合
-                            null,                          // finishTime: nullの場合
-                            2,                             // cogigOrSolo: 1（例として固定）
-                            artist.getId()                 // artistGroupId
+                        int applicationId = livehouseApplicationDAO.createApplication(
+                            userId,                  // ログイン中のユーザーID
+                            null,                    // livehouseInformationId
+                            null,                    // datetime: nullの場合
+                            false,                   // trueFalse
+                            null,                    // startTime: nullの場合
+                            null,                    // finishTime: nullの場合
+                            2,                       // cogigOrSolo: 固定値
+                            artist.getId()           // artist_group_id（申請先のアーティストID）
                         );
 
-                        if (livehouseApplicationId > 0) {
-                            System.out.println("[DEBUG] Created livehouse application with ID: " + livehouseApplicationId);
+                        if (applicationId > 0) {
+                            System.out.println("[DEBUG] Created livehouse application with ID: " + applicationId);
 
-                            // セッションに保存
-                            request.getSession().setAttribute("livehouseApplicationId", livehouseApplicationId);
-
-                            // 成功メッセージをリクエストスコープに追加
-                            request.setAttribute("successMessage", "ライブハウス申請が作成されました。");
+                            // 成功したらリダイレクトで userId を渡す
+                            response.sendRedirect(request.getContextPath() + "/At_livehouse_search?userId=" + userId);
+                            return; // 処理を終了
                         } else {
                             System.err.println("[ERROR] Failed to create livehouse application.");
                             request.setAttribute("errorMessage", "ライブハウス申請の作成に失敗しました。");
@@ -124,12 +131,30 @@ public class At_Cogig extends HttpServlet {
                 System.err.println("[ERROR] applicationId is null.");
                 request.setAttribute("errorMessage", "IDが指定されていません。");
             }
-
-            // 現在のページを再表示
-            doGet(request, response);
-        } else {
-            doGet(request, response);
         }
+
+        // 現在のページを再表示
+        doGet(request, response);
     }
 
+    /**
+     * ログイン状態をチェックする共通メソッド
+     */
+    private boolean isLoggedIn(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        HttpSession session = request.getSession(false); // セッションが存在するか確認
+        if (session == null) {
+            System.err.println("[ERROR] No session found. Redirecting to top page.");
+            response.sendRedirect(request.getContextPath() + "/Top"); // セッションがない場合はログインページへ
+            return false;
+        }
+
+        Integer userId = (Integer) session.getAttribute("userId"); // セッションから userId を取得
+        if (userId == null) {
+            System.err.println("[ERROR] User is not logged in. Redirecting to top page.");
+            response.sendRedirect(request.getContextPath() + "/Top"); // ログインしていない場合はトップページへリダイレクト
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -98,7 +98,7 @@
                 ? request.getContextPath() + "/At-livehouse_search?applicationId=" + livehouseApplicationId
                 : request.getContextPath() + "/At-livehouse_search";
         %>
-        <a href="<%= nextPageUrl %>" class="next-button">次へ</a>
+        <a href="<%= nextPageUrl %>" class="co-gig-btn">次へ</a>
     </div>
 </body>
 </html>
