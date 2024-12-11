@@ -33,7 +33,7 @@
 	                <span class="placeholder-text">アイコンをアップロード</span>
 	                <img id="profileImage" src="" alt="" style="display: none;">
 	            </label>
-	            <input type="file" id="fileInput" name="profile_icon" accept="image/*" style="display: none;" onchange="previewImage()">
+	            <input type="file" id="fileInput" name="picture_image_naigaikan" accept="image/*" style="display: none;" onchange="previewImage()">
 	        </div>
 
             <!-- 基本情報入力 -->
