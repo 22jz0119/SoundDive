@@ -152,6 +152,8 @@ public class Livehouse_informationDAO {
 
         return list;
     }
+    
+    
 
     
     
@@ -192,8 +194,6 @@ public class Livehouse_informationDAO {
 
         return livehouses;
     }
-    
-    
 
     
     // データ削除
