@@ -1,5 +1,9 @@
 function generateCalendar() {
     console.log("[DEBUG] generateCalendar function called");
+	console.log("Reservation Status (Parsed):", reservationStatus);
+	console.log("Days in Month:", daysInMonth);
+	console.log("Year:", year);
+	console.log("Month:", month);
 
     console.log(`[DEBUG] daysInCurrentMonth: ${daysInCurrentMonth}`);
 
