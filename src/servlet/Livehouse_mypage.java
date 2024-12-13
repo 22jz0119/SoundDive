@@ -126,6 +126,7 @@ public class Livehouse_mypage extends HttpServlet {
             return;
         }
 
+        
         // 入力値のバリデーション
         if (livehouseName == null || livehouseName.isEmpty() ||
             ownerName == null || ownerName.isEmpty() ||
