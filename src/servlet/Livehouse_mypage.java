@@ -52,10 +52,10 @@ public class Livehouse_mypage extends HttpServlet {
         }
 
         try {
-            Artist_group userGroup = artistGroupDAO.getGroupByUserId(userId);
+            Artist_group userGroup = Livehouse_informationDAO.getGroupByUserId(userId);
 
             if (userGroup != null) {
-                List<Member> members = memberTableDAO.getMembersByArtistGroupId(userGroup.getId());
+                List<Member> members = Livehouse_informationDAO.getMembersByArtistGroupId(userGroup.getId());
                 request.setAttribute("userGroup", userGroup);
                 request.setAttribute("members", members);
             } else {
@@ -78,6 +78,16 @@ public class Livehouse_mypage extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
+
+        // セッションからuserIdを取得
+        HttpSession session = request.getSession();
+        Integer userId = (Integer) session.getAttribute("userId");
+
+        if (userId == null) {
+            request.setAttribute("errorMessage", "ログインが必要です。");
+            request.getRequestDispatcher("/WEB-INF/jsp/top/top.jsp").forward(request, response);
+            return;
+        }
 
         // 入力値の取得
         String livehouseName = request.getParameter("livehouseName");
@@ -102,22 +112,11 @@ public class Livehouse_mypage extends HttpServlet {
             File uploadDirFile = new File(uploadDir);
             if (!uploadDirFile.exists()) {
                 uploadDirFile.mkdirs();
-                System.out.println("アップロードディレクトリ作成: " + uploadDir);
             }
-            System.out.println("アップロードディレクトリ: " + uploadDir);
 
-            // デバッグログ: Partオブジェクトの確認
-            System.out.println("内観画像 Part: " + (naikanImage != null ? naikanImage.getSubmittedFileName() : "null"));
-            System.out.println("外観画像 Part: " + (gaikanImage != null ? gaikanImage.getSubmittedFileName() : "null"));
-            System.out.println("プロフィール画像 Part: " + (profileImagePart != null ? profileImagePart.getSubmittedFileName() : "null"));
-
-            // 内観画像の保存
+            // 画像の保存
             naikanImagePath = saveImage(naikanImage, uploadDir, "内観");
-
-            // 外観画像の保存
             gaikanImagePath = saveImage(gaikanImage, uploadDir, "外観");
-
-            // プロフィール画像の保存
             pictureImagePath = saveImage(profileImagePart, uploadDir, "プロフィール");
 
             if (naikanImagePath == null || gaikanImagePath == null || pictureImagePath == null) {
@@ -126,8 +125,8 @@ public class Livehouse_mypage extends HttpServlet {
                 return;
             }
         } catch (IOException e) {
-            System.err.println("画像保存失敗: " + e.getMessage());
-            request.setAttribute("errorMessage", "画像のアップロード中にエラーが発生しました。");
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "画像アップロード中にエラーが発生しました。");
             request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
             return;
         }
@@ -146,7 +145,7 @@ public class Livehouse_mypage extends HttpServlet {
 
         // モデルオブジェクトを作成
         Livehouse_information livehouse = new Livehouse_information(
-            0,
+            0,  // id は0で、新規作成
             ownerName,
             equipmentInformation,
             livehouseExplanation,
@@ -159,10 +158,13 @@ public class Livehouse_mypage extends HttpServlet {
             new Date()
         );
 
+        // userIdを紐づける
+        livehouse.setUser_id(userId);
+
         // DAOで保存処理
         boolean isInserted = dao.insertLivehouse_information(livehouse);
 
-     // 結果に応じた処理
+        // 結果に応じた処理
         if (isInserted) {
             // 保存された内容を再取得
             Livehouse_information savedLivehouse = dao.getLivehouse_informationById(livehouse.getId());
@@ -186,19 +188,14 @@ public class Livehouse_mypage extends HttpServlet {
 
             if (!uploadDirFile.exists()) {
                 uploadDirFile.mkdirs();
-                System.out.println(imageType + "画像アップロードディレクトリ作成: " + uploadDir);
             }
 
             String imagePath = uploadDir + File.separator + fileName;
-            System.out.println(imageType + "画像の保存先パス: " + imagePath);
 
             try (InputStream inputStream = imagePart.getInputStream()) {
                 java.nio.file.Files.copy(inputStream, java.nio.file.Paths.get(imagePath));
-                System.out.println(imageType + "画像保存成功: " + fileName);
                 return "/uploads/" + fileName;
             }
-        } else {
-            System.out.println(imageType + "画像未アップロードまたはサイズ0");
         }
         return null;
     }
