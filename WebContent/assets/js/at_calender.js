@@ -19,6 +19,8 @@ function generateCalendar() {
             if ((date === 1 && col < firstDay) || date > daysInCurrentMonth) {
                 td.textContent = ""; // 空白セル
             } else {
+                console.log(`[DEBUG] Generating cell for date: ${date}`);
+
                 const dayDiv = document.createElement("div");
                 dayDiv.classList.add("calendar-day");
                 dayDiv.textContent = date;
@@ -30,7 +32,7 @@ function generateCalendar() {
                 statusDiv.classList.add("status");
                 statusDiv.textContent = status;
 
-                if (date <= daysInCurrentMonth && status === "〇") {
+                if (status === "〇") {
                     td.classList.add("clickable");
                     td.addEventListener("click", () => {
                         const url = `${contextPath}/At_Reservation?year=${currentYear}&month=${currentMonth}&day=${date}&userId=${userId}`;
@@ -45,6 +47,7 @@ function generateCalendar() {
                 td.appendChild(statusDiv);
 
                 date++; // 次の日付
+                console.log(`[DEBUG] Incremented date: ${date}`);
             }
 
             tr.appendChild(td);
