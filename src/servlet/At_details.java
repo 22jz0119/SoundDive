@@ -2,8 +2,6 @@ package servlet;
 
 import java.io.IOException;
 import java.time.YearMonth;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -12,10 +10,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
 import dao.Livehouse_informationDAO;
-import model.Livehouse_application;
 import model.Livehouse_information;
 
 @WebServlet("/At_details")
@@ -41,6 +40,9 @@ public class At_details extends HttpServlet {
                 return;
             }
 
+            // デバッグログ
+            System.out.println("[DEBUG] livehouseId: " + livehouseId);
+
             // DAOの初期化
             DBManager dbManager = DBManager.getInstance();
             Livehouse_informationDAO livehouseInfoDao = new Livehouse_informationDAO(dbManager);
@@ -64,42 +66,29 @@ public class At_details extends HttpServlet {
                     ? Integer.parseInt(monthParam)
                     : java.time.LocalDate.now().getMonthValue();
 
+            // デバッグログ
+            System.out.println("[DEBUG] year: " + year);
+            System.out.println("[DEBUG] month: " + month);
+
             // 指定された年と月の日数を計算
             int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
 
             // 日ごとの予約状況を取得
-            // ライブハウスIDに関連する申請情報を取得
-            List<Livehouse_application> applications = livehouseAppDao.getLivehouse_applicationsByLivehouseId(livehouseId);
-            Map<Integer, String> reservationStatus = new HashMap<>();
+            Map<Integer, String> reservationStatus = livehouseAppDao.getReservationStatusByMonthAndLivehouseId(livehouseId, year, month);
 
-            // 日付の初期化
-            for (int i = 1; i <= daysInMonth; i++) {
-                reservationStatus.put(i, "〇"); // 初期値は空き（〇）
-            }
+            // Gsonを使用してJSONに変換
+            Gson gson = new Gson();
+            String reservationStatusJson = gson.toJson(reservationStatus);
 
-            // アプリケーションデータを反映
-            for (Livehouse_application application : applications) {
-                if (application.getDate_time() != null &&
-                        application.getDate_time().getMonthValue() == month &&
-                        application.getDate_time().getYear() == year) {
-                    int day = application.getDate_time().getDayOfMonth();
-                    reservationStatus.put(day, application.isTrue_False() ? "×" : "〇");
-                }
-            }
+            // デバッグログ
+            System.out.println("[DEBUG] Reservation Status JSON: " + reservationStatusJson);
 
-            // デバッグ用ログを出力
-            System.out.println("[DEBUG] Reservation Status Map: ");
-            reservationStatus.forEach((day, status) -> 
-                System.out.println("Day " + day + ": " + status)
-            );
-
-            // リクエストスコープにデータを保存
+            // JSPにデータを渡す
             request.setAttribute("livehouse", livehouseInfo);
-            request.setAttribute("reservationStatus", reservationStatus);
+            request.setAttribute("reservationStatus", reservationStatusJson);  // JSON形式で渡す
             request.setAttribute("daysInMonth", daysInMonth);
             request.setAttribute("year", year);
             request.setAttribute("month", month);
-            request.setAttribute("applications", applications);
 
             // JSPにフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at_details.jsp").forward(request, response);

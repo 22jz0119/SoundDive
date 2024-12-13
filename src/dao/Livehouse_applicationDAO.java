@@ -339,7 +339,7 @@ public class Livehouse_applicationDAO {
             System.err.println("Error while fetching reservation counts for year: " + year + ", month: " + month);
             e.printStackTrace();
         }
-
+        
         return reservationCounts;
     }
 
@@ -406,17 +406,16 @@ public class Livehouse_applicationDAO {
         return null;
     }
 
-    public Map<Integer, Boolean> getDailyReservationStatus(Livehouse_information livehouse, int year, int month) {
+    public Map<Integer, String> getDailyReservationStatus(Livehouse_information livehouse, int year, int month) {
         int livehouseInformationId = livehouse.getId();  // Livehouse_informationからIDを取得
 
-        // SQLクエリのテーブル名を修正
         String sql = "SELECT DAY(date_time) AS day, true_false " +
-                     "FROM livehouse_application_table " +  // 修正：テーブル名を livehouse_application_table に変更
+                     "FROM livehouse_application_table " +
                      "WHERE livehouse_information_id = ? " +
                      "AND YEAR(date_time) = ? " +
                      "AND MONTH(date_time) = ?";
 
-        Map<Integer, Boolean> reservationStatus = new HashMap<>();
+        Map<Integer, String> reservationStatus = new HashMap<>();
 
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -429,7 +428,7 @@ public class Livehouse_applicationDAO {
                 while (rs.next()) {
                     int day = rs.getInt("day"); // 日付
                     boolean status = rs.getInt("true_false") == 1; // true_falseが1なら予約済み、0なら空き
-                    reservationStatus.put(day, status); // 予約状態を保存
+                    reservationStatus.put(day, status ? "×" : "〇"); // 文字列形式で保存
                 }
             }
         } catch (SQLException e) {
@@ -438,7 +437,6 @@ public class Livehouse_applicationDAO {
 
         return reservationStatus;
     }
-    
 
     //カレンダー申請件数表示
     public Map<String, Integer> getReservationCountsForMonth(int year, int month) throws SQLException {
@@ -561,6 +559,49 @@ e.printStackTrace();
 return -1; // エラー時に -1 を返す
 }
 }
+    
+    public Map<Integer, String> getReservationStatusByMonthAndLivehouseId(int livehouseId, int year, int month) {
+        String sql = "SELECT DAY(date_time) AS day, true_false " +
+                     "FROM livehouse_application_table " +
+                     "WHERE livehouse_information_id = ? " +
+                     "AND date_time IS NOT NULL " +  // NULL を除外
+                     "AND YEAR(date_time) = ? " +
+                     "AND MONTH(date_time) = ?";
+
+        Map<Integer, String> reservationStatus = new HashMap<>();
+
+        System.out.println("[DEBUG] SQL Query: " + sql);
+        System.out.println("[DEBUG] livehouseInformationId: " + livehouseId + ", Year: " + year + ", Month: " + month);
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, livehouseId);
+            pstmt.setInt(2, year);
+            pstmt.setInt(3, month);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int day = rs.getInt("day"); // 日付を取得
+                    boolean isReserved = rs.getBoolean("true_false"); // true_false を取得
+
+                    // デバッグログ
+                    System.out.println("[DEBUG] Fetched Row - Day: " + day + ", True_False: " + isReserved);
+
+                    // 日付が存在する場合は "×" を設定 (予約済み)
+                    reservationStatus.put(day, isReserved ? "〇" : "×");
+
+                    // デバッグログ: マッピングの更新
+                    System.out.println("[DEBUG] Reservation Map Update: " + day + " -> " + (isReserved ? "〇" : "×"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("[DEBUG] Final Reservation Status Map: " + reservationStatus);
+        return reservationStatus;
+    }
 
     // Livehouse_applicationの情報を表示するメソッド
     public void printLivehouse_application(Livehouse_application livehouse_application) {

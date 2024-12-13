@@ -44,7 +44,7 @@ public class At_livehouse_search extends HttpServlet {
                 System.err.println("[WARN] userId が指定されていません。");
             }
 
-            // 修正: get() メソッドを使用してライブハウス情報を取得
+            // ライブハウス情報を取得
             List<Livehouse_information> livehouseList = livehouseInformationDAO.get();
 
             if (livehouseList == null || livehouseList.isEmpty()) {
@@ -53,14 +53,11 @@ public class At_livehouse_search extends HttpServlet {
                 System.err.println("ライブハウス情報が取得されました: " + livehouseList.size() + " 件");
             }
 
-            // userId をリクエストスコープに保存（次の画面に渡すため）
+            // userId とライブハウス情報をリクエストスコープに保存
             if (userId != null) {
                 request.setAttribute("userId", userId);
             }
-
-            // ライブハウス情報をリクエストスコープに保存
             request.setAttribute("livehouseList", livehouseList);
-
 
             // JSPにフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at-livehouse-search.jsp").forward(request, response);
@@ -70,20 +67,7 @@ public class At_livehouse_search extends HttpServlet {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ライブハウス情報の取得中にエラーが発生しました。");
         }
-    	try {
-    	    List<Livehouse_information> livehouseList = livehouseInformationDAO.get();
-    	    if (livehouseList == null || livehouseList.isEmpty()) {
-    	        System.err.println("ライブハウス情報が見つかりませんでした。");
-    	    }
-    	    request.setAttribute("livehouseList", livehouseList);
-    	    request.getRequestDispatcher("/WEB-INF/jsp/artist/at-livehouse-search.jsp").forward(request, response);
-    	} catch (Exception e) {
-    	    System.err.println("エラー: " + e.getMessage()); // エラーメッセージを出力
-    	    e.printStackTrace(); // 詳細なスタックトレース
-    	    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ライブハウス情報の取得中にエラー: " + e.getMessage());
-    	}
     }
-
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

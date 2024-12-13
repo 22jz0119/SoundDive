@@ -482,7 +482,48 @@ td.is-disabled {
     color: #ccc;
 }
 
+.calendar-cell {
+    width: 14%;
+    height: 100px;
+    text-align: center;
+    vertical-align: middle;
+    position: relative;
+}
 
+.calendar-day {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.status {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    font-size: 18px;
+}
+
+.status.x {
+    color: red;
+}
+
+.status.o {
+    color: green;
+}
+
+.calendar-cell.clickable {
+    cursor: pointer;
+    background-color: #e0ffe0;
+}
+
+.calendar-cell.clickable:hover {
+    background-color: #c0ffc0;
+}
+
+.calendar-cell.non-clickable {
+    cursor: not-allowed;
+    background-color: #ffe0e0;
+}
 
 
 
