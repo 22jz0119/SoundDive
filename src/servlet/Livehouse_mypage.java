@@ -1,15 +1,20 @@
 package servlet;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
-import dao.DBManager; // 必要に応じてDBManagerをインポート
+import dao.DBManager;
 import dao.Livehouse_informationDAO;
 import model.Livehouse_information;
 
@@ -17,30 +22,48 @@ import model.Livehouse_information;
  * Servlet implementation class Livehouse_mypage
  */
 @WebServlet("/Livehouse_mypage")
+@MultipartConfig
 public class Livehouse_mypage extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Livehouse_informationDAO dao; // DAOのインスタンスをクラスメンバとして保持
-
+    
     @Override
     public void init() throws ServletException {
-        // DBManagerのインスタンスを取得してDAOを初期化
-        DBManager dbManager = DBManager.getInstance(); // シングルトン実装
-        dao = new Livehouse_informationDAO(dbManager);
+        super.init();
+        // DBManagerインスタンスを取得
+        DBManager dbManager = DBManager.getInstance();
+        // Livehouse_informationDAOインスタンスを初期化
+        dao = new Livehouse_informationDAO(dbManager); // DBManagerをDAOに渡す
     }
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
+    
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int userId = 1; // セッションなどからユーザーIDを取得する（仮のIDを指定）
+        HttpSession session = request.getSession();
+        Integer userId = (Integer) session.getAttribute("userId");
 
-        // DAOでデータを取得
-        Livehouse_information livehouse = dao.getLivehouse_informationById(userId);
+        if (userId == null) {
+            request.setAttribute("errorMessage", "ログインが必要です。");
+            request.getRequestDispatcher("/WEB-INF/jsp/top/top.jsp").forward(request, response);
+            return;
+        }
 
-        // 取得したデータをリクエストスコープにセット
-        request.setAttribute("livehouse", livehouse);
+        try {
+            // ユーザーIDに紐づくライブハウス情報を取得
+            Livehouse_information livehouse = dao.getLivehouse_informationByUserId(userId);
 
-        // JSPにフォワード
+            if (livehouse != null) {
+                // ライブハウス情報が見つかった場合
+                request.setAttribute("livehouse", livehouse);
+            } else {
+                request.setAttribute("errorMessage", "ライブハウス情報が見つかりません。");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "データ取得中にエラーが発生しました。");
+        }
+
+        // マイページのJSPにフォワード
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
     }
 
@@ -50,11 +73,21 @@ public class Livehouse_mypage extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	request.setCharacterEncoding("UTF-8"); // リクエストの文字エンコーディングを設定
-        response.setContentType("text/html; charset=UTF-8"); // レスポンスの文字セットを設定
+        request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-    	
-    	// 入力値の取得
+        response.setContentType("text/html; charset=UTF-8");
+
+        // セッションからuserIdを取得
+        HttpSession session = request.getSession();
+        Integer userId = (Integer) session.getAttribute("userId");
+
+        if (userId == null) {
+            request.setAttribute("errorMessage", "ログインが必要です。");
+            request.getRequestDispatcher("/WEB-INF/jsp/top/top.jsp").forward(request, response);
+            return;
+        }
+
+        // 入力値の取得
         String livehouseName = request.getParameter("livehouseName");
         String ownerName = request.getParameter("ownerName");
         String liveTelNumber = request.getParameter("liveTelNumber");
@@ -62,16 +95,55 @@ public class Livehouse_mypage extends HttpServlet {
         String livehouseDetailed = request.getParameter("livehouseDetailed");
         String equipmentInformation = request.getParameter("equipmentInformation");
 
-        // 入力値のバリデーション
-        if (livehouseName == null || livehouseName.isEmpty() || ownerName == null || ownerName.isEmpty()) {
-            request.setAttribute("errorMessage", "ライブハウス名またはオーナー名を入力してください。");
+        // 画像アップロード処理
+        Part naikanImage = request.getPart("naikanImage");
+        Part gaikanImage = request.getPart("gaikanImage");
+        Part profileImagePart = request.getPart("picture_image_naigaikan");
+
+        String naikanImagePath = null;
+        String gaikanImagePath = null;
+        String pictureImagePath = null;
+
+        try {
+            // アップロードディレクトリの取得
+            String uploadDir = getServletContext().getRealPath("/uploads/");
+            File uploadDirFile = new File(uploadDir);
+            if (!uploadDirFile.exists()) {
+                uploadDirFile.mkdirs();
+            }
+
+            // 画像の保存
+            naikanImagePath = saveImage(naikanImage, uploadDir, "内観");
+            gaikanImagePath = saveImage(gaikanImage, uploadDir, "外観");
+            pictureImagePath = saveImage(profileImagePart, uploadDir, "プロフィール");
+
+            if (naikanImagePath == null || gaikanImagePath == null || pictureImagePath == null) {
+                request.setAttribute("errorMessage", "すべての画像をアップロードしてください。");
+                request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
+                return;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "画像アップロード中にエラーが発生しました。");
             request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
             return;
         }
 
-        // モデルオブジェクトを作成
+        // 入力値のバリデーション
+        if (livehouseName == null || livehouseName.isEmpty() ||
+            ownerName == null || ownerName.isEmpty() ||
+            liveTelNumber == null || liveTelNumber.isEmpty() ||
+            livehouseExplanation == null || livehouseExplanation.isEmpty() ||
+            livehouseDetailed == null || livehouseDetailed.isEmpty() ||
+            equipmentInformation == null || equipmentInformation.isEmpty()) {
+            request.setAttribute("errorMessage", "すべての必須項目を記入してください。");
+            request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
+            return;
+        }
+
+     // モデルオブジェクトを作成
         Livehouse_information livehouse = new Livehouse_information(
-            0, // 自動生成される場合
+            0,  // id は0で、新規作成
             ownerName,
             equipmentInformation,
             livehouseExplanation,
@@ -79,26 +151,52 @@ public class Livehouse_mypage extends HttpServlet {
             livehouseName,
             "未入力",
             liveTelNumber,
-            new Date(), // 現在時刻
-            new Date()
+            pictureImagePath,
+            new Date(),
+            new Date(),
+            userId  // 追加した user_id を渡す
         );
+
+        // userIdを紐づける
+        livehouse.setUser_id(userId);
 
         // DAOで保存処理
         boolean isInserted = dao.insertLivehouse_information(livehouse);
 
         // 結果に応じた処理
         if (isInserted) {
-            // 成功メッセージを設定
-            request.setAttribute("successMessage", "データが正常に保存されました。");
-            request.setAttribute("livehouse", livehouse);
-            request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
+            // 保存された内容を再取得
+            Livehouse_information savedLivehouse = dao.getLivehouse_informationById(livehouse.getId());
 
+            // 保存したデータをリクエストに設定
+            request.setAttribute("livehouse", savedLivehouse);
+            request.setAttribute("successMessage", "データが正常に保存されました。");
         } else {
-            // エラーメッセージを設定
             request.setAttribute("errorMessage", "データの保存に失敗しました。");
         }
 
-        // JSPにフォワード
+        // マイページにフォワード
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
     }
+
+    // 共通の画像保存処理メソッド
+    private String saveImage(Part imagePart, String uploadDir, String imageType) throws IOException {
+        if (imagePart != null && imagePart.getSize() > 0) {
+            String fileName = System.currentTimeMillis() + "_" + imagePart.getSubmittedFileName().replaceAll("[^a-zA-Z0-9._-]", "_");
+            File uploadDirFile = new File(uploadDir);
+
+            if (!uploadDirFile.exists()) {
+                uploadDirFile.mkdirs();
+            }
+
+            String imagePath = uploadDir + File.separator + fileName;
+
+            try (InputStream inputStream = imagePart.getInputStream()) {
+                java.nio.file.Files.copy(inputStream, java.nio.file.Paths.get(imagePath));
+                return "/uploads/" + fileName;
+            }
+        }
+        return null;
+    }
+
 }
