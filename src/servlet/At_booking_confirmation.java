@@ -23,6 +23,8 @@ public class At_booking_confirmation extends HttpServlet {
     public At_booking_confirmation() {
         super();
     }
+    
+    
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // リクエストパラメータからユーザーIDを取得
