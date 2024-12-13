@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
-
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
 
@@ -36,29 +34,34 @@ public class Livehouse_home extends HttpServlet {
         String monthParam = request.getParameter("month");
 
         try {
-            int year = Integer.parseInt(yearParam);
-            int month = Integer.parseInt(monthParam);
+            // パラメータの取得とデフォルト値
+            int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam) : java.time.LocalDate.now().getYear();
+            int month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam) : java.time.LocalDate.now().getMonthValue();
 
-            // 月の範囲（1-12）をチェック
             if (month < 1 || month > 12) {
                 throw new IllegalArgumentException("月の値が不正です: " + month);
             }
 
-            // 該当月の予約件数を取得
+            // 予約件数を取得
             Map<String, Integer> reservationCounts = dao.getReservationCountsForMonth(year, month);
 
-            // JSON形式で結果を返す
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
+            // JSPにデータを渡す
+            request.setAttribute("year", year);
+            request.setAttribute("month", month);
+            request.setAttribute("reservationCounts", reservationCounts);
 
-            String json = new Gson().toJson(reservationCounts);
-            response.getWriter().write(json);
-
+        } catch (NumberFormatException e) {
+            log("パラメータ形式エラー: yearまたはmonthの値が不正です", e);
+            request.setAttribute("errorMessage", "日付パラメータが不正です。正しい値を入力してください。");
+        } catch (IllegalArgumentException e) {
+            log("パラメータエラー: " + e.getMessage(), e);
+            request.setAttribute("errorMessage", e.getMessage());
         } catch (Exception e) {
-            log("エラー: ", e);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "リクエスト処理中にエラーが発生しました");
+            log("エラー発生: リクエスト処理中に問題が発生しました", e);
+            request.setAttribute("errorMessage", "システムエラーが発生しました。時間をおいて再度お試しください。");
         }
+
+        // JSPにフォワード (エラー時も同じJSPで処理)
+        request.getRequestDispatcher("WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
     }
-
-
 }

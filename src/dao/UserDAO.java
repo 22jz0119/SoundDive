@@ -47,6 +47,23 @@ public class UserDAO {
         return false;
     }
 
+    public String getUserTypeById(int userId) {
+        String sql = "SELECT user_type FROM user WHERE id = ?";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("user_type");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // 該当するユーザーがいない場合
+    }
+
+    
     // ユーザーをIDで検索するメソッド
     public User getUserById(int id) {
         String sql = "SELECT * FROM user WHERE id = ?";

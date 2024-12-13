@@ -40,15 +40,21 @@ public class Top extends HttpServlet {
             session.setAttribute("userName", user.getName()); // 必要に応じて他の情報も保存
             session.setMaxInactiveInterval(30 * 60); // セッションの有効期限を30分に設定
 
+            // user_typeのログを記録
+            System.out.println("[DEBUG] User ID: " + user.getId());
+            System.out.println("[DEBUG] User Type: " + user.getUser_type());
+
             // user_typeで遷移先を分岐
             if ("livehouse".equals(user.getUser_type())) {
-                response.sendRedirect(request.getContextPath() + "/Livehouse_Home");
+                response.sendRedirect(request.getContextPath() + "/Livehouse_home");
             } else if ("artist".equals(user.getUser_type())) {
                 response.sendRedirect(request.getContextPath() + "/At_Home");
             } else {
+                System.out.println("[DEBUG] Undefined user type: " + user.getUser_type());
                 response.sendRedirect(request.getContextPath() + "/Top"); // その他の場合はログイン画面にリダイレクト
             }
         } else {
+            System.out.println("[DEBUG] Login failed for tel_number: " + tel_number);
             request.setAttribute("msg", "ログインに失敗しました。ユーザー名またはパスワードを確認してください。");
             request.getRequestDispatcher("WEB-INF/jsp/top/top.jsp").forward(request, response);
         }
