@@ -570,8 +570,9 @@ return -1; // エラー時に -1 を返す
 
         Map<Integer, String> reservationStatus = new HashMap<>();
 
-        System.out.println("[DEBUG] SQL Query: " + sql);
-        System.out.println("[DEBUG] livehouseInformationId: " + livehouseId + ", Year: " + year + ", Month: " + month);
+        // クエリおよびパラメータのデバッグログ
+        System.out.println("[DEBUG] Executing SQL Query: " + sql);
+        System.out.println("[DEBUG] Parameters - livehouseInformationId: " + livehouseId + ", Year: " + year + ", Month: " + month);
 
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -580,7 +581,9 @@ return -1; // エラー時に -1 を返す
             pstmt.setInt(2, year);
             pstmt.setInt(3, month);
 
+            // クエリ実行
             try (ResultSet rs = pstmt.executeQuery()) {
+                int rowCount = 0; // 結果の行数をカウント
                 while (rs.next()) {
                     int day = rs.getInt("day"); // 日付を取得
                     boolean isReserved = rs.getBoolean("true_false"); // true_false を取得
@@ -588,18 +591,26 @@ return -1; // エラー時に -1 を返す
                     // デバッグログ
                     System.out.println("[DEBUG] Fetched Row - Day: " + day + ", True_False: " + isReserved);
 
-                    // 日付が存在する場合は "×" を設定 (予約済み)
+                    // 日付が存在する場合は "〇" を設定 (予約済み)
                     reservationStatus.put(day, isReserved ? "〇" : "×");
 
-                    // デバッグログ: マッピングの更新
+                    // 更新内容のログ
                     System.out.println("[DEBUG] Reservation Map Update: " + day + " -> " + (isReserved ? "〇" : "×"));
+                    rowCount++;
                 }
+
+                // 結果の行数ログ
+                System.out.println("[DEBUG] Total Rows Fetched: " + rowCount);
             }
         } catch (SQLException e) {
+            // SQL例外発生時のログ
+            System.err.println("[ERROR] SQL Exception occurred while fetching reservation status");
             e.printStackTrace();
         }
 
+        // 最終的なマップの内容をログ
         System.out.println("[DEBUG] Final Reservation Status Map: " + reservationStatus);
+
         return reservationStatus;
     }
 
