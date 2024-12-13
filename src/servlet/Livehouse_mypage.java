@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -17,9 +16,7 @@ import javax.servlet.http.Part;
 
 import dao.DBManager;
 import dao.Livehouse_informationDAO;
-import model.Artist_group;
 import model.Livehouse_information;
-import model.Member;
 
 /**
  * Servlet implementation class Livehouse_mypage
@@ -52,21 +49,22 @@ public class Livehouse_mypage extends HttpServlet {
         }
 
         try {
-            Artist_group userGroup = Livehouse_informationDAO.getGroupByUserId(userId);
+            // ユーザーIDに紐づくライブハウス情報を取得
+            Livehouse_information livehouse = dao.getLivehouse_informationByUserId(userId);
 
-            if (userGroup != null) {
-                List<Member> members = Livehouse_informationDAO.getMembersByArtistGroupId(userGroup.getId());
-                request.setAttribute("userGroup", userGroup);
-                request.setAttribute("members", members);
+            if (livehouse != null) {
+                // ライブハウス情報が見つかった場合
+                request.setAttribute("livehouse", livehouse);
             } else {
-                request.setAttribute("errorMessage", "グループ情報が見つかりません。");
+                request.setAttribute("errorMessage", "ライブハウス情報が見つかりません。");
             }
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "データ取得中にエラーが発生しました。");
         }
 
-        request.getRequestDispatcher("/WEB-INF/jsp/at_mypage.jsp").forward(request, response);
+        // マイページのJSPにフォワード
+        request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
     }
 
     
@@ -143,7 +141,7 @@ public class Livehouse_mypage extends HttpServlet {
             return;
         }
 
-        // モデルオブジェクトを作成
+     // モデルオブジェクトを作成
         Livehouse_information livehouse = new Livehouse_information(
             0,  // id は0で、新規作成
             ownerName,
@@ -155,7 +153,8 @@ public class Livehouse_mypage extends HttpServlet {
             liveTelNumber,
             pictureImagePath,
             new Date(),
-            new Date()
+            new Date(),
+            userId  // 追加した user_id を渡す
         );
 
         // userIdを紐づける
