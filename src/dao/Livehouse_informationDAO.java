@@ -94,7 +94,7 @@ public class Livehouse_informationDAO {
 
  // IDでライブハウス情報を取得するメソッド
     public Livehouse_information getLivehouse_informationById(int id) {
-        String sql = "SELECT * FROM livehouse_information WHERE id = ?";
+        String sql = "SELECT * FROM livehouse_information WHERE user_id = ?";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
