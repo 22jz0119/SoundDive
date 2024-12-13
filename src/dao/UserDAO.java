@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.mindrot.jbcrypt.BCrypt;
 
 import model.User;
@@ -161,4 +163,19 @@ public class UserDAO {
         System.out.println("Mapped User: ID=" + id + ", name=" + name + ", userType=" + userType);
         return new User(id, name, password, telNumber, address, createDate, updateDate, userType);
     }
+    
+ // セッションからユーザーIDを取得し、それを元にユーザー情報を取得するメソッド
+    public User getUserFromSession(HttpServletRequest request) {
+        // セッションからユーザーIDを取得
+        Integer userId = (Integer) request.getSession().getAttribute("userId");
+        
+        if (userId != null) {
+            // ユーザーIDがセッションに存在すれば、そのIDでユーザー情報を取得
+            return getUserById(userId);
+        }
+        
+        // セッションにユーザーIDがない場合、nullを返す
+        return null;
+    }
+
 }

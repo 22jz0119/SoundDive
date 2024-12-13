@@ -1,7 +1,8 @@
 package servlet;
 
 import java.io.IOException;
-import java.util.List;
+import java.time.YearMonth;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,10 +10,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
 import dao.Livehouse_informationDAO;
-import model.Livehouse_application;
 import model.Livehouse_information;
 
 @WebServlet("/At_details")
@@ -38,6 +40,9 @@ public class At_details extends HttpServlet {
                 return;
             }
 
+            // デバッグログ
+            System.out.println("[DEBUG] livehouseId: " + livehouseId);
+
             // DAOの初期化
             DBManager dbManager = DBManager.getInstance();
             Livehouse_informationDAO livehouseInfoDao = new Livehouse_informationDAO(dbManager);
@@ -50,19 +55,47 @@ public class At_details extends HttpServlet {
                 return;
             }
 
-            // ライブハウスIDに関連する申請情報を取得
-            List<Livehouse_application> applications = livehouseAppDao.getLivehouse_applicationsByLivehouseId(livehouseId);
+            // 年と月のパラメータを取得
+            String yearParam = request.getParameter("year");
+            String monthParam = request.getParameter("month");
 
-            // リクエストスコープにデータを保存
+            int year = (yearParam != null && !yearParam.isEmpty())
+                    ? Integer.parseInt(yearParam)
+                    : java.time.LocalDate.now().getYear();
+            int month = (monthParam != null && !monthParam.isEmpty())
+                    ? Integer.parseInt(monthParam)
+                    : java.time.LocalDate.now().getMonthValue();
+
+            // デバッグログ
+            System.out.println("[DEBUG] year: " + year);
+            System.out.println("[DEBUG] month: " + month);
+
+            // 指定された年と月の日数を計算
+            int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
+
+            // 日ごとの予約状況を取得
+            Map<Integer, String> reservationStatus = livehouseAppDao.getReservationStatusByMonthAndLivehouseId(livehouseId, year, month);
+
+            // Gsonを使用してJSONに変換
+            Gson gson = new Gson();
+            String reservationStatusJson = gson.toJson(reservationStatus);
+
+            // デバッグログ
+            System.out.println("[DEBUG] Reservation Status JSON: " + reservationStatusJson);
+
+            // JSPにデータを渡す
             request.setAttribute("livehouse", livehouseInfo);
-            request.setAttribute("applications", applications);
+            request.setAttribute("reservationStatus", reservationStatusJson);  // JSON形式で渡す
+            request.setAttribute("daysInMonth", daysInMonth);
+            request.setAttribute("year", year);
+            request.setAttribute("month", month);
 
             // JSPにフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at_details.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ライブハウス情報の取得中にエラーが発生しました。");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "エラーが発生しました。");
         }
     }
 

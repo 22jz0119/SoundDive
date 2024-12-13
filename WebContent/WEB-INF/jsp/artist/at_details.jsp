@@ -8,68 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
     <title>${livehouse.livehouse_name} - ライブハウス詳細画面</title>
-    <style>
-        .calendar-container {
-            width: 100%;
-            padding: 20px;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .calendar-header button {
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-        }
-
-        .calendar-cell {
-            width: 100%;
-            height: 100px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-        }
-
-        .calendar-cell.disabled {
-            background-color: #eaeaea;
-            pointer-events: none;
-        }
-
-        .calendar-cell a {
-            text-decoration: none;
-            font-size: 1.5em;
-            color: black;
-        }
-
-        .calendar-cell .status {
-            font-size: 1.2em;
-            position: absolute;
-            bottom: 5px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .calendar-cell .status.reserved {
-            color: red;
-        }
-
-        .calendar-cell .status.available {
-            color: green;
-        }
-    </style>
 </head>
+
 <body>
     <header class="main-header">
         <div class="header-container">
@@ -125,7 +65,6 @@
         </section>
 
         <!-- カレンダーと空き状況 -->
-       
         <section class="calendar-section">
             <div>
             <h2 class="OpenSpots-Reserve">空き状況・予約</h2>
@@ -133,79 +72,48 @@
             <p class="Notes-or-Cautions">※誰も予約していない〇
                 ※確定していないが予約者多数△</p>
         </div>
-		<section class="calendar-section">
-            <div>
-                <h2 class="OpenSpots-Reserve">空き状況・予約</h2>
-                <p class="OpenSpots-Reserve-detile">空いてる日にちを選択して、予約に進んでください</p>
-                <p class="Notes-or-Cautions">※誰も予約していない〇 ※確定していないが予約者多数△</p>
-            </div>
-            <div class="custom-calendar-container">
-                <div class="custom-calendar-header">
-                    <button id="prev-month-btn">前の月</button>
-                    <h2 id="current-month-label"></h2>
-                    <button id="next-month-btn">次の月</button>
-                </div>
-                <div class="custom-calendar-grid" id="custom-calendar"></div>
-            </div>
-        </section>
-!-- サーブレットから渡されたLivehouse_applicationデータを使用 -->
-	    <script>
-	        const applications = ${applications};
-	
-	        // 予約データを日付ベースでマッピング
-	        const reservationData = {};
-	        applications.forEach(application => {
-	            const date = new Date(application.date_time); // datetimeを取得
-	            const day = date.getDate();
-	            reservationData[day] = application.true_false; // true_falseの状態を日付に紐づけ
-	        });
-	    </script>
-        <!-- JavaScriptファイルの読み込み -->
-        <script src="<%= request.getContextPath() %>/assets/js/A-t-Description.js"></script>
-        
-		<c:choose>
-        <c:when test="${not empty applications}">
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>ライブハウス情報ID</th>
-                        <th>ユーザーID</th>
-                        <th>申請日時</th>
-                        <th>予約状態</th>
-                        <th>開始時間</th>
-                        <th>終了時間</th>
-                        <th>作成日時</th>
-                        <th>更新日時</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="application" items="${applications}">
-                        <tr>
-                            <td>${application.id}</td>
-                            <td>${application.livehouse_information_id}</td>
-                            <td>${application.user_id}</td>
-                            <td>${application.datetime}</td>
-                            <td>${application.trueFalse ? '予約済み' : '空き'}</td>
-                            <td>${application.start_time}</td>
-                            <td>${application.finish_time}</td>
-                            <td>${application.create_date}</td>
-                            <td>${application.update_date}</td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-        </c:when>
-        <c:otherwise>
-            <p>現在、このライブハウスには申請がありません。</p>
-        </c:otherwise>
-    </c:choose>
-    	<
-   		<c:forEach var="application" items="${applications}">
-    		<p>${application.datetime} - ${application.trueFalse}</p>
-		</c:forEach>
 
-	</main>
-		
+        <div class="a-t-detail-calendar-containar">
+            <button id="prev-month" type="button">前の月</button>
+            <button id="next-month" type="button">次の月</button>
+        </div>
+        <div id="calendar-container"></div>
+    </main>
+    
+    <script>
+	    // JSPからJavaScriptにデータを渡す
+	    const contextPath = '<%= request.getContextPath() %>';
+	    const userId = '<c:out value="${param.userId}" escapeXml="true" />';
+	</script>
+
+    <script>
+	    // reservationStatusがJSON形式の文字列として渡されている場合
+	    const reservationStatus = JSON.parse('<c:out value="${reservationStatus}" escapeXml="false" />');
+	    const daysInMonth = ${daysInMonth};
+	    const year = ${year};
+	    const month = ${month};
+	
+	    console.log(reservationStatus); // reservationStatusをコンソールに出力して確認
+	</script>
+	
+	<script>
+	    console.log("Reservation Status (JSP):", '<c:out value="${reservationStatus}" escapeXml="false" />');
+	</script>
+	<script src="<%= request.getContextPath() %>/assets/js/at_calender.js" defer></script>
+    <table id="calendar-table" class="calendar-table">
+        <thead>
+            <tr>
+                <th class="calendar-cell">日</th>
+                <th class="calendar-cell">月</th>
+                <th class="calendar-cell">火</th>
+                <th class="calendar-cell">水</th>
+                <th class="calendar-cell">木</th>
+                <th class="calendar-cell">金</th>
+                <th class="calendar-cell">土</th>
+            </tr>
+        </thead>
+        <tbody id="calendar-body"></tbody>
+    </table>
+    
 </body>
 </html>
