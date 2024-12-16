@@ -68,7 +68,6 @@ public class At_Reservation extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ライブハウスIDが指定されていません");
                 return;
             }
-
             // フォワードまたは他の処理に進む
             // 必要に応じて次の画面にリダイレクトまたはフォワード
             request.setAttribute("year", year);
