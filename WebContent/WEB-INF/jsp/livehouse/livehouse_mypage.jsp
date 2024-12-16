@@ -33,7 +33,7 @@
 			        <span class="placeholder-text">アイコンをアップロード</span>
 			        <!-- プロフィール画像表示 -->
 			        <img id="profileImage" 
-			             src="${livehouse != null && livehouse.picture_image_naigaikan != null ? livehouse.picture_image_naigaikan : ''}" 
+			             src="${livehouse != null && livehouse.picture_image_naigaikan != null ? pageContext.request.contextPath + livehouse.picture_image_naigaikan : ''}" 
 			             alt="プロフィール画像" 
 			             style="display: ${livehouse != null && livehouse.picture_image_naigaikan != null ? 'block' : 'none'};">
 			    </label>
@@ -80,25 +80,30 @@
             </div>
 
             <!-- 画像アップロード -->
-            <figure class="livehouse-picture">
-                <!-- 内観画像 -->
-                <div class="image-container">
-                    <img id="naikan-preview" src="${livehouse != null && livehouse.picture_image_naigaikan != null ? livehouse.picture_image_naigaikan : ''}"  
-                         alt="内観画像" 
-                         style="${livehouse != null && livehouse.picture_image_naigaikan != null ? 'display: block;' : 'display: none;'}">
-                    <input type="file" accept="image/*" id="naikan-input" name="naikanImage" onchange="previewImage(event, 'naikan-preview')">
-                    <label for="naikan-input">内観画像を選択</label>
-                </div>
+			<figure class="livehouse-picture">
+			    <!-- 内観画像 -->
+			    <div class="image-container">
+			        <img id="naikan-preview" 
+			             src="${livehouse_information != null && livehouse_information.picture_image_naigaikan != null ? pageContext.request.contextPath + livehouse_information.picture_image_naigaikan : ''}"  
+			             alt="内観画像" 
+			             style="${livehouse_information != null && livehouse_information.picture_image_naigaikan != null ? 'display: block;' : 'display: none;'}">
+			        <input type="file" accept="image/*" id="naikan-input" name="naikanImage" onchange="previewImage(event, 'naikan-preview')">
+			        <label for="naikan-input">内観画像を選択</label>
+			    </div>
+			
+			    <!-- 外観画像 -->
+			    <div class="image-container">
+			        <img id="gaikan-preview" 
+			             src="${livehouse_information != null && livehouse_information.picture_image_naigaikan != null ? pageContext.request.contextPath + livehouse_information.picture_image_naigaikan : ''}"  
+			             alt="外観画像" 
+			             style="${livehouse_information != null && livehouse_information.picture_image_naigaikan != null ? 'display: block;' : 'display: none;'}">
+			        <input type="file" accept="image/*" id="gaikan-input" name="gaikanImage" onchange="previewImage(event, 'gaikan-preview')">
+			        <label for="gaikan-input">外観画像を選択</label>
+			    </div>
+			</figure>
 
-                <!-- 外観画像 -->
-                <div class="image-container">
-                    <img id="gaikan-preview" src="${livehouse != null && livehouse.picture_image_naigaikan != null ? livehouse.picture_image_naigaikan : ''}"  
-                         alt="外観画像" 
-                         style="${livehouse != null && livehouse.picture_image_naigaikan != null ? 'display: block;' : 'display: none;'}">
-                    <input type="file" accept="image/*" id="gaikan-input" name="gaikanImage" onchange="previewImage(event, 'gaikan-preview')">
-                    <label for="gaikan-input">外観画像を選択</label>
-                </div>
-            </figure>
+
+
 
 
             <!-- 登録ボタン -->
