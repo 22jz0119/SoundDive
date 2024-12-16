@@ -28,15 +28,16 @@
         <!-- メインフォーム -->
         <form action="<%= request.getContextPath() %>/Livehouse_mypage" method="POST" enctype="multipart/form-data">
             <!-- プロフィール画像 -->
-            <div class="profile-container">
-	            <label class="profile-icon" for="fileInput">
-	                <span class="placeholder-text">アイコンをアップロード</span>
-	                <img id="profileImage" src="${livehouse != null && livehouse.pictureImage != null ? livehouse.pictureImage : ''}" 
-                         alt="プロフィール画像" 
-                         style="${livehouse != null && livehouse.pictureImage != null ? 'display: block;' : 'display: none;'}">
-	            </label>
-	            <input type="file" id="fileInput" name="picture_image_naigaikan" accept="image/*" style="display: none;" onchange="previewImage()">
-	        </div>
+				<div class="profile-container">
+				    <label class="profile-icon" for="fileInput">
+				        <span class="placeholder-text">アイコンをアップロード</span>
+				        <img id="profileImage" src="${livehouse != null && livehouse.picture_image_naigaikan != null ? livehouse.picture_image_naigaikan : ''}" 
+				             alt="プロフィール画像" 
+				             style="${livehouse != null && livehouse.picture_image_naigaikan != null ? 'display: block;' : 'display: none;'}">
+				    </label>
+				    <input type="file" id="fileInput" name="picture_image_naigaikan" accept="image/*" style="display: none;" onchange="previewImage()">
+				</div>
+
 
             <!-- 基本情報入力 -->
             <div class="livehouse_mypage-inputfield-containar">
@@ -44,34 +45,35 @@
                     <li class="livehouse_mypage-inputfield-livehouse-name">
                         <label for="livehouseName">ライブハウス名</label>
                         <input type="text" id="livehouseName" name="livehouseName" 
-                               value="${livehouse != null ? livehouse.livehouseName : ''}" required>
+       						value="${livehouse != null ? livehouse.livehouse_name : ''}" required>
+
                     </li>
                     <li class="livehouse_mypage-inputfield-onername">
                         <label for="ownerName">オーナー名</label>
                         <input type="text" id="ownerName" name="ownerName" 
-                               value="${livehouse != null ? livehouse.ownerName : ''}" required>
+                               value="${livehouse != null ? livehouse.owner_name : ''}" required>
                     </li>
                     <li class="livehouse_mypage-inputfield-tel">
                         <label for="liveTelNumber">電話番号</label>
                         <input type="text" id="liveTelNumber" name="liveTelNumber" 
-                               value="${livehouse != null ? livehouse.telNumber : ''}" required>
+                               value="${livehouse != null ? livehouse.live_tel_number : ''}" required>
                     </li>
                 </ul>
             </div>
 
             <div class="livehouse-mypage-livehouseDetail">
                 <label for="livehouseExplanation">ライブハウス説明情報</label>
-                <textarea id="livehouseExplanation" name="livehouseExplanation" style="width: 500px; height: 150px;" required>${livehouse != null ? livehouse.livehouseExplanation : ''}</textarea>
+                <textarea id="livehouseExplanation" name="livehouseExplanation" style="width: 500px; height: 150px;" required>${livehouse != null ? livehouse.livehouse_explanation_information : ''}</textarea>
             </div>
 
             <div class="livehouse-mypage-livehouseDiscription"> 
                 <label for="livehouseDetailed">ライブハウス詳細情報</label>
-                <textarea id="livehouseDetailed" name="livehouseDetailed" style="width: 500px; height: 150px;" required>${livehouse != null ? livehouse.livehouseDetailed : ''}</textarea>
+                <textarea id="livehouseDetailed" name="livehouseDetailed" style="width: 500px; height: 150px;" required>${livehouse != null ? livehouse.livehouse_detailed_information : ''}</textarea>
             </div>
 
             <div class="livehouse-mypage-gearinfo">
                 <label for="equipmentInformation">機材情報</label>
-                <textarea id="equipmentInformation" name="equipmentInformation" style="width: 500px; height: 150px;" required>${livehouse != null ? livehouse.equipmentInformation : ''}</textarea>
+                <textarea id="equipmentInformation" name="equipmentInformation" style="width: 500px; height: 150px;" required>${livehouse != null ? livehouse.equipment_information : ''}</textarea>
             </div>
 
             <!-- 画像アップロード -->
