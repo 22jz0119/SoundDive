@@ -44,17 +44,11 @@
                         <li class="a-t-detail-tell-title a-t-detail-1"><p>電話番号</p></li>
                         <li class="a-t-detail-tell a-t-detail-2"><p>012-3456-7890</p></li>
                         <li class="a-t-detail-explanation-title a-t-detail-1"><p>ライブハウス説明情報</p></li>
-                        <li class="a-t-detail-explanation a-t-detail-2"><p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita, eaque itaque in eveniet ipsam ex ipsum reiciendis minus quos. Quasi omnis exercitationem amet molestias quaerat et nemo cupiditate officia magnam. Perspiciatis voluptatibus quidem eligendi placeat sapiente sequi libero officiis doloribus. Totam saepe ipsam qui commodi quae enim rem optio dignissimos?</p></li>
+                        <li class="a-t-detail-explanation a-t-detail-2"><p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p></li>
                         <li class="a-t-detail-description-title a-t-detail-1"><p>ライブハウス詳細情報</p></li>
-                        <li class="a-t-detail-description a-t-detail-2"><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eligendi inventore, harum porro dicta ipsum, ut sint beatae fuga voluptatum facere at sapiente, quasi eius explicabo et suscipit voluptate nesciunt voluptatem veniam officiis repellendus. A saepe aliquam eveniet, consequatur libero, nesciunt illo totam ad recusandae, voluptas tempora hic laborum animi maxime?</p></li>
+                        <li class="a-t-detail-description a-t-detail-2"><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p></li>
                     </ul>
                 </div>
-                <ul>
-                    <li></li>
-                </ul>
-            </div>
-            <div class="artist_livehouse_details-Discription">
-                
             </div>
         </section>
         <div>
@@ -64,14 +58,89 @@
                 ※確定していないが予約者多数△</p>
         </div>
 
+        <!-- カレンダー要素 -->
         <div class="a-t-detail-calendar-containar">
             <button id="prev-month" type="button">前の月</button>
             <button id="next-month" type="button">次の月</button>
+            <div id="calendar-container">
+                <table id="calendar-table" class="calendar-table">
+                    <thead>
+                        <tr>
+                            <th class="calendar-cell">日</th>
+                            <th class="calendar-cell">月</th>
+                            <th class="calendar-cell">火</th>
+                            <th class="calendar-cell">水</th>
+                            <th class="calendar-cell">木</th>
+                            <th class="calendar-cell">金</th>
+                            <th class="calendar-cell">土</th>
+                        </tr>
+                    </thead>
+                    <tbody id="calendar-body"></tbody>
+                </table>
+            </div>
         </div>
-        <div id="calendar-container"></div>
     </main>
 
-    <script src="../assets/js/at_calender.js"></script> <!-- JavaScriptファイルをリンク -->
-    <a href="./artist_livehouse_reservation.html" class="button">次へ</a>
+    <!-- スクリプトセクション -->
+    <script>
+        // 必要なデータを仮で埋め込む（サーバー側から渡される想定）
+        const daysInMonth = 31;
+        const year = 2024;
+        const month = 12;
+        const reservationStatus = { 15: "×", 20: "〇" }; // 仮データ
+
+        // カレンダー生成関数を呼び出す
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("[DEBUG] DOMContentLoaded event fired");
+            generateCalendar();
+        });
+
+        // カレンダー生成関数
+        function generateCalendar() {
+            const calendarBody = document.getElementById("calendar-body");
+            if (!calendarBody) {
+                console.error("[ERROR] Calendar body not found!");
+                return;
+            }
+
+            console.log("[DEBUG] generateCalendar function called");
+            calendarBody.innerHTML = ""; // カレンダーをリセット
+
+            const firstDay = new Date(year, month - 1, 1).getDay();
+            let date = 1;
+
+            while (date <= daysInMonth) {
+                const tr = document.createElement("tr");
+
+                for (let col = 0; col < 7; col++) {
+                    const td = document.createElement("td");
+                    td.classList.add("calendar-cell");
+
+                    if ((date === 1 && col < firstDay) || date > daysInMonth) {
+                        td.textContent = ""; // 空白セル
+                    } else {
+                        td.textContent = date;
+
+                        // 予約状況を反映
+                        const status = reservationStatus[date] || "〇";
+                        if (status === "〇") {
+                            td.classList.add("clickable");
+                        } else {
+                            td.classList.add("non-clickable");
+                        }
+
+                        date++;
+                    }
+
+                    tr.appendChild(td);
+                }
+
+                calendarBody.appendChild(tr);
+            }
+
+            console.log("[DEBUG] Calendar generated successfully");
+        }
+    </script>
+    <script src="../assets/js/at_calender.js"></script>
 </body>
 </html>

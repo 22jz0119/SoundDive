@@ -1,16 +1,13 @@
 package servlet;
 
 import java.io.IOException;
+import java.time.YearMonth;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import dao.Artist_groupDAO;
-import dao.DBManager;
-import model.Artist_group;
 
 /**
  * Servlet implementation class At_Reservation
@@ -23,60 +20,69 @@ public class At_Reservation extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // クエリパラメータから年、月、日を受け取る
         String yearParam = request.getParameter("year");
         String monthParam = request.getParameter("month");
         String dayParam = request.getParameter("day");
-        String userIdParam = request.getParameter("userId");
-
-        // userIdの確認
-        if (userIdParam == null || userIdParam.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ユーザーIDが指定されていません。");
-            return;
-        }
-        int userId = Integer.parseInt(userIdParam);
-        System.out.println("[DEBUG] userId: " + userId);
-
-        // 年、月、日の確認
-        if (yearParam == null || monthParam == null || dayParam == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "年、月、日が指定されていません。");
-            return;
-        }
-
-        int year = Integer.parseInt(yearParam);
-        int month = Integer.parseInt(monthParam);
-        int day = Integer.parseInt(dayParam);
-        System.out.println("[DEBUG] Selected Date: " + year + "-" + month + "-" + day);
+        String userId = request.getParameter("userId");
+        String livehouseIdParam = request.getParameter("livehouseId"); // livehouseId を受け取る
 
         try {
-            // DBManagerとDAOのインスタンスを初期化
-            DBManager dbManager = DBManager.getInstance();
-            Artist_groupDAO artistGroupDao = Artist_groupDAO.getInstance(dbManager);
+            // パラメータのバリデーション - 年月日
+            int year = Integer.parseInt(yearParam);
+            int month = Integer.parseInt(monthParam);
+            int day = Integer.parseInt(dayParam);
 
-            // userIdを使ってアーティストグループ情報を取得
-            Artist_group artistGroup = artistGroupDao.getGroupByUserId(userId);
+            YearMonth yearMonth = YearMonth.of(year, month);
+            int daysInMonth = yearMonth.lengthOfMonth();
 
-            if (artistGroup == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "アーティストグループが見つかりません。");
+            if (day < 1 || day > daysInMonth) {
+                System.err.println("[ERROR] Invalid date: " + year + "-" + month + "-" + day);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "日付が不正です");
                 return;
             }
 
-            // デバッグログ: アーティストグループ情報
-            System.out.println("[DEBUG] Retrieved Artist Group: " + artistGroup.getAccount_name());
+            System.out.println("[DEBUG] Valid Date: " + year + "-" + month + "-" + day);
 
-            // JSPに渡すデータを設定
-            request.setAttribute("selectedYear", year);
-            request.setAttribute("selectedMonth", month);
-            request.setAttribute("selectedDay", day);
-            request.setAttribute("artistGroup", artistGroup);
+            // userIdのバリデーション
+            if (userId == null || userId.trim().isEmpty()) {
+                System.err.println("[ERROR] Invalid userId: " + userId);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ユーザーIDが指定されていません");
+                return;
+            }
 
-            // 予約フォームや確認画面を表示するJSPにフォワード
+            System.out.println("[DEBUG] Received userId: " + userId);
+
+            // livehouseId のバリデーション
+            int livehouseId = -1; // デフォルト値として無効な値を設定
+            if (livehouseIdParam != null && !livehouseIdParam.trim().isEmpty()) {
+                try {
+                    livehouseId = Integer.parseInt(livehouseIdParam);
+                    System.out.println("[DEBUG] Received livehouseId: " + livehouseId);
+                } catch (NumberFormatException e) {
+                    System.err.println("[ERROR] Invalid livehouseId: " + livehouseIdParam);
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ライブハウスIDが不正です");
+                    return;
+                }
+            } else {
+                System.err.println("[ERROR] livehouseId is missing");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ライブハウスIDが指定されていません");
+                return;
+            }
+
+            // フォワードまたは他の処理に進む
+            // 必要に応じて次の画面にリダイレクトまたはフォワード
+            request.setAttribute("year", year);
+            request.setAttribute("month", month);
+            request.setAttribute("day", day);
+            request.setAttribute("userId", userId);
+            request.setAttribute("livehouseId", livehouseId);  // livehouseId をリクエストに追加
+
+            // 次のページにフォワード (例: reservationDetails.jsp)
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at_reservation.jsp").forward(request, response);
 
-        } catch (Exception e) {
-            System.err.println("[ERROR] Error while processing reservation");
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "エラーが発生しました。");
+        } catch (NumberFormatException e) {
+            System.err.println("[ERROR] Invalid parameters: year=" + yearParam + ", month=" + monthParam + ", day=" + dayParam);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "パラメータが不正です");
         }
     }
 

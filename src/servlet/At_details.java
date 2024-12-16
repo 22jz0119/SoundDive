@@ -25,23 +25,34 @@ public class At_details extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            // リクエストからライブハウスIDを取得
-            String idParam = request.getParameter("id");
-            if (idParam == null || idParam.isEmpty()) {
+            // リクエストからライブハウスIDとユーザーIDを取得
+            String livehouseIdParam = request.getParameter("livehouseId");
+            String userIdParam = request.getParameter("userId");
+
+            // パラメータがない場合のエラーハンドリング
+            if (livehouseIdParam == null || livehouseIdParam.isEmpty()) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ライブハウスIDが指定されていません。");
                 return;
             }
+            if (userIdParam == null || userIdParam.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ユーザーIDが指定されていません。");
+                return;
+            }
 
+            // ライブハウスIDとユーザーIDを整数に変換
             int livehouseId;
+            int userId;
             try {
-                livehouseId = Integer.parseInt(idParam);
+                livehouseId = Integer.parseInt(livehouseIdParam);
+                userId = Integer.parseInt(userIdParam);
             } catch (NumberFormatException e) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なライブハウスID形式です。");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なID形式です。");
                 return;
             }
 
             // デバッグログ
             System.out.println("[DEBUG] livehouseId: " + livehouseId);
+            System.out.println("[DEBUG] userId: " + userId);
 
             // DAOの初期化
             DBManager dbManager = DBManager.getInstance();
@@ -89,6 +100,8 @@ public class At_details extends HttpServlet {
             request.setAttribute("daysInMonth", daysInMonth);
             request.setAttribute("year", year);
             request.setAttribute("month", month);
+            request.setAttribute("userId", userId);  // userId を JSP に渡す
+            request.setAttribute("livehouseId", livehouseId);  // livehouseId を JSP に渡す
 
             // JSPにフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at_details.jsp").forward(request, response);

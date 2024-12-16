@@ -1,30 +1,35 @@
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("[DEBUG] DOMContentLoaded event fired");
+
+    generateCalendar();
+});
+
 function generateCalendar() {
     console.log("[DEBUG] generateCalendar function called");
-	console.log("Reservation Status (Parsed):", reservationStatus);
-	console.log("Days in Month:", daysInMonth);
-	console.log("Year:", year);
-	console.log("Month:", month);
 
-    console.log(`[DEBUG] daysInCurrentMonth: ${daysInCurrentMonth}`);
+    const calendarBody = document.getElementById("calendar-body");
+    if (!calendarBody) {
+        console.error("[ERROR] Calendar body not found!");
+        return;
+    }
 
-    calendarBody.innerHTML = ""; // カレンダーをリセット
-
+    calendarBody.innerHTML = ""; // Reset calendar
     let date = 1;
     const firstDay = new Date(currentYear, currentMonth - 1, 1).getDay();
     console.log("[DEBUG] First day of the month (weekday):", firstDay);
 
     while (date <= daysInCurrentMonth) {
         const tr = document.createElement("tr");
+        console.log(`[DEBUG] Creating row for date=${date}`);
 
         for (let col = 0; col < 7; col++) {
             const td = document.createElement("td");
             td.classList.add("calendar-cell");
 
             if ((date === 1 && col < firstDay) || date > daysInCurrentMonth) {
-                td.textContent = ""; // 空白セル
+                td.textContent = ""; // Empty cell
+                console.log(`[DEBUG] Empty cell at col=${col}`);
             } else {
-                console.log(`[DEBUG] Generating cell for date: ${date}`);
-
                 const dayDiv = document.createElement("div");
                 dayDiv.classList.add("calendar-day");
                 dayDiv.textContent = date;
@@ -38,32 +43,30 @@ function generateCalendar() {
 
                 if (status === "〇") {
                     td.classList.add("clickable");
+                    const currentDate = date; // 必ずイベント内でこの変数を使う
+                    console.log(`[DEBUG] Day ${currentDate} is clickable`);
                     td.addEventListener("click", () => {
-                        const url = `${contextPath}/At_Reservation?year=${currentYear}&month=${currentMonth}&day=${date}&userId=${userId}`;
-                        console.log("[DEBUG] Click event triggered for URL:", url);
+                        const url = `${contextPath}/At_Reservation?year=${currentYear}&month=${currentMonth}&day=${currentDate}&userId=${userId}&livehouseId=${livehouseId}`;
+                        console.log(`[DEBUG] Redirecting to: ${url}`);
                         window.location.href = url;
                     });
                 } else {
                     td.classList.add("non-clickable");
+                    console.log(`[DEBUG] Day ${date} is non-clickable`);
                 }
 
                 td.appendChild(dayDiv);
                 td.appendChild(statusDiv);
-
-                date++; // 次の日付
-                console.log(`[DEBUG] Incremented date: ${date}`);
+                date++;
             }
 
             tr.appendChild(td);
-
-            if (date > daysInCurrentMonth) {
-                console.log(`[DEBUG] Exiting inner loop: date=${date}, daysInCurrentMonth=${daysInCurrentMonth}`);
-                break; // 月の日数を超えた場合、ループを終了
-            }
+            console.log(`[DEBUG] Added cell for col=${col}, date=${date}`);
         }
 
         calendarBody.appendChild(tr);
+        console.log("[DEBUG] Row added");
     }
 
-    console.log("[DEBUG] Calendar generated successfully");
+    console.log("[DEBUG] Calendar generation complete");
 }

@@ -67,39 +67,33 @@
         <!-- カレンダーと空き状況 -->
         <section class="calendar-section">
             <div>
-            <h2 class="OpenSpots-Reserve">空き状況・予約</h2>
-            <p class="OpenSpots-Reserve-detile">空いてる日にちを選択して、予約に進んでください</p>
-            <p class="Notes-or-Cautions">※誰も予約していない〇
-                ※確定していないが予約者多数△</p>
-        </div>
+                <h2 class="OpenSpots-Reserve">空き状況・予約</h2>
+                <p class="OpenSpots-Reserve-detile">空いてる日にちを選択して、予約に進んでください</p>
+                <p class="Notes-or-Cautions">※誰も予約していない〇
+                    ※確定していないが予約者多数△</p>
+            </div>
 
-        <div class="a-t-detail-calendar-containar">
-            <button id="prev-month" type="button">前の月</button>
-            <button id="next-month" type="button">次の月</button>
-        </div>
-        <div id="calendar-container"></div>
+            <div class="a-t-detail-calendar-containar">
+                <button id="prev-month" type="button">前の月</button>
+                <button id="next-month" type="button">次の月</button>
+            </div>
+            <div id="calendar-container"></div>
+        </section>
     </main>
     
+    <!-- JSPからJavaScriptにデータを渡す -->
     <script>
-	    // JSPからJavaScriptにデータを渡す
-	    const contextPath = '<%= request.getContextPath() %>';
-	    const userId = '<c:out value="${param.userId}" escapeXml="true" />';
-	</script>
+        const contextPath = '<%= request.getContextPath() %>';
+        const userId = '<c:out value="${param.userId}" escapeXml="true" />';
+        const livehouseId = '<c:out value="${livehouse.id}" escapeXml="true" />';  // livehouseId を渡す
+        const reservationData = JSON.parse('<c:out value="${reservationStatus}" escapeXml="false" />');
+        const currentYear = ${year != null ? year : 2024};
+        const currentMonth = ${month != null ? month : 12};
+        const daysInCurrentMonth = ${daysInMonth != null ? daysInMonth : 31};
+    </script>
 
-    <script>
-	    // reservationStatusがJSON形式の文字列として渡されている場合
-	    const reservationStatus = JSON.parse('<c:out value="${reservationStatus}" escapeXml="false" />');
-	    const daysInMonth = ${daysInMonth};
-	    const year = ${year};
-	    const month = ${month};
-	
-	    console.log(reservationStatus); // reservationStatusをコンソールに出力して確認
-	</script>
-	
-	<script>
-	    console.log("Reservation Status (JSP):", '<c:out value="${reservationStatus}" escapeXml="false" />');
-	</script>
-	<script src="<%= request.getContextPath() %>/assets/js/at_calender.js" defer></script>
+    <script src="<%= request.getContextPath() %>/assets/js/at_calender.js" defer></script>
+
     <table id="calendar-table" class="calendar-table">
         <thead>
             <tr>
@@ -114,6 +108,5 @@
         </thead>
         <tbody id="calendar-body"></tbody>
     </table>
-    
 </body>
 </html>
