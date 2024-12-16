@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -27,11 +27,11 @@
     <main>
         <!-- メインフォーム -->
         <form action="<%= request.getContextPath() %>/Livehouse_mypage" method="POST" enctype="multipart/form-data">
-            <!-- プロフィール画像 -->
+            <!-- プロフィール画像 
 			<div class="profile-container">
 			    <label class="profile-icon" for="fileInput">
 			        <span class="placeholder-text">アイコンをアップロード</span>
-			        <!-- プロフィール画像表示 -->
+
 			        <img id="profileImage" 
 			             src="${livehouse != null && livehouse.picture_image_naigaikan != null ? pageContext.request.contextPath + livehouse.picture_image_naigaikan : ''}" 
 			             alt="プロフィール画像" 
@@ -40,6 +40,28 @@
 			    <input type="file" id="fileInput" name="picture_image_naigaikan" accept="image/*" style="display: none;" onchange="previewImage(event, 'profileImage')">
 			</div>
 
+
+<!-- プロフィール画像 -->
+        <div class="profile-container">
+            <label class="profile-icon" for="fileInput">
+                <c:choose>
+                    <c:when test="${not empty userGroup.livehouse.picture_image_naigaikan}">
+                        <!-- 画像がある場合 -->
+                        <img id="profileImage" src="${pageContext.request.contextPath}${livehouse.picture_image_naigaikan}" alt="Profile Image" />
+                    </c:when>
+                    <c:otherwise>
+                        <!-- 画像がない場合 -->
+                        <span class="placeholder-text">アイコンをアップロード</span>
+                        <img id="profileImage" src="" alt="" style="display: none;">
+                    </c:otherwise>
+                </c:choose>
+            </label>
+            <input type="file" id="fileInput" name="picture_image_movie" accept="image/*" style="display: none;" onchange="previewImage()">
+        </div>
+        
+        
+        
+        
 
 
             <!-- 基本情報入力 -->
@@ -101,6 +123,22 @@
 			        <label for="gaikan-input">外観画像を選択</label>
 			    </div>
 			</figure>
+			
+			
+			<!-- プロフィール画像 -->
+        <div class="profile-container">
+            <label class="profile-icon" for="fileInput">
+                <c:choose>
+                    <c:when test="${not empty userGroup.picture_image_movie}">
+                        <!-- 画像がある場合 -->
+                        <img src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" alt="Profile Image" />
+                    </c:when>
+                    <c:otherwise>
+                        <!-- 画像がない場合 -->
+                        <span class="placeholder-text">アイコンをアップロード</span>
+                        <img id="profileImage" src="" alt="" style="display: none;">
+                    </c:otherwise>
+                </c:choose>
 
 
 
