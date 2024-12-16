@@ -250,10 +250,11 @@ public class Livehouse_informationDAO {
         String sql = "UPDATE livehouse_information SET owner_name = ?, equipment_information = ?, " +
                      "livehouse_explanation_information = ?, livehouse_detailed_information = ?, " +
                      "livehouse_name = ?, live_address = ?, live_tel_number = ?, update_date = ?, picture_image_naigaikan = ? " +
-                     "WHERE id = ?";
+                     "WHERE user_id = ?";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+            // パラメータの設定
             pstmt.setString(1, livehouse_information.getOwner_name());
             pstmt.setString(2, livehouse_information.getEquipment_information());
             pstmt.setString(3, livehouse_information.getLivehouse_explanation_information());
@@ -265,12 +266,31 @@ public class Livehouse_informationDAO {
             pstmt.setString(9, livehouse_information.getPicture_image_naigaikan());
             pstmt.setInt(10, livehouse_information.getId());
 
-            return pstmt.executeUpdate() > 0;
+            // デバッグログ: SQLステートメントの確認
+            System.out.println("Executing SQL: " + pstmt);
+
+            // クエリを実行し、更新された行数を取得
+            int rowsUpdated = pstmt.executeUpdate();
+
+            // デバッグログ: 実行結果の確認
+            System.out.println("Rows Updated: " + rowsUpdated);
+
+            // 更新成功なら true を返す
+            return rowsUpdated > 0;
+
         } catch (SQLException e) {
+            // デバッグログ: エラー詳細の出力
+            System.err.println("SQL Error during update:");
+            e.printStackTrace();
+
+            // エラー処理
             handleSQLException(e, "Failed to update Livehouse information with ID: " + livehouse_information.getId());
         }
+
+        // 更新失敗の場合は false を返す
         return false;
     }
+
 
     
     public int createApplication(int userId, int livehouseInformationId, LocalDate datetime, boolean trueFalse, LocalDate startTime, LocalDate finishTime) {

@@ -16,7 +16,7 @@
             </div>
             <nav class="header-nav">
                 <ul class="header-nav-ul">
-                    <li><a href="livehouse_home.html">HOME</a></li>
+                    <li><a href="<%= request.getContextPath() %>/At_Details" >HOME</a></li>
                     <li><a href="livehouse_mypage.html">MY PAGE</a></li>
                     <li><a href="#">000</a></li>
                     <li><a href="#">000</a></li>
@@ -28,15 +28,18 @@
         <!-- メインフォーム -->
         <form action="<%= request.getContextPath() %>/Livehouse_mypage" method="POST" enctype="multipart/form-data">
             <!-- プロフィール画像 -->
-				<div class="profile-container">
-				    <label class="profile-icon" for="fileInput">
-				        <span class="placeholder-text">アイコンをアップロード</span>
-				        <img id="profileImage" src="${livehouse != null && livehouse.picture_image_naigaikan != null ? livehouse.picture_image_naigaikan : ''}" 
-				             alt="プロフィール画像" 
-				             style="${livehouse != null && livehouse.picture_image_naigaikan != null ? 'display: block;' : 'display: none;'}">
-				    </label>
-				    <input type="file" id="fileInput" name="picture_image_naigaikan" accept="image/*" style="display: none;" onchange="previewImage()">
-				</div>
+			<div class="profile-container">
+			    <label class="profile-icon" for="fileInput">
+			        <span class="placeholder-text">アイコンをアップロード</span>
+			        <!-- プロフィール画像表示 -->
+			        <img id="profileImage" 
+			             src="${livehouse != null && livehouse.picture_image_naigaikan != null ? livehouse.picture_image_naigaikan : ''}" 
+			             alt="プロフィール画像" 
+			             style="display: ${livehouse != null && livehouse.picture_image_naigaikan != null ? 'block' : 'none'};">
+			    </label>
+			    <input type="file" id="fileInput" name="picture_image_naigaikan" accept="image/*" style="display: none;" onchange="previewImage(event, 'profileImage')">
+			</div>
+
 
 
             <!-- 基本情報入力 -->
@@ -80,22 +83,23 @@
             <figure class="livehouse-picture">
                 <!-- 内観画像 -->
                 <div class="image-container">
-                    <img id="naikan-preview" src="${livehouse != null && livehouse.naikanImagePath != null ? livehouse.naikanImagePath : ''}" 
+                    <img id="naikan-preview" src="${livehouse != null && livehouse.picture_image_naigaikan != null ? livehouse.picture_image_naigaikan : ''}"  
                          alt="内観画像" 
-                         style="${livehouse != null && livehouse.naikanImagePath != null ? 'display: block;' : 'display: none;'}">
-                    <input type="file" accept="image/*" id="naikan-input" name="naikanImage">
+                         style="${livehouse != null && livehouse.picture_image_naigaikan != null ? 'display: block;' : 'display: none;'}">
+                    <input type="file" accept="image/*" id="naikan-input" name="naikanImage" onchange="previewImage(event, 'naikan-preview')">
                     <label for="naikan-input">内観画像を選択</label>
                 </div>
 
                 <!-- 外観画像 -->
                 <div class="image-container">
-                    <img id="gaikan-preview" src="${livehouse != null && livehouse.gaikanImagePath != null ? livehouse.gaikanImagePath : ''}" 
+                    <img id="gaikan-preview" src="${livehouse != null && livehouse.picture_image_naigaikan != null ? livehouse.picture_image_naigaikan : ''}"  
                          alt="外観画像" 
-                         style="${livehouse != null && livehouse.gaikanImagePath != null ? 'display: block;' : 'display: none;'}">
-                    <input type="file" accept="image/*" id="gaikan-input" name="gaikanImage">
+                         style="${livehouse != null && livehouse.picture_image_naigaikan != null ? 'display: block;' : 'display: none;'}">
+                    <input type="file" accept="image/*" id="gaikan-input" name="gaikanImage" onchange="previewImage(event, 'gaikan-preview')">
                     <label for="gaikan-input">外観画像を選択</label>
                 </div>
             </figure>
+
 
             <!-- 登録ボタン -->
             <div class="live-mypage-keep">
@@ -109,6 +113,44 @@
                 <p><%= request.getAttribute("errorMessage") %></p>
             </div>
         <% } %>
+        
+         <!-- スクリプト -->
+        <script>
+     // プレビュー関数 (指定されたプレビューIDに画像を表示)
+	        function previewImage(event, previewId) {
+	            const input = event.target;
+	            if (input.files && input.files[0]) {
+	                const reader = new FileReader();
+	                reader.onload = function (e) {
+	                    const previewImage = document.getElementById(previewId);
+	                    previewImage.src = e.target.result; // 選択した画像をプレビュー
+	                    previewImage.style.display = 'block'; // 表示を有効化
+	                };
+	                reader.readAsDataURL(input.files[0]);
+	            }
+	        }
+
+
+            // ページ読み込み時に保存済み画像がある場合は表示
+            window.onload = function () {
+                const profileImage = document.getElementById('profileImage');
+                const naikanPreview = document.getElementById('naikan-preview');
+                const gaikanPreview = document.getElementById('gaikan-preview'); 
+
+                // 保存された画像がある場合、その画像を表示
+                if (profileImage && profileImage.src) {
+                    profileImage.style.display = 'block';
+                }
+                if (naikanPreview && naikanPreview.src) {
+                    naikanPreview.style.display = 'block';
+                }
+                if (gaikanPreview && gaikanPreview.src) {
+                    gaikanPreview.style.display = 'block';
+                }
+            };
+        </script>
+
+
     </main>
 </body>
 </html>
