@@ -194,5 +194,33 @@ public class UserDAO {
         // セッションにユーザーIDがない場合、nullを返す
         return null;
     }
+ // userId で User 情報を取得
+    public User findUserById(int userId) {
+        String sql = "SELECT id, name, password, tel_number, address, create_date, update_date, user_type FROM user WHERE id = ?";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId); // userIdをセット
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new User(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("password"),
+                        rs.getString("tel_number"),
+                        rs.getString("address"),
+                        rs.getTimestamp("create_date"),
+                        rs.getTimestamp("update_date"),
+                        rs.getString("user_type")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while fetching user by ID: " + userId);
+            e.printStackTrace();
+        }
+        return null; // ユーザーが見つからなかった場合
+    }
+ 
 
 }
