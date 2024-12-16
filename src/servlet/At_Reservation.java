@@ -89,6 +89,5 @@ public class At_Reservation extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // 必要に応じてPOST処理を追加
     }
 }
