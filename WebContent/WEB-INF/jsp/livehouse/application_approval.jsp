@@ -1,5 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <!DOCTYPE html>
 <html lang="ja">
@@ -42,35 +43,34 @@
             </ul>
 
             <div class="application-approval-div1">
-            	<c:choose>
-    <c:when test="${application != null}">
-        <ul class="application-approval-ul-2">
-            <li class="application-approval-li-1"><p>予約者名</p></li>
-            <!-- us_name が null でない場合に表示、それ以外は「名前なし」と表示 -->
-            <li class="application-approval-li-2">
-                <p>${application.us_name != null ? application.us_name : '名前なし'}</p>
-            </li>
-        </ul>
+                <c:choose>
+                    <c:when test="${application != null}">
+                         <ul class="application-approval-ul-2">
+                            <li class="application-approval-li-1"><p>予約者名</p></li>
+                            <li class="application-approval-li-2">
+                                <p>${application.us_name != null ? application.us_name : '名前なし'}</p>
+                            </li>
+                        </ul>
 
-        <ul class="application-approval-ul-2">
-            <li class="application-approval-li-1"><p>予約日時</p></li>
-            <!-- date_time が null でない場合に表示、それ以外は「未定」と表示 -->
-            <li class="application-approval-li-2">
-                <p>${application.date_time != null ? application.date_time : '未定'}</p>
-            </li>
-        </ul>
+                        <ul class="application-approval-ul-2">
+                            <li class="application-approval-li-1"><p>予約日時</p></li>
+                            <li class="application-approval-li-2">
+                                <!-- date_timeをフォーマットして表示 -->
+                                <fmt:formatDate value="${application.datetime}" pattern="yyyy-MM-dd HH:mm:ss" var="formattedDate" />
+                                <!-- フォーマットされた日時を表示 -->
+                                <p>${formattedDate != null ? formattedDate : '未定'}</p>
+                            </li>
+                        </ul>
 
-        <ul class="application-approval-ul-2">
-            <li class="application-approval-li-1"><p>前払い金額</p></li>
-            <!-- 固定の前払い金額を表示 -->
-            <li class="application-approval-li-2"><p>4000円</p></li>
-        </ul>
-    </c:when>
-    <c:otherwise>
-        <p>データがありません。</p>
-    </c:otherwise>
-</c:choose>
- 
+                        <ul class="application-approval-ul-2">
+                            <li class="application-approval-li-1"><p>前払い金額</p></li>
+                            <li class="application-approval-li-2"><p>4000円</p></li>
+                        </ul>
+                    </c:when>
+                    <c:otherwise>
+                        <p>データがありません。</p>
+                    </c:otherwise>
+                </c:choose>
             </div>
             <div class="application-approval-div2">
                 <ul class="application-approval-ul-3">
@@ -79,7 +79,7 @@
             </div>
         </section>
         <div class="application-approval-backhome-btn-div">
-            <a href="<%= request.getContextPath() %>//Livehouse_home" class="application-approval-backhome-btn">ホームへ戻る</a>
+            <a href="<%= request.getContextPath() %>/Livehouse_home" class="application-approval-backhome-btn">ホームへ戻る</a>
         </div>
     </main>
 </body>
