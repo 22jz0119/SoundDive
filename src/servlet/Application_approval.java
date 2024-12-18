@@ -1,7 +1,6 @@
 package servlet;
 
 import java.io.IOException;
-import java.sql.SQLException; // SQLExceptionをインポート
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,16 +10,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
-import model.Livehouse_application;
+import model.LivehouseApplicationWithGroup;
 
 @WebServlet("/Application_approval")
 public class Application_approval extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // DBManagerインスタンスを取得
         DBManager dbManager = DBManager.getInstance();
         Livehouse_applicationDAO livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
 
+        // リクエストパラメータからapplicationIdを取得
         String applicationIdParam = request.getParameter("id");
 
         if (applicationIdParam != null) {
@@ -28,29 +29,29 @@ public class Application_approval extends HttpServlet {
                 int applicationId = Integer.parseInt(applicationIdParam);
 
                 // applicationIdに基づいて申請データを取得
-                Livehouse_application application = livehouseApplicationDAO.getLivehouse_applicationById(applicationId);
+                LivehouseApplicationWithGroup applicationDetails = livehouseApplicationDAO.getApplicationDetailsById(applicationId);
 
-                if (application != null) {
-                    String userName = livehouseApplicationDAO.getUserNameByUserId(application.getUser_id());
-                    application.setUs_name(userName);
+                if (applicationDetails != null) {
+                    // ユーザーIDからus_nameを取得
+                    String userName = livehouseApplicationDAO.getUserNameByUserId(applicationDetails.getUserId());
+                    applicationDetails.setUs_name(userName);  // LivehouseApplicationWithGroupオブジェクトにユーザー名を設定
 
-                    request.setAttribute("application", application);
+                    // applicationDetails をリクエストスコープに渡す
+                    request.setAttribute("application", applicationDetails);
                 } else {
                     request.setAttribute("error", "指定された申請データが見つかりません");
                 }
             } catch (NumberFormatException e) {
+                // IDの形式が正しくない場合はエラーメッセージを設定
                 request.setAttribute("error", "無効な申請ID形式です");
                 System.err.println("[ERROR] NumberFormatException: " + e.getMessage());
                 e.printStackTrace();
-            } catch (SQLException e) {
-                request.setAttribute("error", "データベースエラーが発生しました");
-                System.err.println("[ERROR] SQLException occurred while processing the application: " + e.getMessage());
-                e.printStackTrace();
-            }
+            } 
         } else {
             request.setAttribute("error", "申請IDが指定されていません");
         }
 
+        // JSPページにフォワード
         request.getRequestDispatcher("WEB-INF/jsp/livehouse/application_approval.jsp").forward(request, response);
     }
 

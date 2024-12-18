@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>予約確認ページ</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
 </head>
 <body>
     <header class="main-header">
@@ -112,9 +113,17 @@
                 </div>
             </div>
         </section>
-        <form action="confirmBooking" method="post">
-        <button type="submit" class="btn">予約を確定する</button>
-    </form>
+		<form action="<%= request.getContextPath() %>/At_livehouse_reservation_completed" method="post">
+		    <input type="hidden" name="year" value="${selectedYear}">
+		    <input type="hidden" name="month" value="${selectedMonth}">
+		    <input type="hidden" name="day" value="${selectedDay}">
+		    <input type="hidden" name="time" value="${application.start_time}">
+		    <input type="hidden" name="livehouseId" value="${livehouseInfo.id}">
+		    <input type="hidden" name="userId" value="${user.id}">
+		    <input type="hidden" name="applicationId" value="${application.id}">
+		    <button type="submit" class="btn">予約を確定する</button>
+		</form>
+    
     </main>
 </body>
 </html>

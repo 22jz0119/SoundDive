@@ -28,40 +28,8 @@
     </header>
 
     <main class="artist-livehouse-details-main">
-        <!-- ライブハウス情報 -->
         <section class="artist-livehouse-detail-section">
-            <div class="A-t-detail-livehousename">
-                <p class="artist-livehouse-detail-oner">${livehouse.livehouse_name}</p>
-            </div>
-            <div class="a-t-livehouse-detail-containar">
-                <div class="a-t-livehouse-detail-img-div">
-                    <img src="<%= request.getContextPath() %>/assets/img/key-visual.jpg" alt="" class="artist_livehouse_details-img1">
-                </div>
-                <div class="a-t-detail-description-div1">
-                    <ul class="A-t-discription-ul2">
-                        <li class="a-t-detail-onername-title a-t-detail-1"><p>オーナー</p></li>
-                        <li class="a-t-detail-onername a-t-detail-2"><p>${livehouse.owner_name}</p></li>
-                    </ul>
-                    <ul class="A-t-discription-ul2">
-                        <li class="a-t-detail-address-title a-t-detail-1"><p>住所</p></li>
-                        <li class="a-t-detail-address a-t-detail-2"><p>${livehouse.live_address}</p></li>
-                    </ul>
-                    <ul class="A-t-discription-ul2">
-                        <li class="a-t-detail-tell-title a-t-detail-1"><p>電話番号</p></li>
-                        <li class="a-t-detail-tell a-t-detail-2"><p>${livehouse.live_tel_number}</p></li>
-                    </ul>
-                </div>
-                <div class="a-t-detail-description-div2">
-                    <ul class="A-t-discription-ul3">
-                        <li class="a-t-detail-explanation-title a-t-detail-1"><p>ライブハウス説明情報</p></li>
-                        <li class="a-t-detail-explanation a-t-detail-2"><p>${livehouse.livehouse_explanation_information}</p></li>
-                    </ul> 
-                    <ul class="A-t-discription-ul3">   
-                        <li class="a-t-detail-description-title a-t-detail-1"><p>ライブハウス詳細情報</p></li>
-                        <li class="a-t-detail-description a-t-detail-2"><p>${livehouse.livehouse_detailed_information}</p></li>
-                    </ul>
-                </div>
-            </div>
+            <!-- ライブハウス情報を表示 -->
         </section>
 
         <!-- カレンダーと空き状況 -->
@@ -83,25 +51,42 @@
     
     <!-- JSPからJavaScriptにデータを渡す -->
     <script>
-        const contextPath = '<%= request.getContextPath() %>';
-        const userId = '<c:out value="${param.userId}" escapeXml="true" />';
-        const applicationId = '<c:out value="${param.applicationId}" escapeXml="true" />';
-        const livehouseId = '<c:out value="${livehouse.id}" escapeXml="true" />';  // livehouseId を渡す
-        const reservationData = JSON.parse('<c:out value="${reservationStatus}" escapeXml="false" />');
-        const currentYear = ${year != null ? year : 2024};
-        const currentMonth = ${month != null ? month : 12};
-        const daysInCurrentMonth = ${daysInMonth != null ? daysInMonth : 31};
+    const contextPath = '<%= request.getContextPath() %>';
+    const livehouseType = '<c:out value="${livehouseType}" escapeXml="true" />'; // 修正
+    const userId = livehouseType === 'multi' ? '<c:out value="${userId}" escapeXml="true" />' : null; // 修正
+    const applicationId = livehouseType === 'multi' ? '<c:out value="${applicationId}" escapeXml="true" />' : null; // 修正
+    const livehouseId = '<c:out value="${livehouse.id}" escapeXml="true" />';
+    const reservationDataRaw = '<c:out value="${reservationStatus}" escapeXml="false" />';
+    let reservationData = {};
 
-        
-        console.log("[DEBUG] contextPath:", contextPath);
-        console.log("[DEBUG] userId:", userId);
-        console.log("[DEBUG] applicationId:", applicationId);
-        console.log("[DEBUG] livehouseId:", livehouseId);
-        console.log("[DEBUG] reservationData:", reservationData);
-        console.log("[DEBUG] currentYear:", currentYear);
-        console.log("[DEBUG] currentMonth:", currentMonth);
-        console.log("[DEBUG] daysInCurrentMonth:", daysInCurrentMonth);
-    </script>
+    console.log("[DEBUG] Raw reservationData from JSP:", reservationDataRaw);
+
+    // reservationData を安全にパース
+    try {
+        if (reservationDataRaw && reservationDataRaw.trim() !== "") {
+            reservationData = JSON.parse(reservationDataRaw);
+        } else {
+            console.warn("[WARNING] reservationData is empty or null.");
+        }
+    } catch (error) {
+        console.error("[ERROR] Failed to parse reservationData:", error);
+    }
+
+    const currentYear = ${year != null ? year : 2024};
+    const currentMonth = ${month != null ? month : 12};
+    const daysInCurrentMonth = ${daysInMonth != null ? daysInMonth : 31};
+
+    console.log("[DEBUG] JSP contextPath:", contextPath);
+    console.log("[DEBUG] JSP livehouseType:", livehouseType);
+    console.log("[DEBUG] JSP userId:", userId);
+    console.log("[DEBUG] JSP applicationId:", applicationId);
+    console.log("[DEBUG] JSP livehouseId:", livehouseId);
+    console.log("[DEBUG] Parsed reservationData:", reservationData);
+    console.log("[DEBUG] currentYear:", currentYear);
+    console.log("[DEBUG] currentMonth:", currentMonth);
+    console.log("[DEBUG] daysInCurrentMonth:", daysInCurrentMonth);
+</script>
+
 
     <script src="<%= request.getContextPath() %>/assets/js/at_calender.js" defer></script>
 

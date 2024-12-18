@@ -59,15 +59,26 @@
                             <li><p>100人</p></li>
                             <li><p>${livehouse.livehouse_explanation_information}</p></li>
                             <li class="artist-search-decision">
-    							<!-- userId と applicationId をリンクに追加 -->
-							    <a href="<c:url value='/At_details'>
-							                <c:param name='userId' value='${userId}' />
-							                <c:param name='livehouseId' value='${livehouse.id}' />
-							                <c:param name='applicationId' value='${applicationId}' />
-							             </c:url>"
-							       class="artist-result-decision-button">詳細・予約</a>
-							</li>
-
+                                <!-- ソロとマルチの分岐 -->
+                                <c:choose>
+                                    <c:when test="${param.livehouse_type == 'solo'}">
+                                        <!-- ソロライブの場合 -->
+                                        <a href="<c:url value='/At_details'>
+                                            <c:param name='livehouseId' value='${livehouse.id}' />
+                                            <c:param name='livehouse_type' value='solo'/>
+                                        </c:url>" class="artist-result-decision-button">詳細・予約</a>
+                                    </c:when>
+                                    <c:when test="${param.livehouse_type == 'multi'}">
+                                        <!-- マルチライブの場合 -->
+                                        <a href="<c:url value='/At_details'>
+                                            <c:param name='userId' value='${userId}' />
+                                            <c:param name='livehouseId' value='${livehouse.id}' />
+                                            <c:param name='applicationId' value='${applicationId}' />
+                                            <c:param name='livehouse_type' value='multi'/>
+                                        </c:url>" class="artist-result-decision-button">詳細・予約</a>
+                                    </c:when>
+                                </c:choose>
+                            </li>
                         </ul>
                     </div>
                 </div>

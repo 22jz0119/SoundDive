@@ -17,15 +17,25 @@ import model.Livehouse_information;
 public class At_livehouse_reservation_completed extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
+<<<<<<< HEAD
             // パラメータ取得
             String applicationIdParam = request.getParameter("applicationId");
             if (applicationIdParam == null || applicationIdParam.trim().isEmpty()) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "申請IDが指定されていません。");
                 return;
             }
+=======
+            // 予約完了メッセージ
+            String reservationMessage = "予約が完了しました。";
 
+            // 必要なデータをリクエストスコープに設定
+            request.setAttribute("reservationMessage", reservationMessage);
+>>>>>>> branch 'main' of https://github.com/22jz0119/SoundDive.git
+
+<<<<<<< HEAD
             int applicationId = Integer.parseInt(applicationIdParam);
 
             // DAOの初期化
@@ -55,9 +65,23 @@ public class At_livehouse_reservation_completed extends HttpServlet {
             request.getRequestDispatcher("reservation_completed.jsp").forward(request, response);
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な申請IDです。");
+=======
+            // 予約完了ページにフォワード
+            request.getRequestDispatcher("/WEB-INF/jsp/artist/at-livehouse-reservation-completed.jsp").forward(request, response);
+
+>>>>>>> branch 'main' of https://github.com/22jz0119/SoundDive.git
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "サーバーエラーが発生しました: " + e.getMessage());
         }
     }
+<<<<<<< HEAD
+=======
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // GETリクエストの場合も同様の処理をする
+        doPost(request, response);
+    }
+>>>>>>> branch 'main' of https://github.com/22jz0119/SoundDive.git
 }

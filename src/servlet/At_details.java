@@ -24,43 +24,36 @@ public class At_details extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+    	System.out.println("[DEBUG] Query String: " + request.getQueryString());
+    	request.setCharacterEncoding("UTF-8");
+
         try {
-            // リクエストからライブハウスIDとユーザーID、applicationIdを取得
+            // リクエストから必要なパラメータを取得
             String livehouseIdParam = request.getParameter("livehouseId");
+            String livehouseType = request.getParameter("livehouse_type");
             String userIdParam = request.getParameter("userId");
             String applicationIdParam = request.getParameter("applicationId");
 
-            // パラメータがない場合のエラーハンドリング
+            // パラメータのデバッグログ
+            System.out.println("[DEBUG] Received Parameters - livehouseId: " + livehouseIdParam + ", livehouseType: " + livehouseType
+                    + ", userId: " + userIdParam + ", applicationId: " + applicationIdParam);
+
             if (livehouseIdParam == null || livehouseIdParam.isEmpty()) {
+                System.err.println("[ERROR] livehouseId is missing.");
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ライブハウスIDが指定されていません。");
-                return;
-            }
-            if (userIdParam == null || userIdParam.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ユーザーIDが指定されていません。");
-                return;
-            }
-            if (applicationIdParam == null || applicationIdParam.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "申請IDが指定されていません。");
                 return;
             }
 
             // IDの変換
             int livehouseId;
-            int userId;
-            int applicationId;
             try {
                 livehouseId = Integer.parseInt(livehouseIdParam);
-                userId = Integer.parseInt(userIdParam);
-                applicationId = Integer.parseInt(applicationIdParam);
+                System.out.println("[DEBUG] Parsed livehouseId: " + livehouseId);
             } catch (NumberFormatException e) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なID形式です。");
+                System.err.println("[ERROR] Invalid livehouseId format: " + livehouseIdParam);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なライブハウスID形式です。");
                 return;
             }
-
-            // デバッグログ
-            System.out.println("[DEBUG] livehouseId: " + livehouseId);
-            System.out.println("[DEBUG] userId: " + userId);
-            System.out.println("[DEBUG] applicationId: " + applicationId);
 
             // DAOの初期化
             DBManager dbManager = DBManager.getInstance();
@@ -70,9 +63,11 @@ public class At_details extends HttpServlet {
             // ライブハウス情報を取得
             Livehouse_information livehouseInfo = livehouseInfoDao.getLivehouse_informationById(livehouseId);
             if (livehouseInfo == null) {
+                System.err.println("[ERROR] Livehouse not found for ID: " + livehouseId);
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "指定されたライブハウスが見つかりません。");
                 return;
             }
+            System.out.println("[DEBUG] Retrieved Livehouse Information: " + livehouseInfo);
 
             // 年と月のパラメータを取得
             String yearParam = request.getParameter("year");
@@ -84,40 +79,57 @@ public class At_details extends HttpServlet {
             int month = (monthParam != null && !monthParam.isEmpty())
                     ? Integer.parseInt(monthParam)
                     : java.time.LocalDate.now().getMonthValue();
+            System.out.println("[DEBUG] Year: " + year + ", Month: " + month);
 
             // 日数の計算
             int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
+            System.out.println("[DEBUG] Days in Month: " + daysInMonth);
 
             // 日ごとの予約状況を取得
             Map<Integer, String> reservationStatus = livehouseAppDao.getReservationStatusByMonthAndLivehouseId(livehouseId, year, month);
+            System.out.println("[DEBUG] Generated Reservation Status Map: " + reservationStatus);
 
             // JSON形式に変換
             Gson gson = new Gson();
             String reservationStatusJson = gson.toJson(reservationStatus);
-
-            // デバッグログ
             System.out.println("[DEBUG] Reservation Status JSON: " + reservationStatusJson);
 
-            // JSPにデータを渡す
+            // リクエストスコープに共通データをセット
             request.setAttribute("livehouse", livehouseInfo);
             request.setAttribute("reservationStatus", reservationStatusJson);
             request.setAttribute("daysInMonth", daysInMonth);
             request.setAttribute("year", year);
             request.setAttribute("month", month);
-            request.setAttribute("userId", userId);
             request.setAttribute("livehouseId", livehouseId);
-            request.setAttribute("applicationId", applicationId); // applicationIdをセット
+            request.setAttribute("livehouseType", livehouseType);
+
+            // マルチライブの場合の追加データ
+            if ("multi".equals(livehouseType)) {
+                if (userIdParam == null || userIdParam.isEmpty() || applicationIdParam == null || applicationIdParam.isEmpty()) {
+                    System.err.println("[ERROR] Missing userId or applicationId for multi livehouse.");
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ユーザーIDまたは申請IDが指定されていません。");
+                    return;
+                }
+
+                int userId = Integer.parseInt(userIdParam);
+                int applicationId = Integer.parseInt(applicationIdParam);
+                request.setAttribute("userId", userId);
+                request.setAttribute("applicationId", applicationId);
+
+                System.out.println("[DEBUG] Multi Livehouse - userId: " + userId + ", applicationId: " + applicationId);
+            }
 
             // JSPにフォワード
+            System.out.println("[DEBUG] Forwarding to JSP: /WEB-INF/jsp/artist/at_details.jsp");
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at_details.jsp").forward(request, response);
 
         } catch (Exception e) {
+            System.err.println("[ERROR] Exception occurred: " + e.getMessage());
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "エラーが発生しました。");
         }
     }
-
-    @Override
+        @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 必要なら POST リクエスト用の処理を追加
     }
