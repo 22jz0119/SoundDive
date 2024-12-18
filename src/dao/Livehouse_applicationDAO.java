@@ -26,6 +26,36 @@ public class Livehouse_applicationDAO {
         this.dbManager = dbManager;
     }
     
+    //soloの場合の申請 梅島
+    public boolean saveSoloReservation(int livehouseId, int userId, LocalDateTime dateTime, LocalDateTime startTime, DBManager dbManager) {
+        String sql = "INSERT INTO livehouse_application_table (livehouse_information_id, user_id, date_time, start_time, true_false, create_date, update_date) " +
+                     "VALUES (?, ?, ?, ?, true, NOW(), NOW())";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            // パラメータを設定
+            stmt.setInt(1, livehouseId); // livehouse_information_id
+            stmt.setInt(2, userId);      // user_id
+            stmt.setTimestamp(3, Timestamp.valueOf(dateTime)); // date_time
+            stmt.setTimestamp(4, Timestamp.valueOf(startTime)); // start_time
+
+            // SQL 実行
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println("[DEBUG] Rows affected by saveSoloReservation: " + rowsAffected);
+
+            // 成功した場合 true を返す
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            // エラーハンドリング
+            System.err.println("[ERROR] Failed to save solo reservation: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    
     // Livehouse_applicationを挿入するメソッド
     public boolean insertLivehouse_application(Livehouse_application livehouse_application) {
         // AUTO_INCREMENTの場合、idを除外
@@ -58,22 +88,25 @@ public class Livehouse_applicationDAO {
         return false;
     }
     
-	    public boolean updateLivehouseApplication(int applicationId, boolean trueFalse, LocalDateTime startTime) {
-	        String sql = "UPDATE livehouse_application_table SET true_false = ?, start_time = ? WHERE id = ?";
-	        try (Connection conn = dbManager.getConnection();
-	             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	
-	            pstmt.setBoolean(1, trueFalse); // true_false を更新
-	            pstmt.setTimestamp(2, Timestamp.valueOf(startTime)); // start_time を更新
-	            pstmt.setInt(3, applicationId); // 更新対象のid
-	
-	            int affectedRows = pstmt.executeUpdate();
-	            return affectedRows > 0; // 更新成功ならtrue
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	            return false; // 更新失敗ならfalse
-	        }
-	    }
+    public boolean updateLivehouseApplication(int applicationId, int livehouseInformationId, LocalDateTime dateTime, LocalDateTime startTime) {
+        String sql = "UPDATE livehouse_application_table " +
+                     "SET livehouse_information_id = ?, date_time = ?, start_time = ? " +
+                     "WHERE id = ?";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, livehouseInformationId); // livehouse_information_id を更新
+            pstmt.setTimestamp(2, Timestamp.valueOf(dateTime)); // date_time を更新
+            pstmt.setTimestamp(3, Timestamp.valueOf(startTime)); // start_time を更新
+            pstmt.setInt(4, applicationId); // 更新対象のid
+
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0; // 更新成功ならtrue
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // 更新失敗ならfalse
+        }
+    }
 
     // IDでLivehouse_applicationを取得するメソッド
     public Livehouse_application getLivehouse_applicationById(int id) {

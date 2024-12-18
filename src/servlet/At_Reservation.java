@@ -24,17 +24,15 @@ public class At_Reservation extends HttpServlet {
         String yearParam = request.getParameter("year");
         String monthParam = request.getParameter("month");
         String dayParam = request.getParameter("day");
-        String userId = request.getParameter("userId");
-        String livehouseIdParam = request.getParameter("livehouseId"); // livehouseId を受け取る
-        String applicationIdParam = request.getParameter("applicationId"); // applicationId を受け取る
+        String livehouseIdParam = request.getParameter("livehouseId");
+        String livehouseType = request.getParameter("livehouse_type"); // livehouse_type を受け取る
 
         // パラメータログ
         System.out.println("[DEBUG] Received year: " + yearParam);
         System.out.println("[DEBUG] Received month: " + monthParam);
         System.out.println("[DEBUG] Received day: " + dayParam);
-        System.out.println("[DEBUG] Received userId: " + userId);
         System.out.println("[DEBUG] Received livehouseId: " + livehouseIdParam);
-        System.out.println("[DEBUG] Received applicationId: " + applicationIdParam);
+        System.out.println("[DEBUG] Received livehouseType: " + livehouseType);
 
         try {
             // 入力チェック - 年月日が存在しているか、空でないかをチェック
@@ -48,12 +46,6 @@ public class At_Reservation extends HttpServlet {
             }
             if (dayParam == null || dayParam.trim().isEmpty()) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "日が指定されていません。");
-                return;
-            }
-
-            // userIdのバリデーション
-            if (userId == null || userId.trim().isEmpty()) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ユーザーIDが指定されていません");
                 return;
             }
 
@@ -71,17 +63,20 @@ public class At_Reservation extends HttpServlet {
                 return;
             }
 
-            // applicationId のバリデーション
-            int applicationId = -1;
-            if (applicationIdParam != null && !applicationIdParam.trim().isEmpty()) {
-                try {
-                    applicationId = Integer.parseInt(applicationIdParam);
-                } catch (NumberFormatException e) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "applicationIdが不正です");
-                    return;
-                }
+            // livehouseType による処理分岐
+            if (livehouseType == null || livehouseType.trim().isEmpty()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ライブハウスタイプが指定されていません");
+                return;
+            }
+
+            if ("solo".equalsIgnoreCase(livehouseType)) {
+                System.out.println("[DEBUG] ソロライブモード");
+                // ソロの場合の処理は特に追加データは不要
+            } else if ("multi".equalsIgnoreCase(livehouseType)) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "マルチライブのリクエストには追加情報が必要です");
+                return;
             } else {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "applicationIdが指定されていません");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なライブハウスタイプです");
                 return;
             }
 
@@ -103,16 +98,15 @@ public class At_Reservation extends HttpServlet {
             request.setAttribute("year", year);
             request.setAttribute("month", month);
             request.setAttribute("day", day);
-            request.setAttribute("userId", userId);
             request.setAttribute("livehouseId", livehouseId);
-            request.setAttribute("applicationId", applicationId); // applicationId を追加
+            request.setAttribute("livehouseType", livehouseType);
 
             // ログ確認
-            System.out.println("[DEBUG] Set attributes: year=" + year + ", month=" + month + ", day=" + day + 
-                               ", userId=" + userId + ", livehouseId=" + livehouseId + ", applicationId=" + applicationId);
+            System.out.println("[DEBUG] Set attributes: year=" + year + ", month=" + month + ", day=" + day +
+                               ", livehouseId=" + livehouseId + ", livehouseType=" + livehouseType);
 
             // 次のページにフォワード
-            request.getRequestDispatcher("/WEB-INF/jsp/artist/at_reservation.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/jsp/artist/at-booking-confirmation.jsp").forward(request, response);
 
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な年月日が指定されています。");

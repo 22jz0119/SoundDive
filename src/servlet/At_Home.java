@@ -32,10 +32,12 @@ public class At_Home extends HttpServlet {
         String action = request.getParameter("action");
         if ("solo".equals(action)) {
             System.out.println("[DEBUG] Solo live action triggered.");
-            response.sendRedirect(request.getContextPath() + "/SoloLiveServlet");
+            // ソロライブに関連する処理を実行し、livehouse_type をリダイレクトURLに追加
+            response.sendRedirect(request.getContextPath() + "/At_livehouse_search?livehouse_type=solo");
         } else if ("multi".equals(action)) {
             System.out.println("[DEBUG] Multi live action triggered.");
-            response.sendRedirect(request.getContextPath() + "/MultiLiveServlet");
+            // マルチライブに関連する処理を実行し、livehouse_type をリダイレクトURLに追加
+            response.sendRedirect(request.getContextPath() + "/At_Cogig?livehouse_type=multi");
         } else {
             System.out.println("[DEBUG] Unknown action: " + action);
             response.sendRedirect(request.getContextPath() + "/At_Home");
