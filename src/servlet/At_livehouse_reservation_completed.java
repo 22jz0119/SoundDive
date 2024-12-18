@@ -28,4 +28,5 @@ public class At_livehouse_reservation_completed extends HttpServlet {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "サーバーでエラーが発生しました: " + e.getMessage());
         }
     }
+    
 }
