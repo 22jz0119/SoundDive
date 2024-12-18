@@ -18,8 +18,7 @@
             </div>
             <nav class="header-nav">
                 <ul class="header-nav-ul">
-                    <li><a href="<%= request.getContextPath() %>/At_Details">HOME</a></li>
-                    <li><a href="livehouse_mypage.html">MY PAGE</a></li>
+                    <li><a href="<%= request.getContextPath() %>/Livehouse_home">HOME</a></li>
                     <li><a href="#">000</a></li>
                     <li><a href="#">000</a></li>
                 </ul>

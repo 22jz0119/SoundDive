@@ -17,8 +17,8 @@
             <h1 class="main-title">Sound Dive</h1>
             <nav class="header-nav">
                 <ul class="header-nav-ul">
-                    <li><a href="livehouse_home.html">HOME</a></li>
-                    <li><a href="livehouse_mypage.html">MY PAGE</a></li>
+                    <li><a href="<%= request.getContextPath() %>/Livehouse_home">HOME</a></li>
+                    <li><a href="<%= request.getContextPath() %>/Livehouse_mypage">MY PAGE</a></li>
                     <li><a href="#">その他1</a></li>
                     <li><a href="#">その他2</a></li>
                 </ul>

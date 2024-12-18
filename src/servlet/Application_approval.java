@@ -8,29 +8,47 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dao.Artist_groupDAO;
 import dao.DBManager;
-import model.Artist_group;
+import dao.Livehouse_applicationDAO;
+import model.LivehouseApplicationWithGroup;
 
 @WebServlet("/Application_approval")
 public class Application_approval extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // DBManagerインスタンスを取得してArtist_groupDAOを作成
+        // DBManagerインスタンスを取得
         DBManager dbManager = DBManager.getInstance();
-        Artist_groupDAO artistGroupDAO = new Artist_groupDAO(dbManager);
+        Livehouse_applicationDAO livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
 
-        // サンプルとして、IDが1のアーティストグループ情報を取得
-        int artistGroupId = 1;  // 取得したいArtist_groupのIDを指定
-        Artist_group artistGroup = artistGroupDAO.getArtist_groupById(artistGroupId);
+        // リクエストパラメータからapplicationIdを取得
+        String applicationIdParam = request.getParameter("id");
 
-        // アーティストグループ情報が見つかればaccount_nameをJSPに渡し、見つからなければエラーメッセージを渡す
-        if (artistGroup != null) {
-            String accountName = artistGroup.getAccount_name(); // account_name属性を取得
-            request.setAttribute("accountName", accountName); // JSPに渡す
+        if (applicationIdParam != null) {
+            try {
+                int applicationId = Integer.parseInt(applicationIdParam);
+
+                // applicationIdに基づいて申請データを取得
+                LivehouseApplicationWithGroup applicationDetails = livehouseApplicationDAO.getApplicationDetailsById(applicationId);
+
+                if (applicationDetails != null) {
+                    // ユーザーIDからus_nameを取得
+                    String userName = livehouseApplicationDAO.getUserNameByUserId(applicationDetails.getUserId());
+                    applicationDetails.setUs_name(userName);  // LivehouseApplicationWithGroupオブジェクトにユーザー名を設定
+
+                    // applicationDetails をリクエストスコープに渡す
+                    request.setAttribute("application", applicationDetails);
+                } else {
+                    request.setAttribute("error", "指定された申請データが見つかりません");
+                }
+            } catch (NumberFormatException e) {
+                // IDの形式が正しくない場合はエラーメッセージを設定
+                request.setAttribute("error", "無効な申請ID形式です");
+                System.err.println("[ERROR] NumberFormatException: " + e.getMessage());
+                e.printStackTrace();
+            } 
         } else {
-            request.setAttribute("error", "アーティストグループ情報が見つかりません");
+            request.setAttribute("error", "申請IDが指定されていません");
         }
 
         // JSPページにフォワード

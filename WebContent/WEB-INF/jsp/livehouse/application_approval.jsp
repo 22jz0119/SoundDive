@@ -1,5 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <!DOCTYPE html>
 <html lang="ja">
@@ -17,8 +18,8 @@
             </div>
             <nav class="header-nav">
                 <ul class="header-nav-ul">
-                    <li><a href="<%= request.getContextPath() %>/livehouse_home.jsp">HOME</a></li>
-                    <li><a href="<%= request.getContextPath() %>/livehouse_mypage.jsp">MY PAGE</a></li>
+                    <li><a href="<%= request.getContextPath() %>/Livehouse_home">HOME</a></li>
+                    <li><a href="<%= request.getContextPath() %>/Livehouse_mypage">MY PAGE</a></li>
                     <li><a href="">000</a></li>
                     <li><a href="">000</a></li>
                 </ul>
@@ -32,6 +33,7 @@
             </div>
             <p class="approvaled-application-title">以下の予約が完了されました。</p>
         </section>
+        <h1>test</h1>
 
         <section class="application-approval-section">
             <ul class="application-approval-ul-1">
@@ -41,27 +43,34 @@
             </ul>
 
             <div class="application-approval-div1">
-            	<c:choose>
-			    <c:when test="${application != null}">
-			        <ul class="application-approval-ul-2">
-			            <li class="application-approval-li-1"><p>予約者名</p></li>
-			            <li class="application-approval-li-2"><p>${application.us_name}</p></li>
-			        </ul>
-			        <ul class="application-approval-ul-2">
-			            <li class="application-approval-li-1"><p>予約日時</p></li>
-			            <li class="application-approval-li-2"><p>${application.datetime}</p></li>
-			        </ul>
-			        <ul class="application-approval-ul-2">
-			            <li class="application-approval-li-1"><p>前払い金額</p></li>
-			            <li class="application-approval-li-2"><p>4000円</p></li>
-			        </ul>
-			    </c:when>
-			    <c:otherwise>
-        <p>データがありません。</p>
-    </c:otherwise>
-</c:choose>
-            	
-                
+                <c:choose>
+                    <c:when test="${application != null}">
+                         <ul class="application-approval-ul-2">
+                            <li class="application-approval-li-1"><p>予約者名</p></li>
+                            <li class="application-approval-li-2">
+                                <p>${application.us_name != null ? application.us_name : '名前なし'}</p>
+                            </li>
+                        </ul>
+
+                        <ul class="application-approval-ul-2">
+                            <li class="application-approval-li-1"><p>予約日時</p></li>
+                            <li class="application-approval-li-2">
+                                <!-- date_timeをフォーマットして表示 -->
+                                <fmt:formatDate value="${application.datetime}" pattern="yyyy-MM-dd HH:mm:ss" var="formattedDate" />
+                                <!-- フォーマットされた日時を表示 -->
+                                <p>${formattedDate != null ? formattedDate : '未定'}</p>
+                            </li>
+                        </ul>
+
+                        <ul class="application-approval-ul-2">
+                            <li class="application-approval-li-1"><p>前払い金額</p></li>
+                            <li class="application-approval-li-2"><p>4000円</p></li>
+                        </ul>
+                    </c:when>
+                    <c:otherwise>
+                        <p>データがありません。</p>
+                    </c:otherwise>
+                </c:choose>
             </div>
             <div class="application-approval-div2">
                 <ul class="application-approval-ul-3">
@@ -70,7 +79,7 @@
             </div>
         </section>
         <div class="application-approval-backhome-btn-div">
-            <a href="<%= request.getContextPath() %>/livehouse_home.jsp" class="application-approval-backhome-btn">ホームへ戻る</a>
+            <a href="<%= request.getContextPath() %>/Livehouse_home" class="application-approval-backhome-btn">ホームへ戻る</a>
         </div>
     </main>
 </body>
