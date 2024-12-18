@@ -824,6 +824,7 @@ return -1; // エラー時に -1 を返す
         }
         return applications;
     }
+    
 
 
 }
