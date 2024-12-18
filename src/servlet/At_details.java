@@ -25,9 +25,10 @@ public class At_details extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            // リクエストからライブハウスIDとユーザーIDを取得
+            // リクエストからライブハウスIDとユーザーID、applicationIdを取得
             String livehouseIdParam = request.getParameter("livehouseId");
             String userIdParam = request.getParameter("userId");
+            String applicationIdParam = request.getParameter("applicationId");
 
             // パラメータがない場合のエラーハンドリング
             if (livehouseIdParam == null || livehouseIdParam.isEmpty()) {
@@ -38,13 +39,19 @@ public class At_details extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ユーザーIDが指定されていません。");
                 return;
             }
+            if (applicationIdParam == null || applicationIdParam.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "申請IDが指定されていません。");
+                return;
+            }
 
-            // ライブハウスIDとユーザーIDを整数に変換
+            // IDの変換
             int livehouseId;
             int userId;
+            int applicationId;
             try {
                 livehouseId = Integer.parseInt(livehouseIdParam);
                 userId = Integer.parseInt(userIdParam);
+                applicationId = Integer.parseInt(applicationIdParam);
             } catch (NumberFormatException e) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なID形式です。");
                 return;
@@ -53,6 +60,7 @@ public class At_details extends HttpServlet {
             // デバッグログ
             System.out.println("[DEBUG] livehouseId: " + livehouseId);
             System.out.println("[DEBUG] userId: " + userId);
+            System.out.println("[DEBUG] applicationId: " + applicationId);
 
             // DAOの初期化
             DBManager dbManager = DBManager.getInstance();
@@ -77,17 +85,13 @@ public class At_details extends HttpServlet {
                     ? Integer.parseInt(monthParam)
                     : java.time.LocalDate.now().getMonthValue();
 
-            // デバッグログ
-            System.out.println("[DEBUG] year: " + year);
-            System.out.println("[DEBUG] month: " + month);
-
-            // 指定された年と月の日数を計算
+            // 日数の計算
             int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
 
             // 日ごとの予約状況を取得
             Map<Integer, String> reservationStatus = livehouseAppDao.getReservationStatusByMonthAndLivehouseId(livehouseId, year, month);
 
-            // Gsonを使用してJSONに変換
+            // JSON形式に変換
             Gson gson = new Gson();
             String reservationStatusJson = gson.toJson(reservationStatus);
 
@@ -96,12 +100,13 @@ public class At_details extends HttpServlet {
 
             // JSPにデータを渡す
             request.setAttribute("livehouse", livehouseInfo);
-            request.setAttribute("reservationStatus", reservationStatusJson);  // JSON形式で渡す
+            request.setAttribute("reservationStatus", reservationStatusJson);
             request.setAttribute("daysInMonth", daysInMonth);
             request.setAttribute("year", year);
             request.setAttribute("month", month);
-            request.setAttribute("userId", userId);  // userId を JSP に渡す
-            request.setAttribute("livehouseId", livehouseId);  // livehouseId を JSP に渡す
+            request.setAttribute("userId", userId);
+            request.setAttribute("livehouseId", livehouseId);
+            request.setAttribute("applicationId", applicationId); // applicationIdをセット
 
             // JSPにフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at_details.jsp").forward(request, response);

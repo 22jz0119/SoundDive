@@ -59,6 +59,16 @@
 		        <form action="<%= request.getContextPath() %>/At_Cogig" method="post">
 		            <input type="hidden" name="action" value="apply">
 		            <input type="hidden" name="applicationId" value="${artist.id}">
+		            
+		            <%
+		                // applicationIdをセッションから取得し、存在しない場合はリクエストから取得
+		                String livehouseApplicationId = (String) session.getAttribute("livehouseApplicationId");
+		                if (livehouseApplicationId == null) {
+		                    livehouseApplicationId = request.getParameter("applicationId");
+		                }
+		            %>
+		            <input type="hidden" name="livehouseApplicationId" value="<%= livehouseApplicationId %>">
+		
 		            <table class="taibantable">
 		                <tr class="a">
 		                    <th rowspan="4">
@@ -88,6 +98,7 @@
 		        </form>
 		    </div>
 		</c:forEach>
+
 	</div>
 
     <!-- 次へボタン -->

@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class Livehouse_applicationDAO {
     public Livehouse_applicationDAO(DBManager dbManager) {
         this.dbManager = dbManager;
     }
-
+    
     // Livehouse_applicationを挿入するメソッド
     public boolean insertLivehouse_application(Livehouse_application livehouse_application) {
         // AUTO_INCREMENTの場合、idを除外
@@ -56,6 +57,23 @@ public class Livehouse_applicationDAO {
 
         return false;
     }
+    
+	    public boolean updateLivehouseApplication(int applicationId, boolean trueFalse, LocalDateTime startTime) {
+	        String sql = "UPDATE livehouse_application_table SET true_false = ?, start_time = ? WHERE id = ?";
+	        try (Connection conn = dbManager.getConnection();
+	             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	
+	            pstmt.setBoolean(1, trueFalse); // true_false を更新
+	            pstmt.setTimestamp(2, Timestamp.valueOf(startTime)); // start_time を更新
+	            pstmt.setInt(3, applicationId); // 更新対象のid
+	
+	            int affectedRows = pstmt.executeUpdate();
+	            return affectedRows > 0; // 更新成功ならtrue
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            return false; // 更新失敗ならfalse
+	        }
+	    }
 
     // IDでLivehouse_applicationを取得するメソッド
     public Livehouse_application getLivehouse_applicationById(int id) {

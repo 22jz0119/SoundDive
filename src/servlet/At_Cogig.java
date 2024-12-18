@@ -108,8 +108,14 @@ public class At_Cogig extends HttpServlet {
                         if (applicationId > 0) {
                             System.out.println("[DEBUG] Created livehouse application with ID: " + applicationId);
 
-                            // 成功したらリダイレクトで userId を渡す
-                            response.sendRedirect(request.getContextPath() + "/At_livehouse_search?userId=" + userId);
+                            // セッションに applicationId を保存
+                            HttpSession session = request.getSession();
+                            session.setAttribute("applicationId", applicationId);
+
+                            // リダイレクトで userId と applicationId を渡す
+                            response.sendRedirect(request.getContextPath() 
+                                    + "/At_livehouse_search?userId=" + userId 
+                                    + "&applicationId=" + applicationId);
                             return; // 処理を終了
                         } else {
                             System.err.println("[ERROR] Failed to create livehouse application.");

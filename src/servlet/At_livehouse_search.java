@@ -28,9 +28,12 @@ public class At_livehouse_search extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            // userId パラメータを取得
+            // userId と applicationId パラメータを取得
             String userIdParam = request.getParameter("userId");
+            String applicationIdParam = request.getParameter("applicationId");
             Integer userId = null;
+            Integer applicationId = null;
+
             if (userIdParam != null && !userIdParam.isEmpty()) {
                 try {
                     userId = Integer.parseInt(userIdParam);
@@ -42,13 +45,23 @@ public class At_livehouse_search extends HttpServlet {
                 }
             }
 
+            if (applicationIdParam != null && !applicationIdParam.isEmpty()) {
+                try {
+                    applicationId = Integer.parseInt(applicationIdParam);
+                    System.out.println("[DEBUG] Received applicationId: " + applicationId);
+                } catch (NumberFormatException e) {
+                    System.err.println("[ERROR] Invalid applicationId format: " + applicationIdParam);
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な applicationId 形式です。");
+                    return;
+                }
+            }
+
             // ライブハウス情報の取得
             List<Livehouse_information> livehouseList = livehouseInformationDAO.get();
 
             // リクエストスコープにセット
-            if (userId != null) {
-                request.setAttribute("userId", userId);
-            }
+            if (userId != null) request.setAttribute("userId", userId);
+            if (applicationId != null) request.setAttribute("applicationId", applicationId);
             request.setAttribute("livehouseList", livehouseList);
 
             // JSPにフォワード
@@ -66,9 +79,12 @@ public class At_livehouse_search extends HttpServlet {
         try {
             request.setCharacterEncoding("UTF-8");
 
-            // userId パラメータを取得
+            // userId と applicationId パラメータを取得
             String userIdParam = request.getParameter("userId");
+            String applicationIdParam = request.getParameter("applicationId");
             Integer userId = null;
+            Integer applicationId = null;
+
             if (userIdParam != null && !userIdParam.isEmpty()) {
                 try {
                     userId = Integer.parseInt(userIdParam);
@@ -80,36 +96,41 @@ public class At_livehouse_search extends HttpServlet {
                 }
             }
 
+            if (applicationIdParam != null && !applicationIdParam.isEmpty()) {
+                try {
+                    applicationId = Integer.parseInt(applicationIdParam);
+                    System.out.println("[DEBUG] Received applicationId: " + applicationId);
+                } catch (NumberFormatException e) {
+                    System.err.println("[ERROR] Invalid applicationId format: " + applicationIdParam);
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な applicationId 形式です。");
+                    return;
+                }
+            }
+
             // 検索クエリの取得
             String searchQuery = request.getParameter("q");
-            System.err.println("検索クエリ: " + searchQuery);
+            System.out.println("[DEBUG] Search query: " + searchQuery);
 
             // 検索結果を取得
             List<Livehouse_information> livehouseList = livehouseInformationDAO.searchLivehouses(searchQuery);
 
             // リクエストスコープにセット
             request.setAttribute("livehouseList", livehouseList);
+            if (userId != null) request.setAttribute("userId", userId);
+            if (applicationId != null) request.setAttribute("applicationId", applicationId);
 
-            // ライブハウスの詳細ページへリダイレクト
-            if (userId != null) {
-                String livehouseIdParam = request.getParameter("livehouseId");
-                if (livehouseIdParam != null) {
-                    try {
-                        Integer livehouseId = Integer.parseInt(livehouseIdParam);
-                        String nextPageUrl = request.getContextPath() + "/At_details?userId=" + userId + "&livehouseId=" + livehouseId;
-                        System.out.println("[DEBUG] Redirecting to: " + nextPageUrl);
-                        response.sendRedirect(nextPageUrl);
-                        return;
-                    } catch (NumberFormatException e) {
-                        System.err.println("[ERROR] Invalid livehouseId format: " + livehouseIdParam);
-                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な livehouseId 形式です。");
-                        return;
-                    }
-                }
+            // 次のページにパラメータを渡してフォワードまたはリダイレクト
+            if (userId != null && applicationId != null) {
+                // リダイレクトして次の画面に userId と applicationId を渡す
+                String nextPageUrl = request.getContextPath() + "/At_next_page?userId=" + userId + "&applicationId=" + applicationId;
+                System.out.println("[DEBUG] Redirecting to: " + nextPageUrl);
+                response.sendRedirect(nextPageUrl);
+            } else {
+                // userId または applicationId がない場合はエラーページを表示
+                request.setAttribute("errorMessage", "必要なパラメータが指定されていません。");
+                request.getRequestDispatcher("/WEB-INF/jsp/error.jsp").forward(request, response);
             }
 
-            // JSPにフォワード
-            request.getRequestDispatcher("/WEB-INF/jsp/artist/at-livehouse-search.jsp").forward(request, response);
         } catch (Exception e) {
             System.err.println("ライブハウス検索中にエラーが発生しました。");
             e.printStackTrace();

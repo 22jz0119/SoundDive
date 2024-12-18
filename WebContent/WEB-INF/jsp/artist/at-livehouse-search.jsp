@@ -59,10 +59,15 @@
                             <li><p>100人</p></li>
                             <li><p>${livehouse.livehouse_explanation_information}</p></li>
                             <li class="artist-search-decision">
-                                <!-- userId をリンクに追加 -->
-                                <a href="<%= request.getContextPath() %>/At_details?userId=${userId}&livehouseId=${livehouse.id}" 
-                                   class="artist-result-decision-button">詳細・予約</a>
-                            </li>
+    							<!-- userId と applicationId をリンクに追加 -->
+							    <a href="<c:url value='/At_details'>
+							                <c:param name='userId' value='${userId}' />
+							                <c:param name='livehouseId' value='${livehouse.id}' />
+							                <c:param name='applicationId' value='${applicationId}' />
+							             </c:url>"
+							       class="artist-result-decision-button">詳細・予約</a>
+							</li>
+
                         </ul>
                     </div>
                 </div>

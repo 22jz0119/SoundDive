@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function generateCalendar() {
     console.log("[DEBUG] generateCalendar function called");
+    console.log("applicationId:", applicationId);
+
 
     const calendarBody = document.getElementById("calendar-body");
     if (!calendarBody) {
@@ -46,7 +48,7 @@ function generateCalendar() {
                     const currentDate = date; // 必ずイベント内でこの変数を使う
                     console.log(`[DEBUG] Day ${currentDate} is clickable`);
                     td.addEventListener("click", () => {
-                        const url = `${contextPath}/At_Reservation?year=${currentYear}&month=${currentMonth}&day=${currentDate}&userId=${userId}&livehouseId=${livehouseId}`;
+                        const url = `${contextPath}/At_Reservation?year=${currentYear}&month=${currentMonth}&day=${currentDate}&userId=${userId}&livehouseId=${livehouseId}&applicationId=${applicationId}`;
                         console.log(`[DEBUG] Redirecting to: ${url}`);
                         window.location.href = url;
                     });
