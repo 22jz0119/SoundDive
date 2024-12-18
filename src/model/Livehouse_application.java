@@ -16,6 +16,7 @@ public class Livehouse_application {
     private int cogig_or_solo;  // 追加されたプロパティ
     private int artist_group_id;  // 追加されたプロパティ
 
+    
     public int getId() {
         return id;
     }
