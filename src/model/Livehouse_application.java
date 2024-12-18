@@ -1,7 +1,6 @@
 package model;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class Livehouse_application {
     private int id;
@@ -13,21 +12,11 @@ public class Livehouse_application {
     private LocalDate finish_time;
     private LocalDate create_date;
     private LocalDate update_date;
-    private int cogig_or_solo;
-    private int artist_group_id;
+    private String us_name;  // 追加されたフィールド
+    private int cogig_or_solo;  // 追加されたプロパティ
+    private int artist_group_id;  // 追加されたプロパティ
 
-    // Livehouse_information型のフィールドを追加
-    private Livehouse_information livehouse_information;
-
-    // ゲッターとセッターを追加
-    public Livehouse_information getLivehouse_information() {
-        return livehouse_information;
-    }
-
-    public void setLivehouse_information(Livehouse_information livehouse_information) {
-        this.livehouse_information = livehouse_information;
-    }
-
+    
     public int getId() {
         return id;
     }
@@ -99,7 +88,15 @@ public class Livehouse_application {
     public void setUpdate_date(LocalDate update_date) {
         this.update_date = update_date;
     }
+    public String getUs_name() {
+        return us_name;
+    }
 
+    public void setUs_name(String us_name) {
+        this.us_name = us_name;
+    }
+
+    // 新しいゲッターとセッターを追加
     public int getCogig_or_solo() {
         return cogig_or_solo;
     }
@@ -116,17 +113,9 @@ public class Livehouse_application {
         this.artist_group_id = artist_group_id;
     }
 
-    // 日付と時間をフォーマットするメソッド
-    public String getFormattedDateTime() {
-        if (this.date_time != null) {
-            return this.date_time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        }
-        return ""; // nullの場合は空文字を返す
-    }
-
-    // コンストラクタ
+    // コンストラクタにartist_group_idとcogig_or_soloを追加
     public Livehouse_application(int id, int user_id, int livehouse_information_id, LocalDate date_time, Boolean true_false, LocalDate start_time, LocalDate finish_time, 
-                                 LocalDate create_date, LocalDate update_date, int cogig_or_solo, int artist_group_id) {
+                                 LocalDate create_date, LocalDate update_date, int cogig_or_solo, int artist_group_id, String us_name) {
         super();
         this.id = id;
         this.user_id = user_id;
@@ -137,7 +126,8 @@ public class Livehouse_application {
         this.finish_time = finish_time;
         this.create_date = create_date;
         this.update_date = update_date;
-        this.cogig_or_solo = cogig_or_solo;
-        this.artist_group_id = artist_group_id;
+        this.us_name = us_name;  // us_nameを初期化
+        this.cogig_or_solo = cogig_or_solo;  // 追加されたプロパティの初期化
+        this.artist_group_id = artist_group_id;  // 追加されたプロパティの初期化
     }
 }

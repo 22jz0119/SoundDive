@@ -116,6 +116,34 @@ public class Artist_groupDAO {
         }
         return null; // 該当するグループがない場合
     }
+    
+ // id に紐づくアーティストグループを取得するメソッド
+    public Artist_group getArtistGroupByUserId(int userId) {
+        String sql = "SELECT * FROM artist_group WHERE user_id = ?";
+        System.out.println("[DEBUG] Executing SQL: SELECT * FROM artist_group WHERE user_id = ? with user_id=" + userId);
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            System.out.println("[DEBUG] Executing SQL: " + sql + " with userId=" + userId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    // rsからArtist_groupオブジェクトに変換
+                    Artist_group group = rs2model(rs);
+                    System.out.println("[DEBUG] Group found: " + group.getAccount_name());
+                    return group;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[ERROR] SQL Exception in getArtistGroupByUserId");
+            e.printStackTrace();
+        }
+        System.out.println("[DEBUG] No group found for userId=" + userId);
+        return null;
+    }
+
+    
 
 
     // user_id に紐づくアーティストグループを取得するメソッド
