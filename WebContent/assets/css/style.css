@@ -2125,3 +2125,37 @@ th.b {
     letter-spacing: 1px;
 }
 
+/* 予約済みの日付 */
+.reserved {
+    background-color: #ff6347; /* 赤色 */
+}
+
+/* 空き日付 */
+.available {
+    background-color: #90ee90; /* 緑色 */
+}
+
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.calendar-cell {
+    width: 14%;
+    height: 60px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #ddd;
+}
+
+.calendar-day {
+    font-size: 1.2em;
+}
+
+.status {
+    font-size: 0.8em;
+    color: #fff;
+    margin-top: 5px;
+}
+
+
