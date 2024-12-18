@@ -163,11 +163,7 @@ td.is-disabled {
     justify-content: center;
 }
 
-.booking-nav-section{
-    margin-top: 100px;
-    margin-left: 400px;
-    margin-right: 400px;
-}
+
 
 .booking-title{
     color: #fff;
@@ -2095,3 +2091,37 @@ th.b {
     align-items: center;
     font-size: 1.4rem;
 }
+
+.booking-button{
+	margin-top: 100px;
+    display: flex;
+    justify-content: center;
+
+}
+
+.booking-solo-button{
+    margin-right: 100px;
+}
+
+.solo-button{
+    background-color: rgb(26, 26, 112);
+    padding: 30px 60px;
+    border-radius: 3px;
+    text-decoration: none;
+    color: white;
+    letter-spacing: 1px;
+}
+
+.booking-multi-button{
+    margin-left: 100px;
+}
+
+.multi-button{
+    background-color: rgb(190, 39, 29);
+    padding: 30px 60px;
+    border-radius: 3px;
+    text-decoration: none;
+    color: white;
+    letter-spacing: 1px;
+}
+
