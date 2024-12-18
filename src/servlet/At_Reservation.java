@@ -20,73 +20,102 @@ public class At_Reservation extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // リクエストパラメータの取得
         String yearParam = request.getParameter("year");
         String monthParam = request.getParameter("month");
         String dayParam = request.getParameter("day");
         String userId = request.getParameter("userId");
         String livehouseIdParam = request.getParameter("livehouseId"); // livehouseId を受け取る
+        String applicationIdParam = request.getParameter("applicationId"); // applicationId を受け取る
+
+        // パラメータログ
+        System.out.println("[DEBUG] Received year: " + yearParam);
+        System.out.println("[DEBUG] Received month: " + monthParam);
+        System.out.println("[DEBUG] Received day: " + dayParam);
+        System.out.println("[DEBUG] Received userId: " + userId);
+        System.out.println("[DEBUG] Received livehouseId: " + livehouseIdParam);
+        System.out.println("[DEBUG] Received applicationId: " + applicationIdParam);
 
         try {
-            // パラメータのバリデーション - 年月日
-            int year = Integer.parseInt(yearParam);
-            int month = Integer.parseInt(monthParam);
-            int day = Integer.parseInt(dayParam);
-
-            YearMonth yearMonth = YearMonth.of(year, month);
-            int daysInMonth = yearMonth.lengthOfMonth();
-
-            if (day < 1 || day > daysInMonth) {
-                System.err.println("[ERROR] Invalid date: " + year + "-" + month + "-" + day);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "日付が不正です");
+            // 入力チェック - 年月日が存在しているか、空でないかをチェック
+            if (yearParam == null || yearParam.trim().isEmpty()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "年が指定されていません。");
+                return;
+            }
+            if (monthParam == null || monthParam.trim().isEmpty()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "月が指定されていません。");
+                return;
+            }
+            if (dayParam == null || dayParam.trim().isEmpty()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "日が指定されていません。");
                 return;
             }
 
-            System.out.println("[DEBUG] Valid Date: " + year + "-" + month + "-" + day);
-
             // userIdのバリデーション
             if (userId == null || userId.trim().isEmpty()) {
-                System.err.println("[ERROR] Invalid userId: " + userId);
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ユーザーIDが指定されていません");
                 return;
             }
 
-            System.out.println("[DEBUG] Received userId: " + userId);
-
             // livehouseId のバリデーション
-            int livehouseId = -1; // デフォルト値として無効な値を設定
+            int livehouseId = -1;
             if (livehouseIdParam != null && !livehouseIdParam.trim().isEmpty()) {
                 try {
                     livehouseId = Integer.parseInt(livehouseIdParam);
-                    System.out.println("[DEBUG] Received livehouseId: " + livehouseId);
                 } catch (NumberFormatException e) {
-                    System.err.println("[ERROR] Invalid livehouseId: " + livehouseIdParam);
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ライブハウスIDが不正です");
                     return;
                 }
             } else {
-                System.err.println("[ERROR] livehouseId is missing");
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ライブハウスIDが指定されていません");
                 return;
             }
-            // フォワードまたは他の処理に進む
-            // 必要に応じて次の画面にリダイレクトまたはフォワード
+
+            // applicationId のバリデーション
+            int applicationId = -1;
+            if (applicationIdParam != null && !applicationIdParam.trim().isEmpty()) {
+                try {
+                    applicationId = Integer.parseInt(applicationIdParam);
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "applicationIdが不正です");
+                    return;
+                }
+            } else {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "applicationIdが指定されていません");
+                return;
+            }
+
+            // 年、月、日を整数に変換
+            int year = Integer.parseInt(yearParam);
+            int month = Integer.parseInt(monthParam);
+            int day = Integer.parseInt(dayParam);
+
+            // 日付のバリデーション
+            YearMonth yearMonth = YearMonth.of(year, month);
+            int daysInMonth = yearMonth.lengthOfMonth();
+
+            if (day < 1 || day > daysInMonth) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "日付が不正です");
+                return;
+            }
+
+            // 正常な場合は次の画面にデータを渡す
             request.setAttribute("year", year);
             request.setAttribute("month", month);
             request.setAttribute("day", day);
             request.setAttribute("userId", userId);
-            request.setAttribute("livehouseId", livehouseId);  // livehouseId をリクエストに追加
+            request.setAttribute("livehouseId", livehouseId);
+            request.setAttribute("applicationId", applicationId); // applicationId を追加
 
-            // 次のページにフォワード (例: reservationDetails.jsp)
+            // ログ確認
+            System.out.println("[DEBUG] Set attributes: year=" + year + ", month=" + month + ", day=" + day + 
+                               ", userId=" + userId + ", livehouseId=" + livehouseId + ", applicationId=" + applicationId);
+
+            // 次のページにフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at_reservation.jsp").forward(request, response);
 
         } catch (NumberFormatException e) {
-            System.err.println("[ERROR] Invalid parameters: year=" + yearParam + ", month=" + monthParam + ", day=" + dayParam);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "パラメータが不正です");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な年月日が指定されています。");
         }
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
     }
 }

@@ -111,20 +111,10 @@
                     </ul>
                 </div>
             </div>
-           
-
-            
-        
-
         </section>
         <form action="confirmBooking" method="post">
         <button type="submit" class="btn">予約を確定する</button>
     </form>
     </main>
-
-   
-    
-
-
 </body>
 </html>

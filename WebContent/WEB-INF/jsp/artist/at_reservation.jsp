@@ -50,11 +50,12 @@
 		        <option value="18:00">18:00</option>
 		    </select>
 		
-		    <input type="hidden" name="year" value="${selectedYear}">
-		    <input type="hidden" name="month" value="${selectedMonth}">
-		    <input type="hidden" name="day" value="${selectedDay}">
-		    <input type="hidden" name="livehouseId" value="${livehouseId}">
-		    <input type="hidden" name="userId" value="${userId}">
+		    <input type="hidden" name="year" value="${year}">
+			<input type="hidden" name="month" value="${month}">
+			<input type="hidden" name="day" value="${day}">
+			<input type="hidden" name="livehouseId" value="${livehouseId}">
+			<input type="hidden" name="userId" value="${userId}">
+			<input type="hidden" name="applicationId" value="${applicationId}">
 		    <input type="submit" value="確定" class="rv-btn">
 		</form>
 
@@ -92,6 +93,5 @@
             </div>
         </c:forEach>
     </div>
- 
 </body>
 </html>

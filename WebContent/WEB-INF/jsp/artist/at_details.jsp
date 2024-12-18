@@ -85,11 +85,22 @@
     <script>
         const contextPath = '<%= request.getContextPath() %>';
         const userId = '<c:out value="${param.userId}" escapeXml="true" />';
+        const applicationId = '<c:out value="${param.applicationId}" escapeXml="true" />';
         const livehouseId = '<c:out value="${livehouse.id}" escapeXml="true" />';  // livehouseId を渡す
         const reservationData = JSON.parse('<c:out value="${reservationStatus}" escapeXml="false" />');
         const currentYear = ${year != null ? year : 2024};
         const currentMonth = ${month != null ? month : 12};
         const daysInCurrentMonth = ${daysInMonth != null ? daysInMonth : 31};
+
+        
+        console.log("[DEBUG] contextPath:", contextPath);
+        console.log("[DEBUG] userId:", userId);
+        console.log("[DEBUG] applicationId:", applicationId);
+        console.log("[DEBUG] livehouseId:", livehouseId);
+        console.log("[DEBUG] reservationData:", reservationData);
+        console.log("[DEBUG] currentYear:", currentYear);
+        console.log("[DEBUG] currentMonth:", currentMonth);
+        console.log("[DEBUG] daysInCurrentMonth:", daysInCurrentMonth);
     </script>
 
     <script src="<%= request.getContextPath() %>/assets/js/at_calender.js" defer></script>
