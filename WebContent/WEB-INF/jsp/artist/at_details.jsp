@@ -92,6 +92,7 @@
         const currentMonth = ${month != null ? month : 12};
         const daysInCurrentMonth = ${daysInMonth != null ? daysInMonth : 31};
 
+        
         console.log("[DEBUG] contextPath:", contextPath);
         console.log("[DEBUG] userId:", userId);
         console.log("[DEBUG] applicationId:", applicationId);
