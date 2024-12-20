@@ -260,20 +260,20 @@ public class Livehouse_applicationDAO {
                 List<Member> members = getMembersByGroupId(groupId);
 
                 LivehouseApplicationWithGroup application = new LivehouseApplicationWithGroup(
-                    rs.getInt("application_id"),  // applicationId
-                    rs.getInt("application_id"),  // id (同じカラムを代入)
-                    rs.getTimestamp("date_time").toLocalDateTime(), // dateTime
-                    rs.getBoolean("true_false"),  // trueFalse
-                    rs.getTimestamp("start_time").toLocalDateTime().toLocalDate(), // startTime
-                    rs.getTimestamp("finish_time").toLocalDateTime().toLocalDate(), // finishTime
-                    groupId,                      // groupId
-                    rs.getString("account_name"), // accountName
-                    rs.getString("group_genre"),  // groupGenre
-                    rs.getString("band_years"),   // bandYears
-                    rs.getInt("user_id"),         // userId
-                    rs.getString("us_name"),      // usName
-                    members                       // メンバーリストを追加
-                );
+                	    rs.getInt("application_id"),  // applicationId
+                	    rs.getInt("application_id"),  // id (同じカラムを代入)
+                	    rs.getTimestamp("date_time") != null ? rs.getTimestamp("date_time").toLocalDateTime() : null, // dateTime (null安全)
+                	    rs.getBoolean("true_false"),  // trueFalse
+                	    rs.getTimestamp("start_time") != null ? rs.getTimestamp("start_time").toLocalDateTime() : null, // startTime (null安全)
+                	    rs.getTimestamp("finish_time") != null ? rs.getTimestamp("finish_time").toLocalDateTime() : null, // finishTime (null安全)
+                	    groupId,                      // groupId
+                	    rs.getString("account_name") != null ? rs.getString("account_name") : "", // accountName (null安全)
+                	    rs.getString("group_genre") != null ? rs.getString("group_genre") : "",  // groupGenre (null安全)
+                	    rs.getString("band_years") != null ? rs.getString("band_years") : "",   // bandYears (null安全)
+                	    rs.getInt("user_id"),         // userId
+                	    rs.getString("us_name") != null ? rs.getString("us_name") : "",         // usName (null安全)
+                	    members                       // メンバーリストを追加
+                	);
                 applicationList.add(application);
             }
         } catch (SQLException e) {
@@ -332,60 +332,46 @@ public class Livehouse_applicationDAO {
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // SQL実行前にアプリケーションIDをログに出力
+            // SQL実行前にパラメータとクエリをログに出力
             pstmt.setInt(1, applicationId);
             System.out.println("[DEBUG] Executing query: " + sql + " with applicationId=" + applicationId);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    System.out.println("[DEBUG] Data found for applicationId: " + applicationId);
-
-                    // データの取得
-                    int groupId = rs.getInt("group_id");
-                    System.out.println("[DEBUG] groupId: " + groupId);
+                    // デバッグ: クエリ結果を確認
+                    System.out.println("[DEBUG] Row data retrieved:");
+                    System.out.println("application_id: " + rs.getInt("application_id"));
+                    System.out.println("date_time: " + rs.getTimestamp("date_time"));
+                    System.out.println("true_false: " + rs.getBoolean("true_false"));
+                    System.out.println("start_time: " + rs.getTimestamp("start_time"));
+                    System.out.println("finish_time: " + rs.getTimestamp("finish_time"));
+                    System.out.println("group_id: " + rs.getInt("group_id"));
+                    System.out.println("account_name: " + rs.getString("account_name"));
+                    System.out.println("group_genre: " + rs.getString("group_genre"));
+                    System.out.println("band_years: " + rs.getString("band_years"));
+                    System.out.println("user_id: " + rs.getInt("user_id"));
+                    System.out.println("us_name: " + rs.getString("us_name"));
 
                     // メンバー情報を取得
+                    int groupId = rs.getInt("group_id");
                     List<Member> members = getMembersByGroupId(groupId);
                     System.out.println("[DEBUG] Fetched members: " + members.size() + " members found.");
 
-                    // 日時の取得
-                    LocalDateTime dateTime = rs.getTimestamp("date_time") != null ?
-                                             rs.getTimestamp("date_time").toLocalDateTime() : null;
-                    System.out.println("[DEBUG] dateTime: " + dateTime);
-
-                    LocalDateTime startTime = rs.getTimestamp("start_time") != null ?
-                                              rs.getTimestamp("start_time").toLocalDateTime() : null;
-                    System.out.println("[DEBUG] startTime: " + startTime);
-
-                    LocalDateTime finishTime = rs.getTimestamp("finish_time") != null ?
-                                               rs.getTimestamp("finish_time").toLocalDateTime() : null;
-                    System.out.println("[DEBUG] finishTime: " + finishTime);
-
-                    // LocalDateに変換
-                    LocalDate startDate = startTime != null ? startTime.toLocalDate() : null;
-                    LocalDate finishDate = finishTime != null ? finishTime.toLocalDate() : null;
-
-                    // 文字列の取得
-                    String accountName = rs.getString("account_name") != null ? rs.getString("account_name") : "";
-                    String groupGenre = rs.getString("group_genre") != null ? rs.getString("group_genre") : "";
-                    String bandYears = rs.getString("band_years") != null ? rs.getString("band_years") : "";
-                    String usName = rs.getString("us_name") != null ? rs.getString("us_name") : "";
-
-                    // LivehouseApplicationWithGroupオブジェクトを作成
+                    // LivehouseApplicationWithGroupオブジェクトを作成して返す
                     return new LivehouseApplicationWithGroup(
                         rs.getInt("application_id"),    // applicationId
                         rs.getInt("application_id"),    // id (同じカラムを代入)
-                        dateTime,                       // dateTime (null安全)
+                        rs.getTimestamp("date_time") != null ? rs.getTimestamp("date_time").toLocalDateTime() : null, // dateTime
                         rs.getBoolean("true_false"),    // trueFalse
-                        startDate,                      // startTime (null安全)
-                        finishDate,                     // finishTime (null安全)
+                        rs.getTimestamp("start_time") != null ? rs.getTimestamp("start_time").toLocalDateTime() : null, // startTime
+                        rs.getTimestamp("finish_time") != null ? rs.getTimestamp("finish_time").toLocalDateTime() : null, // finishTime
                         groupId,                        // groupId
-                        accountName,                    // accountName
-                        groupGenre,                     // groupGenre
-                        bandYears,                      // bandYears
+                        rs.getString("account_name") != null ? rs.getString("account_name") : "", // accountName
+                        rs.getString("group_genre") != null ? rs.getString("group_genre") : "",   // groupGenre
+                        rs.getString("band_years") != null ? rs.getString("band_years") : "",    // bandYears
                         rs.getInt("user_id"),           // userId
-                        usName,                         // usName
-                        members                         // members list
+                        rs.getString("us_name") != null ? rs.getString("us_name") : "",          // usName
+                        members                          // members list
                     );
                 } else {
                     System.out.println("[DEBUG] No data found for applicationId: " + applicationId);
@@ -394,10 +380,14 @@ public class Livehouse_applicationDAO {
         } catch (SQLException e) {
             System.err.println("[ERROR] SQLException occurred while fetching data for applicationId: " + applicationId);
             e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("[ERROR] Unexpected exception occurred.");
+            e.printStackTrace();
         }
 
         return null;
     }
+
 
 
 
@@ -461,14 +451,14 @@ public class Livehouse_applicationDAO {
                     // メンバー情報を取得
                     List<Member> members = getMembersByGroupId(groupId);
 
-                    // データを LivehouseApplicationWithGroup に追加
+                 // データを LivehouseApplicationWithGroup に追加
                     reservations.add(new LivehouseApplicationWithGroup(
                         rs.getInt("application_id"),                       // applicationId
                         rs.getInt("application_id"),                       // id (同じカラムを代入)
                         rs.getTimestamp("date_time") != null ? rs.getTimestamp("date_time").toLocalDateTime() : null, // dateTime (null 安全)
                         rs.getBoolean("true_false"),                       // trueFalse
-                        rs.getDate("start_time") != null ? rs.getDate("start_time").toLocalDate() : null, // startTime (null 安全)
-                        rs.getDate("finish_time") != null ? rs.getDate("finish_time").toLocalDate() : null, // finishTime (null 安全)
+                        rs.getTimestamp("start_time") != null ? rs.getTimestamp("start_time").toLocalDateTime() : null, // startTime (LocalDateTimeに変更)
+                        rs.getTimestamp("finish_time") != null ? rs.getTimestamp("finish_time").toLocalDateTime() : null, // finishTime (LocalDateTimeに変更)
                         groupId,                                           // groupId
                         rs.getString("account_name") != null ? rs.getString("account_name") : "", // accountName (null 安全)
                         rs.getString("group_genre") != null ? rs.getString("group_genre") : "",   // groupGenre (null 安全)
@@ -477,6 +467,7 @@ public class Livehouse_applicationDAO {
                         rs.getString("us_name") != null ? rs.getString("us_name") : "",           // usName (null 安全)
                         members                                            // メンバーリスト
                     ));
+
                 }
             }
         } catch (SQLException e) {

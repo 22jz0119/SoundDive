@@ -54,22 +54,34 @@
         </ul>
 
         <ul class="application-approval-ul-2">
-            <li class="application-approval-li-1"><p>予約日時</p></li>
-            <li class="application-approval-li-2">
-                <fmt:formatDate value="${application.datetime}" pattern="yyyy-MM-dd HH:mm:ss" var="formattedDate" />
-                <p>${formattedDate != null ? formattedDate : '未定'}</p>
-            </li>
-        </ul>
+		    <li class="application-approval-li-1"><p>予約日時</p></li>
+		    <li class="application-approval-li-2">
+		        <c:choose>
+		            <c:when test="${not empty formattedDateTime}">
+		                <p>${formattedDateTime}</p>
+		            </c:when>
+		            <c:otherwise>
+		                <p>未定</p>
+		            </c:otherwise>
+		        </c:choose>
+		</ul>
+		</c:when>
+    <c:otherwise>
+        <p>データがありません。</p>
+        <li>申請ID: ${application.applicationId}</li>
+                            <li>予約者名: ${application.us_name}</li>
+                            <li>予約日時: ${application.datetime}</li>
+                            <li>開始時間: ${application.startTime}</li>
+                            <li>終了時間: ${application.finishTime}</li>
+    </c:otherwise>
+</c:choose>
+
 
         <ul class="application-approval-ul-2">
             <li class="application-approval-li-1"><p>前払い金額</p></li>
             <li class="application-approval-li-2"><p>4000円</p></li>
         </ul>
-    </c:when>
-    <c:otherwise>
-        <p>データがありません。</p>
-    </c:otherwise>
-</c:choose>
+    
 
             </div>
             <div class="application-approval-div2">
