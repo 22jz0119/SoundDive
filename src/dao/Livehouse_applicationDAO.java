@@ -148,8 +148,7 @@ public class Livehouse_applicationDAO {
 	                    createDate, 
 	                    updateDate, 
 	                    cogig_or_solo,
-	                    artist_group_id,
-	                    usName  // us_nameをセット
+	                    artist_group_id
 	                );
 	            }
 	        } catch (SQLException e) {
@@ -213,8 +212,7 @@ public class Livehouse_applicationDAO {
 	                    createDateLocal,
 	                    updateDateLocal,
 	                    cogig_or_solo,
-	                    artist_group_id,
-	                    us_name // us_name を渡す
+	                    artist_group_id
 	                );
 
 	                applications.add(application);

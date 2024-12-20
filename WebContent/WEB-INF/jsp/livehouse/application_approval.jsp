@@ -44,33 +44,33 @@
 
             <div class="application-approval-div1">
                 <c:choose>
-                    <c:when test="${application != null}">
-                         <ul class="application-approval-ul-2">
-                            <li class="application-approval-li-1"><p>予約者名</p></li>
-                            <li class="application-approval-li-2">
-                                <p>${application.us_name != null ? application.us_name : '名前なし'}</p>
-                            </li>
-                        </ul>
+    <c:when test="${application != null}">
+        <p>デバッグ: ${application.datetime}</p> <!-- datetimeの値を表示 -->
+        <ul class="application-approval-ul-2">
+            <li class="application-approval-li-1"><p>予約者名</p></li>
+            <li class="application-approval-li-2">
+                <p>${application.us_name != null ? application.us_name : '名前なし'}</p>
+            </li>
+        </ul>
 
-                        <ul class="application-approval-ul-2">
-                            <li class="application-approval-li-1"><p>予約日時</p></li>
-                            <li class="application-approval-li-2">
-                                <!-- date_timeをフォーマットして表示 -->
-                                <fmt:formatDate value="${application.datetime}" pattern="yyyy-MM-dd HH:mm:ss" var="formattedDate" />
-                                <!-- フォーマットされた日時を表示 -->
-                                <p>${formattedDate != null ? formattedDate : '未定'}</p>
-                            </li>
-                        </ul>
+        <ul class="application-approval-ul-2">
+            <li class="application-approval-li-1"><p>予約日時</p></li>
+            <li class="application-approval-li-2">
+                <fmt:formatDate value="${application.datetime}" pattern="yyyy-MM-dd HH:mm:ss" var="formattedDate" />
+                <p>${formattedDate != null ? formattedDate : '未定'}</p>
+            </li>
+        </ul>
 
-                        <ul class="application-approval-ul-2">
-                            <li class="application-approval-li-1"><p>前払い金額</p></li>
-                            <li class="application-approval-li-2"><p>4000円</p></li>
-                        </ul>
-                    </c:when>
-                    <c:otherwise>
-                        <p>データがありません。</p>
-                    </c:otherwise>
-                </c:choose>
+        <ul class="application-approval-ul-2">
+            <li class="application-approval-li-1"><p>前払い金額</p></li>
+            <li class="application-approval-li-2"><p>4000円</p></li>
+        </ul>
+    </c:when>
+    <c:otherwise>
+        <p>データがありません。</p>
+    </c:otherwise>
+</c:choose>
+
             </div>
             <div class="application-approval-div2">
                 <ul class="application-approval-ul-3">
