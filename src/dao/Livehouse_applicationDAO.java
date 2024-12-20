@@ -745,6 +745,81 @@ return -1; // エラー時に -1 を返す
             System.out.println("該当するライブハウス申請情報が見つかりませんでした。");
         }
     }
+    
+    public Livehouse_information getLivehouseInformationById(int livehouseId) {
+        String sql = "SELECT * FROM livehouse_information WHERE id = ?";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+            pstmt.setInt(1, livehouseId);
+            ResultSet rs = pstmt.executeQuery();
 
+            if (rs.next()) {
+                return new Livehouse_information(
+                    rs.getInt("id"),
+                    rs.getString("owner_name"),
+                    rs.getString("equipment_information"),
+                    rs.getString("livehouse_explanation_information"),
+                    rs.getString("livehouse_detailed_information"),
+                    rs.getString("livehouse_name"),
+                    rs.getString("live_address"),
+                    rs.getString("live_tel_number"),
+                    rs.getString("picture_image_naigaikan"),
+                    rs.getTimestamp("create_date"),
+                    rs.getTimestamp("update_date"),
+                    rs.getInt("user_id")
+                );
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching Livehouse information by ID: " + livehouseId);
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+//    public List<Livehouse_application> getApplicationsByUserId(int userId) throws SQLException {
+//        List<Livehouse_application> applications = new ArrayList<>();
+//        String query = "SELECT * FROM livehouse_application_table WHERE user_id = ?";
+//
+//        try (Connection conn = dbManager.getConnection();
+//             PreparedStatement stmt = conn.prepareStatement(query)) {
+//
+//            stmt.setInt(1, userId);
+//            try (ResultSet rs = stmt.executeQuery()) {
+//                while (rs.next()) {
+//                    int id = rs.getInt("id");
+//                    int livehouseInformationId = rs.getInt("livehouse_information_id");
+//
+//                    // 各日付フィールドの取得とnullチェック
+//                    LocalDate dateTime = (rs.getDate("date_time") != null) ? rs.getDate("date_time").toLocalDate() : null;
+//                    boolean trueFalse = rs.getBoolean("true_false");
+//
+//                    // NULLの場合、LocalDate.MINなどデフォルト日付に設定
+//                    LocalDate startTime = (rs.getDate("start_time") != null) ? rs.getDate("start_time").toLocalDate() : null;
+//                    LocalDate finishTime = (rs.getDate("finish_time") != null) ? rs.getDate("finish_time").toLocalDate() : null;
+//                    LocalDate createDate = (rs.getDate("create_date") != null) ? rs.getDate("create_date").toLocalDate() : null;
+//                    LocalDate updateDate = (rs.getDate("update_date") != null) ? rs.getDate("update_date").toLocalDate() : null;
+//                    int cogigOrSolo = rs.getInt("cogig_or_solo");
+//                    int artistGroupId = rs.getInt("artist_group_id");
+//
+//                    // Livehouse_applicationオブジェクトを作成
+//                    Livehouse_application application = new Livehouse_application(
+//                        id,
+//                        userId,
+//                        livehouseInformationId,
+//                        dateTime,
+//                        trueFalse,
+//                        startTime,
+//                        finishTime,
+//                        createDate,
+//                        updateDate,
+//                        cogigOrSolo,
+//                        artistGroupId
+//                    );
+//                    applications.add(application);
+//                }
+//            }
+//        }
+//        return applications;
+//    }
 }

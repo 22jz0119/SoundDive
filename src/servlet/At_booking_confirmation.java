@@ -69,8 +69,8 @@ public class At_booking_confirmation extends HttpServlet {
             // ソロ/マルチの処理分岐
             if ("solo".equalsIgnoreCase(livehouseType)) {
                 System.out.println("[DEBUG] ソロライブモード");
-                
-                // ソロの処理: userId が必要
+
+                // ソロの場合の userId チェック
                 if (isNullOrEmpty(userIdParam)) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ユーザーIDが指定されていません。");
                     return;
@@ -90,15 +90,17 @@ public class At_booking_confirmation extends HttpServlet {
                 boolean saveResult = applicationDAO.saveSoloReservation(
                         livehouseInformationId, // livehouseId
                         userId,                 // userId
-                        dateTime,               // dateTime
+                        startTime,              // dateTime
                         startTime,              // startTime
                         dbManager               // DBManager
                 );
 
                 if (saveResult) {
-                    System.out.println("[INFO] Solo reservation saved successfully.");
+                    System.out.println("[DEBUG] Solo reservation saved successfully for userId: " + userId);
+                    forwardToCompletedPage(request, response, year, month, day, livehouseInformationId, livehouseType);
                 } else {
-                    System.err.println("[ERROR] Failed to save solo reservation.");
+                    System.err.println("[ERROR] Failed to save solo reservation for userId: " + userId);
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ソロライブ予約の保存に失敗しました。");
                 }
 
             } else if ("multi".equalsIgnoreCase(livehouseType)) {

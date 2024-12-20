@@ -39,6 +39,15 @@
 
 
     <div class="artist-livehouse-detail-section3">
+    	<ul>
+    		<li>予約情報</li>
+    		
+    	</ul>
+    	<ul>
+    		<li>予約時間</li>
+    		<li>${application.date_time}</li>
+    		<li>${application.start_time}</li>
+    	</ul>
         <div class="A-t-detail-livehousename">
             <p class="artist-livehouse-detail-oner">${livehouse.livehouse_name}</p>
         </div>
@@ -52,10 +61,6 @@
                     <li><p>${livehouse.live_address}</p></li>
                     <li><p>電話番号</p></li>
                     <li><p>${livehouse.live_tel_number}</p></li>
-                    <li><p>ライブハウス説明情報</p></li>
-                    <li><p>${livehouse.livehouse_explanation_information}</p></li>
-                    <li><p>ライブハウス詳細情報</p></li>
-                    <li><p>${livehouse.livehouse_detailed_information}</p></li>
                 </ul>
             </div>
         </div>
