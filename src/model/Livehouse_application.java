@@ -93,10 +93,7 @@ public class Livehouse_application {
 
     public void setUpdate_date(LocalDate update_date) {
         this.update_date = update_date;
-
     }
-
-
 
     // 新しいゲッターとセッターを追加
     public int getCogig_or_solo() {
