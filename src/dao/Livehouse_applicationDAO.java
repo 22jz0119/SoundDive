@@ -27,18 +27,17 @@ public class Livehouse_applicationDAO {
     }
     
     //soloの場合の申請 梅島
-    public boolean saveSoloReservation(int livehouseId, int userId, LocalDateTime dateTime, LocalDateTime startTime, DBManager dbManager) {
-        String sql = "INSERT INTO livehouse_application_table (livehouse_information_id, user_id, date_time, start_time, true_false, create_date, update_date) " +
-                     "VALUES (?, ?, ?, ?, true, NOW(), NOW())";
+    public boolean saveSoloReservation(int livehouseId, LocalDateTime dateTime, LocalDateTime startTime) {
+        String sql = "INSERT INTO livehouse_application_table (livehouse_information_id, date_time, start_time, cogig_or_solo, true_false, create_date, update_date) " +
+                     "VALUES (?, ?, ?, 1, true, NOW(), NOW())";
 
         try (Connection conn = dbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // パラメータを設定
             stmt.setInt(1, livehouseId); // livehouse_information_id
-            stmt.setInt(2, userId);      // user_id
-            stmt.setTimestamp(3, Timestamp.valueOf(dateTime)); // date_time
-            stmt.setTimestamp(4, Timestamp.valueOf(startTime)); // start_time
+            stmt.setTimestamp(2, Timestamp.valueOf(dateTime)); // date_time
+            stmt.setTimestamp(3, Timestamp.valueOf(startTime)); // start_time
 
             // SQL 実行
             int rowsAffected = stmt.executeUpdate();
@@ -53,7 +52,6 @@ public class Livehouse_applicationDAO {
             return false;
         }
     }
-
 
     
     // Livehouse_applicationを挿入するメソッド
@@ -148,8 +146,7 @@ public class Livehouse_applicationDAO {
 	                    createDate, 
 	                    updateDate, 
 	                    cogig_or_solo,
-	                    artist_group_id,
-	                    usName  // us_nameをセット
+	                    artist_group_id
 	                );
 	            }
 	        } catch (SQLException e) {
@@ -213,8 +210,7 @@ public class Livehouse_applicationDAO {
 	                    createDateLocal,
 	                    updateDateLocal,
 	                    cogig_or_solo,
-	                    artist_group_id,
-	                    us_name // us_name を渡す
+	                    artist_group_id
 	                );
 
 	                applications.add(application);

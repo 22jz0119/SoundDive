@@ -33,31 +33,52 @@
         <!-- 日付 -->
         <p class="timeselection">${selectedYear}年${selectedMonth}月${selectedDay}日</p>
     
-        <!-- 時間選択フォーム -->
-        <form action="<%= request.getContextPath() %>/At_booking_confirmation" method="post" class="timeschedule">
-		    <label for="time">開始時間を選択してください:</label>
-		    <select id="time" name="time" class="timeschedule" required>
-		        <option value="08:00">08:00</option>
-		        <option value="09:00">09:00</option>
-		        <option value="10:00">10:00</option>
-		        <option value="11:00">11:00</option>
-		        <option value="12:00">12:00</option>
-		        <option value="13:00">13:00</option>
-		        <option value="14:00">14:00</option>
-		        <option value="15:00">15:00</option>
-		        <option value="16:00">16:00</option>
-		        <option value="17:00">17:00</option>
-		        <option value="18:00">18:00</option>
-		    </select>
-		
-		    <input type="hidden" name="year" value="${year}">
-			<input type="hidden" name="month" value="${month}">
-			<input type="hidden" name="day" value="${day}">
-			<input type="hidden" name="livehouseId" value="${livehouseId}">
-			<input type="hidden" name="userId" value="${userId}">
-			<input type="hidden" name="applicationId" value="${applicationId}">
-		    <input type="submit" value="確定" class="rv-btn">
-		</form>
+        <!-- デバッグ用の値表示 -->
+<section>
+    <h3>デバッグ情報</h3>
+    <p>Year: ${selectedYear}</p>
+    <p>Month: ${selectedMonth}</p>
+    <p>Day: ${selectedDay}</p>
+    <p>LivehouseId: ${livehouseId}</p>
+    <p>LivehouseType: ${livehouseType}</p>
+    <c:if test="${livehouseType == 'multi'}">
+        <p>UserId: ${userId}</p>
+        <p>ApplicationId: ${applicationId}</p>
+    </c:if>
+</section>
+
+<!-- 時間選択フォーム -->
+<form action="<%= request.getContextPath() %>/At_booking_confirmation" method="post" class="timeschedule">
+    <label for="time">開始時間を選択してください:</label>
+    <select id="time" name="time" class="timeschedule" required>
+        <option value="08:00">08:00</option>
+        <option value="09:00">09:00</option>
+        <option value="10:00">10:00</option>
+        <option value="11:00">11:00</option>
+        <option value="12:00">12:00</option>
+        <option value="13:00">13:00</option>
+        <option value="14:00">14:00</option>
+        <option value="15:00">15:00</option>
+        <option value="16:00">16:00</option>
+        <option value="17:00">17:00</option>
+        <option value="18:00">18:00</option>
+    </select>
+
+    <!-- 共通の入力項目 -->
+    <input type="hidden" name="year" value="${selectedYear}">
+    <input type="hidden" name="month" value="${selectedMonth}">
+    <input type="hidden" name="day" value="${selectedDay}">
+    <input type="hidden" name="livehouseId" value="${livehouseId}">
+    <input type="hidden" name="livehouse_type" value="${livehouseType}">
+
+    <!-- マルチの場合のみ追加 -->
+    <c:if test="${livehouseType == 'multi'}">
+        <input type="hidden" name="userId" value="${userId}">
+        <input type="hidden" name="applicationId" value="${applicationId}">
+    </c:if>
+
+    <input type="submit" value="確定" class="rv-btn">
+</form>
 
     
         <!-- ライブハウス情報 -->
