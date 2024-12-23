@@ -747,7 +747,7 @@ return -1; // エラー時に -1 を返す
             System.out.println("該当するライブハウス申請情報が見つかりませんでした。");
         }
     }
-    
+ // livehouse_information_idを元にLivehouse_informationを取得
     public Livehouse_information getLivehouseInformationById(int livehouseId) {
         String sql = "SELECT * FROM livehouse_information WHERE id = ?";
         try (Connection conn = dbManager.getConnection();
@@ -778,9 +778,106 @@ return -1; // エラー時に -1 を返す
         }
         return null;
     }
-    
-    
-    
+ // ユーザーIDを元にライブハウス申請情報を取得
+    public List<Livehouse_application> getApplicationsByUserId(int userId) throws SQLException {
+        List<Livehouse_application> applications = new ArrayList<>();
+        String sql = "SELECT * FROM livehouse_application_table WHERE user_id = ?";
 
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    int livehouse_information_id = rs.getInt("livehouse_information_id");
+                    LocalDate date_time = rs.getDate("date_time") != null ? rs.getDate("date_time").toLocalDate() : null;
+                    boolean true_false = rs.getBoolean("true_false"); // true_falseはそのまま取得
+                    LocalDate start_time = rs.getDate("start_time") != null ? rs.getDate("start_time").toLocalDate() : null;
+                    LocalDate finish_time = rs.getDate("finish_time") != null ? rs.getDate("finish_time").toLocalDate() : null;
+                    LocalDate create_date = rs.getDate("create_date") != null ? rs.getDate("create_date").toLocalDate() : null;
+                    LocalDate update_date = rs.getDate("update_date") != null ? rs.getDate("update_date").toLocalDate() : null;
+                    int cogig_or_solo = rs.getInt("cogig_or_solo");
+                    int artist_group_id = rs.getInt("artist_group_id");
+
+                    // Livehouse_applicationオブジェクトを作成し、リストに追加
+                    Livehouse_application application = new Livehouse_application(
+                        id, userId, livehouse_information_id, date_time, true_false, start_time, finish_time,
+                        create_date, update_date, cogig_or_solo, artist_group_id, "Some User Name"  // us_nameは仮に設定
+                    );
+                    applications.add(application);
+                }
+            }
+        }
+        return applications;
+    }
+ // true_false が true の場合のメソッド
+    public List<Livehouse_application> getApplicationsByUserIdTrue(int userId) throws SQLException {
+        List<Livehouse_application> applications = new ArrayList<>();
+        String sql = "SELECT * FROM livehouse_application_table WHERE user_id = ? AND true_false = true";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    int livehouse_information_id = rs.getInt("livehouse_information_id");
+                    LocalDate date_time = rs.getDate("date_time") != null ? rs.getDate("date_time").toLocalDate() : null;
+                    boolean true_false = rs.getBoolean("true_false");
+                    LocalDate start_time = rs.getDate("start_time") != null ? rs.getDate("start_time").toLocalDate() : null;
+                    LocalDate finish_time = rs.getDate("finish_time") != null ? rs.getDate("finish_time").toLocalDate() : null;
+                    LocalDate create_date = rs.getDate("create_date") != null ? rs.getDate("create_date").toLocalDate() : null;
+                    LocalDate update_date = rs.getDate("update_date") != null ? rs.getDate("update_date").toLocalDate() : null;
+                    int cogig_or_solo = rs.getInt("cogig_or_solo");
+                    int artist_group_id = rs.getInt("artist_group_id");
+
+                    // Livehouse_applicationオブジェクトを作成し、リストに追加
+                    Livehouse_application application = new Livehouse_application(
+                        id, userId, livehouse_information_id, date_time, true_false, start_time, finish_time,
+                        create_date, update_date, cogig_or_solo, artist_group_id, "Some User Name"  // us_nameは仮に設定
+                    );
+                    applications.add(application);
+                }
+            }
+        }
+        return applications;
+    }
+
+    // true_false が false の場合のメソッド
+    public List<Livehouse_application> getApplicationsByUserIdFalse(int userId) throws SQLException {
+        List<Livehouse_application> applications = new ArrayList<>();
+        String sql = "SELECT * FROM livehouse_application_table WHERE user_id = ? AND true_false = false";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    int livehouse_information_id = rs.getInt("livehouse_information_id");
+                    LocalDate date_time = rs.getDate("date_time") != null ? rs.getDate("date_time").toLocalDate() : null;
+                    boolean true_false = rs.getBoolean("true_false");
+                    LocalDate start_time = rs.getDate("start_time") != null ? rs.getDate("start_time").toLocalDate() : null;
+                    LocalDate finish_time = rs.getDate("finish_time") != null ? rs.getDate("finish_time").toLocalDate() : null;
+                    LocalDate create_date = rs.getDate("create_date") != null ? rs.getDate("create_date").toLocalDate() : null;
+                    LocalDate update_date = rs.getDate("update_date") != null ? rs.getDate("update_date").toLocalDate() : null;
+                    int cogig_or_solo = rs.getInt("cogig_or_solo");
+                    int artist_group_id = rs.getInt("artist_group_id");
+
+                    // Livehouse_applicationオブジェクトを作成し、リストに追加
+                    Livehouse_application application = new Livehouse_application(
+                        id, userId, livehouse_information_id, date_time, true_false, start_time, finish_time,
+                        create_date, update_date, cogig_or_solo, artist_group_id, "Some User Name"  // us_nameは仮に設定
+                    );
+                    applications.add(application);
+                }
+            }
+        }
+        return applications;
+    }
+ 
+ 
 }

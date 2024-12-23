@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -372,4 +374,49 @@ public class Livehouse_informationDAO {
                 livehouse_explanation_information, livehouse_detailed_information, livehouse_name,
                 live_address, live_tel_number, picture_image_naigaikan, createDate, updateDate, user_id); // user_idを渡す
     }
+    
+    
+    public Livehouse_information findLivehouseInformationById(int livehouseInformationId) throws SQLException {
+        Livehouse_information livehouseInfo = null;
+        String sql = "SELECT * FROM livehouse_information WHERE id = ?"; // livehouse_informationテーブルからIDを基に情報を取得
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, livehouseInformationId);  // パラメータにライブハウス情報IDを設定
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // データベースの情報を使用してLivehouse_informationオブジェクトを作成
+                    int id = rs.getInt("id");
+                    String owner_name = rs.getString("owner_name");
+                    String equipment_information = rs.getString("equipment_information");
+                    String livehouse_explanation_information = rs.getString("livehouse_explanation_information");
+                    String livehouse_detailed_information = rs.getString("livehouse_detailed_information");
+                    String livehouse_name = rs.getString("livehouse_name");
+                    String live_address = rs.getString("live_address");
+                    String live_tel_number = rs.getString("live_tel_number");
+                    String picture_image_naigaikan = rs.getString("picture_image_naigaikan");
+                    Date createDate = rs.getDate("create_date");  // create_dateカラムを取得
+                    Date updateDate = rs.getDate("update_date");
+                    int user_id = rs.getInt("user_id");
+
+                    livehouseInfo = new Livehouse_information(id, owner_name, equipment_information,
+                            livehouse_explanation_information, livehouse_detailed_information, livehouse_name,
+                            live_address, live_tel_number, picture_image_naigaikan, createDate, updateDate, user_id);
+                }
+            }
+        }
+        return livehouseInfo;  // Livehouse_informationオブジェクトを返す
+    }
+	 // DateをLocalDateTimeに変換するヘルパーメソッド
+	    private LocalDateTime convertDateToLocalDateTime(Date date) {
+	        if (date != null) {
+	            return date.toInstant()
+	                       .atZone(ZoneId.systemDefault())
+	                       .toLocalDateTime();
+	        }
+	        return null;  // Nullの場合はnullを返す
+	    }
+
+
 }

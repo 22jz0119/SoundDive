@@ -1,6 +1,8 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,18 +11,63 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import dao.DBManager;
+import dao.Livehouse_applicationDAO;
+import dao.Livehouse_informationDAO;
+import model.Livehouse_application;
+import model.Livehouse_information;
+
 @WebServlet("/At_Home")
 public class At_Home extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // ユーザーがログインしているか確認
         if (!isLoggedIn(request, response)) {
             return;
         }
 
-        System.out.println("[DEBUG] User is logged in. Forwarding to at_home.jsp.");
-        request.getRequestDispatcher("WEB-INF/jsp/at_home.jsp").forward(request, response);
+        // セッションからユーザーIDを取得
+        HttpSession session = request.getSession();
+        Integer userId = (Integer) session.getAttribute("userId");
+
+        if (userId == null) {
+            response.sendRedirect(request.getContextPath() + "/Top");
+            return;
+        }
+
+        try {
+            // DBManagerのインスタンスを取得し、Livehouse_applicationDAOを使ってデータを取得
+            DBManager dbManager = DBManager.getInstance();
+            Livehouse_applicationDAO dao = new Livehouse_applicationDAO(dbManager);
+            List<Livehouse_application> applications = dao.getApplicationsByUserId(userId);
+
+            // Livehouse_informationDAOを使って、各申請に関連するライブハウス情報を取得
+            Livehouse_informationDAO livehouseInfoDAO = new Livehouse_informationDAO(dbManager);
+
+            for (Livehouse_application app : applications) {
+                // livehouse_information_idを使ってLivehouse_informationを取得
+                Livehouse_information livehouseInfo = livehouseInfoDAO.findLivehouseInformationById(app.getLivehouse_information_id());
+                
+                // livehouseInfoがnullでないことを確認
+                if (livehouseInfo != null) {
+                    app.setLivehouse_information(livehouseInfo);  // Livehouse_informationをセット
+                } else {
+                    System.err.println("Livehouse information not found for ID: " + app.getLivehouse_information_id());
+                }
+            }
+
+            // 取得した情報をリクエストにセット
+            request.setAttribute("applications", applications);
+
+            // at_home.jspに転送
+            System.out.println("[DEBUG] User is logged in. Forwarding to at_home.jsp.");
+            request.getRequestDispatcher("WEB-INF/jsp/at_home.jsp").forward(request, response);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "データベースエラー");
+        }
     }
 
     @Override
@@ -32,10 +79,10 @@ public class At_Home extends HttpServlet {
         String action = request.getParameter("action");
         if ("solo".equals(action)) {
             System.out.println("[DEBUG] Solo live action triggered.");
-            response.sendRedirect(request.getContextPath() + "/SoloLiveServlet");
+            response.sendRedirect(request.getContextPath() + "/At_livehouse_search?livehouse_type=solo");
         } else if ("multi".equals(action)) {
             System.out.println("[DEBUG] Multi live action triggered.");
-            response.sendRedirect(request.getContextPath() + "/MultiLiveServlet");
+            response.sendRedirect(request.getContextPath() + "/At_Cogig?livehouse_type=multi");
         } else {
             System.out.println("[DEBUG] Unknown action: " + action);
             response.sendRedirect(request.getContextPath() + "/At_Home");
@@ -49,8 +96,6 @@ public class At_Home extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/Top");
             return false;
         }
-
-        System.out.println("[DEBUG] User is logged in: userId=" + session.getAttribute("userId"));
         return true;
     }
 }

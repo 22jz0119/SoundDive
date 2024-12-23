@@ -12,11 +12,18 @@ public class Livehouse_application {
     private LocalDate finish_time;
     private LocalDate create_date;
     private LocalDate update_date;
-    private String us_name;  // 追加されたフィールド
     private int cogig_or_solo;  // 追加されたプロパティ
     private int artist_group_id;  // 追加されたプロパティ
+    private Livehouse_information livehouse_information;
 
-    
+    // ゲッターとセッターを追加
+    public Livehouse_information getLivehouse_information() {
+        return livehouse_information;
+    }
+
+    public void setLivehouse_information(Livehouse_information livehouse_information) {
+        this.livehouse_information = livehouse_information;
+    }
     public int getId() {
         return id;
     }
@@ -56,7 +63,6 @@ public class Livehouse_application {
     public void setTrue_False(boolean true_false) {
         this.true_false = true_false;
     }
-
     public LocalDate getStart_time() {
         return start_time;
     }
@@ -88,13 +94,7 @@ public class Livehouse_application {
     public void setUpdate_date(LocalDate update_date) {
         this.update_date = update_date;
     }
-    public String getUs_name() {
-        return us_name;
-    }
 
-    public void setUs_name(String us_name) {
-        this.us_name = us_name;
-    }
 
     // 新しいゲッターとセッターを追加
     public int getCogig_or_solo() {
@@ -126,7 +126,6 @@ public class Livehouse_application {
         this.finish_time = finish_time;
         this.create_date = create_date;
         this.update_date = update_date;
-        this.us_name = us_name;  // us_nameを初期化
         this.cogig_or_solo = cogig_or_solo;  // 追加されたプロパティの初期化
         this.artist_group_id = artist_group_id;  // 追加されたプロパティの初期化
     }
