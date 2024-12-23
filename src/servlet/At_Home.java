@@ -41,29 +41,44 @@ public class At_Home extends HttpServlet {
             // DBManagerのインスタンスを取得し、Livehouse_applicationDAOを使ってデータを取得
             DBManager dbManager = DBManager.getInstance();
             Livehouse_applicationDAO dao = new Livehouse_applicationDAO(dbManager);
-            List<Livehouse_application> applications = dao.getApplicationsByUserId(userId);
+
+            // true_falseがtrueの場合の申請情報を取得
+            List<Livehouse_application> applicationsTrue = dao.getApplicationsByUserIdTrue(userId);
+
+            // true_falseがfalseの場合の申請情報を取得
+            List<Livehouse_application> applicationsFalse = dao.getApplicationsByUserIdFalse(userId);
 
             // Livehouse_informationDAOを使って、各申請に関連するライブハウス情報を取得
             Livehouse_informationDAO livehouseInfoDAO = new Livehouse_informationDAO(dbManager);
 
-            for (Livehouse_application app : applications) {
-                // livehouse_information_idを使ってLivehouse_informationを取得
+            // applicationsTrue の情報を取得して関連するライブハウス情報をセット
+            for (Livehouse_application app : applicationsTrue) {
                 Livehouse_information livehouseInfo = livehouseInfoDAO.findLivehouseInformationById(app.getLivehouse_information_id());
-                
-                // livehouseInfoがnullでないことを確認
                 if (livehouseInfo != null) {
-                    app.setLivehouse_information(livehouseInfo);  // Livehouse_informationをセット
+                    app.setLivehouse_information(livehouseInfo);
+                } else {
+                    System.err.println("Livehouse information not found for ID: " + app.getLivehouse_information_id());
+                }
+            }
+
+            // applicationsFalse の情報を取得して関連するライブハウス情報をセット
+            for (Livehouse_application app : applicationsFalse) {
+                Livehouse_information livehouseInfo = livehouseInfoDAO.findLivehouseInformationById(app.getLivehouse_information_id());
+                if (livehouseInfo != null) {
+                    app.setLivehouse_information(livehouseInfo);
                 } else {
                     System.err.println("Livehouse information not found for ID: " + app.getLivehouse_information_id());
                 }
             }
 
             // 取得した情報をリクエストにセット
-            request.setAttribute("applications", applications);
+            request.setAttribute("applicationsTrue", applicationsTrue);  // true_false = true の申請情報
+            request.setAttribute("applicationsFalse", applicationsFalse); // true_false = false の申請情報
 
             // at_home.jspに転送
             System.out.println("[DEBUG] User is logged in. Forwarding to at_home.jsp.");
             request.getRequestDispatcher("WEB-INF/jsp/at_home.jsp").forward(request, response);
+
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "データベースエラー");

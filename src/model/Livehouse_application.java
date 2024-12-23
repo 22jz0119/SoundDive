@@ -93,7 +93,9 @@ public class Livehouse_application {
 
     public void setUpdate_date(LocalDate update_date) {
         this.update_date = update_date;
+
     }
+
 
 
     // 新しいゲッターとセッターを追加
@@ -115,7 +117,7 @@ public class Livehouse_application {
 
     // コンストラクタにartist_group_idとcogig_or_soloを追加
     public Livehouse_application(int id, int user_id, int livehouse_information_id, LocalDate date_time, Boolean true_false, LocalDate start_time, LocalDate finish_time, 
-                                 LocalDate create_date, LocalDate update_date, int cogig_or_solo, int artist_group_id, String us_name) {
+                                 LocalDate create_date, LocalDate update_date, int cogig_or_solo, int artist_group_id) {
         super();
         this.id = id;
         this.user_id = user_id;

@@ -51,6 +51,66 @@
 
         </section>
         
+        <section>
+        	<h2>ライブ予約状況</h2>
+        	<div>
+        		<h2>ライブ予約完了</h2>
+        		<c:forEach var="app" items="${applicationsTrue}">
+        			<div>
+        				<img src="${app.livehouse_information.picture_image_naigaikan}" alt="Livehouse Image" width="100px" height="100px"/>
+	        			<ul>
+	        				<li>${app.livehouse_information.livehouse_name}</li>
+	        				<li>予約日</li>
+	        				<li>${app.date_time}</li>
+	        				
+	        			</ul>
+	        			<ul>
+	        				<li>
+	        				<li>${app.livehouse_information.live_address}</li>
+	        				<li>${app.livehouse_information.live_tel_number}</li>
+	        			</ul>
+        			</div>
+        			
+        		</c:forEach>
+        		<h2>予約申請中</h2>
+        		<c:forEach var="app" items="${applicationsFalse}">
+        			<div>
+        				<img src="${app.livehouse_information.picture_image_naigaikan}" alt="Livehouse Image" width="100px" height="100px"/>
+	        			<ul>
+	        				<li>${app.livehouse_information.livehouse_name}</li>
+	        				<li>予約日</li>
+	        				<li>${app.date_time}</li>
+	        				
+	        			</ul>
+	        			<ul>
+	        				<li>
+	        				<li>${app.livehouse_information.live_address}</li>
+	        				<li>${app.livehouse_information.live_tel_number}</li>
+	        			</ul>
+        			</div>
+        			
+        		</c:forEach>
+        		
+        	</div>
+        </section>
+        
+        <c:if test="${not empty applicationsTrue}">
+		    <ul>
+		        <c:forEach var="app" items="${applicationsTrue}">
+		            <li>
+		                <strong>Application ID:</strong> ${app.id} <br>
+		                <strong>Livehouse:</strong> ${app.livehouse_information.livehouse_name} <br>
+		                <strong>Date:</strong> ${app.date_time} <br>
+		                <strong>Start Time:</strong> ${app.start_time} <br>
+		                <strong>Finish Time:</strong> ${app.finish_time}
+		            </li>
+		        </c:forEach>
+		    </ul>
+		</c:if>
+        <c:forEach var="app" items="${applicationsTrue}">
+        	
+        </c:forEach>
+        
         <table border="1">
 	        <thead>
 	            <tr>
