@@ -14,8 +14,16 @@ public class Livehouse_application {
     private LocalDate update_date;
     private int cogig_or_solo;  // 追加されたプロパティ
     private int artist_group_id;  // 追加されたプロパティ
+    private Livehouse_information livehouse_information;
 
-    
+    // ゲッターとセッターを追加
+    public Livehouse_information getLivehouse_information() {
+        return livehouse_information;
+    }
+
+    public void setLivehouse_information(Livehouse_information livehouse_information) {
+        this.livehouse_information = livehouse_information;
+    }
     public int getId() {
         return id;
     }
@@ -55,7 +63,6 @@ public class Livehouse_application {
     public void setTrue_False(boolean true_false) {
         this.true_false = true_false;
     }
-
     public LocalDate getStart_time() {
         return start_time;
     }
