@@ -665,6 +665,41 @@ e.printStackTrace();
 return -1; // エラー時に -1 を返す
 }
 }
+    //ライブハウス予約
+    public Map<Integer, Integer> getApplicationCountsByDate(int livehouseId, int year, int month) throws SQLException {
+        String sql = "SELECT DAY(date_time) AS day, COUNT(*) AS count " +
+                     "FROM livehouse_application_table " +
+                     "WHERE livehouse_information_id = ? " +
+                     "AND YEAR(date_time) = ? " +
+                     "AND MONTH(date_time) = ? " +
+                     "GROUP BY DAY(date_time)";
+
+        Map<Integer, Integer> applicationCounts = new HashMap<>();
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, livehouseId);
+            pstmt.setInt(2, year);
+            pstmt.setInt(3, month);
+
+            System.out.println("[DEBUG] Executing query: " + pstmt);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int day = rs.getInt("day");
+                    int count = rs.getInt("count");
+                    applicationCounts.put(day, count);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[ERROR] Error fetching application counts by date");
+            e.printStackTrace();
+            throw e;
+        }
+
+        return applicationCounts;
+    }
     
     public Map<Integer, String> getReservationStatusByMonthAndLivehouseId(int livehouseId, int year, int month) {
         String sql = "SELECT DAY(date_time) AS day, true_false " +
