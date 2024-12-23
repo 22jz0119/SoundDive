@@ -51,6 +51,7 @@
 
         </section>
         
+        
         <section>
         	<h2>ライブ予約状況</h2>
         	<div>
