@@ -1,6 +1,5 @@
 package model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -9,8 +8,8 @@ public class LivehouseApplicationWithGroup {
     private int id;
     private LocalDateTime datetime; // JSPと一致するプロパティ名
     private boolean trueFalse;
-    private LocalDate startTime;
-    private LocalDate finishTime;
+    private LocalDateTime startTime; // LocalDateから変更
+    private LocalDateTime finishTime; // LocalDateから変更
     private int groupId;
     private String accountName;
     private String groupGenre;
@@ -25,8 +24,8 @@ public class LivehouseApplicationWithGroup {
             int id,
             LocalDateTime datetime,
             boolean trueFalse,
-            LocalDate startTime,
-            LocalDate finishTime,
+            LocalDateTime startTime,
+            LocalDateTime finishTime,
             int groupId,
             String accountName,
             String groupGenre,
@@ -82,19 +81,19 @@ public class LivehouseApplicationWithGroup {
         this.trueFalse = trueFalse;
     }
 
-    public LocalDate getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDate startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public LocalDate getFinishTime() {
+    public LocalDateTime getFinishTime() {
         return finishTime;
     }
 
-    public void setFinishTime(LocalDate finishTime) {
+    public void setFinishTime(LocalDateTime finishTime) {
         this.finishTime = finishTime;
     }
 
