@@ -61,7 +61,7 @@ public class At_booking_confirmation extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("[DEBUG] doPost: Saving reservation.");
+        System.out.println("[DEBUG] doPost: Entering doPost for saving reservation.");
 
         try {
             // リクエストのすべてのパラメータをログ出力
@@ -89,12 +89,12 @@ public class At_booking_confirmation extends HttpServlet {
                 return;
             }
 
-            // 取得したパラメータのログ出力
+            // パラメータのログ出力
             System.out.println("[DEBUG] doPost: Processed parameters:");
             System.out.println("  year: " + year + ", month: " + month + ", day: " + day);
             System.out.println("  time: " + time + ", livehouseId: " + livehouseId);
             System.out.println("  livehouseType: " + livehouseType);
-            System.out.println("  soloSpecificData: " + soloSpecificData); // 重要なデバッグポイント
+            System.out.println("  soloSpecificData: " + soloSpecificData); 
             System.out.println("  userId: " + userId + ", applicationId: " + applicationId);
 
             int livehouseInformationId = Integer.parseInt(livehouseId);
@@ -104,34 +104,25 @@ public class At_booking_confirmation extends HttpServlet {
             Livehouse_applicationDAO applicationDAO = new Livehouse_applicationDAO(dbManager);
 
             if ("solo".equalsIgnoreCase(livehouseType)) {
-                // ソロの予約を保存
                 System.out.println("[DEBUG] doPost: Processing solo reservation.");
                 boolean saveResult = applicationDAO.saveSoloReservation(livehouseInformationId, startTime, startTime);
 
                 if (saveResult) {
                     System.out.println("[DEBUG] doPost: Solo reservation saved successfully.");
                     request.setAttribute("confirmationMessage", "ソロライブの予約が完了しました！");
-                    request.setAttribute("selectedYear", year);
-                    request.setAttribute("selectedMonth", month);
-                    request.setAttribute("selectedDay", day);
-                    request.setAttribute("selectedTime", time);
-                    request.setAttribute("livehouseId", livehouseId);
-                    request.setAttribute("livehouseType", livehouseType);
-                    request.setAttribute("soloSpecificData", soloSpecificData); // JSP にデータを送る
-                    request.getRequestDispatcher("/WEB-INF/jsp/artist/at-booking-confirmation.jsp").forward(request, response);
                 } else {
                     System.err.println("[ERROR] doPost: Failed to save solo reservation.");
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ソロライブ予約の保存に失敗しました。");
+                    return;
                 }
             } else if ("multi".equalsIgnoreCase(livehouseType)) {
-                // マルチの予約を保存
+                System.out.println("[DEBUG] doPost: Processing multi reservation.");
                 if (isNullOrEmpty(userId, applicationId)) {
                     System.err.println("[ERROR] doPost: Missing userId or applicationId.");
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ユーザーIDまたは申請IDが指定されていません。");
                     return;
                 }
 
-                System.out.println("[DEBUG] doPost: Processing multi reservation.");
                 boolean updateResult = applicationDAO.updateLivehouseApplication(
                     Integer.parseInt(applicationId),
                     livehouseInformationId,
@@ -142,20 +133,26 @@ public class At_booking_confirmation extends HttpServlet {
                 if (updateResult) {
                     System.out.println("[DEBUG] doPost: Multi reservation saved successfully.");
                     request.setAttribute("confirmationMessage", "マルチライブの予約が完了しました！");
-                    request.setAttribute("selectedYear", year);
-                    request.setAttribute("selectedMonth", month);
-                    request.setAttribute("selectedDay", day);
-                    request.setAttribute("selectedTime", time);
-                    request.setAttribute("livehouseId", livehouseId);
-                    request.setAttribute("livehouseType", livehouseType);
-                    request.getRequestDispatcher("/WEB-INF/jsp/artist/at-booking-confirmation.jsp").forward(request, response);
                 } else {
                     System.err.println("[ERROR] doPost: Failed to save multi reservation.");
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "マルチライブ予約の保存に失敗しました。");
+                    return;
                 }
             } else {
+                System.err.println("[ERROR] doPost: Invalid livehouseType.");
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なライブハウスタイプが指定されました。");
+                return;
             }
+
+            // 成功した場合のフォワード
+            request.setAttribute("selectedYear", year);
+            request.setAttribute("selectedMonth", month);
+            request.setAttribute("selectedDay", day);
+            request.setAttribute("selectedTime", time);
+            request.setAttribute("livehouseId", livehouseId);
+            request.setAttribute("livehouseType", livehouseType);
+
+            request.getRequestDispatcher("/WEB-INF/jsp/artist/at-booking-confirmation.jsp").forward(request, response);
         } catch (Exception e) {
             System.err.println("[ERROR] doPost: Error while saving reservation: " + e.getMessage());
             e.printStackTrace();
@@ -163,7 +160,6 @@ public class At_booking_confirmation extends HttpServlet {
         }
         System.out.println("[DEBUG] doPost: Exit point.");
     }
-
 
     private LocalDateTime parseDateTime(String year, String month, String day, String time) {
         try {

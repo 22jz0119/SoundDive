@@ -31,6 +31,8 @@ function generateCalendar() {
     console.log(`[DEBUG] 現在の月: ${currentMonth}`);
     console.log(`[DEBUG] 今月の日数: ${daysInCurrentMonth}`);
     console.log("[DEBUG] 予約データ:", reservationData);
+    console.log("[DEBUG] JSP livehouseType:", livehouseType);
+
 
     calendarBody.innerHTML = ""; // カレンダーのリセット
     let date = 1;
@@ -78,19 +80,26 @@ function generateCalendar() {
                     console.log(`[DEBUG] 日付 ${currentDate} はクリック可能です`);
 
                     td.addEventListener("click", () => {
-                        let url;
-                        if (livehouseType === "solo") {
-                            url = `${contextPath}/At_Reservation?year=${currentYear}&month=${currentMonth}&day=${currentDate}&livehouseId=${livehouseId}&livehouse_type=${livehouseType}`;
-                        } else if (livehouseType === "multi") {
-                            url = `${contextPath}/At_Reservation?year=${currentYear}&month=${currentMonth}&day=${currentDate}&userId=${userId}&livehouseId=${livehouseId}&applicationId=${applicationId}`;
-                        } else {
-                            console.error("[ERROR] 無効な livehouseType:", livehouseType);
-                            return;
-                        }
+					    let url;
+					
+					    if (livehouseType === "solo") {
+						    // ソロライブの場合
+						    url = `${contextPath}/At_Reservation?year=${currentYear}&month=${currentMonth}&day=${currentDate}&livehouseId=${livehouseId}&livehouse_type=${livehouseType}`;
+						} else if (livehouseType === "multi") {
+						    // マルチライブの場合
+						    url = `${contextPath}/At_Reservation?year=${currentYear}&month=${currentMonth}&day=${currentDate}&userId=${userId}&livehouseId=${livehouseId}&applicationId=${applicationId}&livehouse_type=${livehouseType}`;
+						} else {
+						    // 無効なタイプの場合
+						    console.error("[ERROR] 無効な livehouseType:", livehouseType);
+						    return;
+						}
+						console.log("[DEBUG] livehouseType for URL:", livehouseType);
+						console.log("[DEBUG] Generated URL:", url);
 
-                        console.log(`[DEBUG] URL にリダイレクトします: ${url}`);
-                        window.location.href = url;
-                    });
+					    console.log(`[DEBUG] URL にリダイレクトします: ${url}`);
+					    window.location.href = url;
+					});
+
                 } else {
                     td.classList.add("non-clickable");
                     console.log(`[DEBUG] 日付 ${date} はクリック不可です`);

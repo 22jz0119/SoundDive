@@ -24,8 +24,8 @@ public class At_details extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-    	System.out.println("[DEBUG] Query String: " + request.getQueryString());
-    	request.setCharacterEncoding("UTF-8");
+        System.out.println("[DEBUG] Query String: " + request.getQueryString());
+        request.setCharacterEncoding("UTF-8");
 
         try {
             // リクエストから必要なパラメータを取得
@@ -35,8 +35,10 @@ public class At_details extends HttpServlet {
             String applicationIdParam = request.getParameter("applicationId");
 
             // パラメータのデバッグログ
-            System.out.println("[DEBUG] Received Parameters - livehouseId: " + livehouseIdParam + ", livehouseType: " + livehouseType
-                    + ", userId: " + userIdParam + ", applicationId: " + applicationIdParam);
+            System.out.println("[DEBUG] Received Parameters - livehouseId: " + livehouseIdParam +
+                               ", livehouseType: " + livehouseType + 
+                               ", userId: " + userIdParam + 
+                               ", applicationId: " + applicationIdParam);
 
             if (livehouseIdParam == null || livehouseIdParam.isEmpty()) {
                 System.err.println("[ERROR] livehouseId is missing.");
@@ -56,11 +58,13 @@ public class At_details extends HttpServlet {
             }
 
             // DAOの初期化
+            System.out.println("[DEBUG] Initializing DAOs");
             DBManager dbManager = DBManager.getInstance();
             Livehouse_informationDAO livehouseInfoDao = new Livehouse_informationDAO(dbManager);
             Livehouse_applicationDAO livehouseAppDao = new Livehouse_applicationDAO(dbManager);
 
             // ライブハウス情報を取得
+            System.out.println("[DEBUG] Fetching livehouse information for ID: " + livehouseId);
             Livehouse_information livehouseInfo = livehouseInfoDao.getLivehouse_informationById(livehouseId);
             if (livehouseInfo == null) {
                 System.err.println("[ERROR] Livehouse not found for ID: " + livehouseId);
@@ -86,6 +90,7 @@ public class At_details extends HttpServlet {
             System.out.println("[DEBUG] Days in Month: " + daysInMonth);
 
             // 日ごとの予約状況を取得
+            System.out.println("[DEBUG] Fetching reservation status for livehouseId: " + livehouseId);
             Map<Integer, String> reservationStatus = livehouseAppDao.getReservationStatusByMonthAndLivehouseId(livehouseId, year, month);
             System.out.println("[DEBUG] Generated Reservation Status Map: " + reservationStatus);
 
@@ -95,6 +100,7 @@ public class At_details extends HttpServlet {
             System.out.println("[DEBUG] Reservation Status JSON: " + reservationStatusJson);
 
             // リクエストスコープに共通データをセット
+            System.out.println("[DEBUG] Setting request attributes");
             request.setAttribute("livehouse", livehouseInfo);
             request.setAttribute("reservationStatus", reservationStatusJson);
             request.setAttribute("daysInMonth", daysInMonth);
@@ -105,6 +111,7 @@ public class At_details extends HttpServlet {
 
             // マルチライブの場合の追加データ
             if ("multi".equals(livehouseType)) {
+                System.out.println("[DEBUG] Multi livehouse type detected");
                 if (userIdParam == null || userIdParam.isEmpty() || applicationIdParam == null || applicationIdParam.isEmpty()) {
                     System.err.println("[ERROR] Missing userId or applicationId for multi livehouse.");
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ユーザーIDまたは申請IDが指定されていません。");
@@ -129,7 +136,8 @@ public class At_details extends HttpServlet {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "エラーが発生しました。");
         }
     }
-        @Override
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 必要なら POST リクエスト用の処理を追加
     }

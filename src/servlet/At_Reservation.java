@@ -26,6 +26,8 @@ public class At_Reservation extends HttpServlet {
         String dayParam = request.getParameter("day");
         String livehouseIdParam = request.getParameter("livehouseId");
         String livehouseType = request.getParameter("livehouse_type"); // livehouse_type を受け取る
+        String userIdParam = request.getParameter("userId"); // multi用のuserId
+        String applicationIdParam = request.getParameter("applicationId"); // multi用のapplicationId
 
         // パラメータログ
         System.out.println("[DEBUG] Received parameters:");
@@ -34,6 +36,8 @@ public class At_Reservation extends HttpServlet {
         System.out.println("day: " + dayParam);
         System.out.println("livehouseId: " + livehouseIdParam);
         System.out.println("livehouseType: " + livehouseType);
+        System.out.println("userId: " + userIdParam);
+        System.out.println("applicationId: " + applicationIdParam);
 
         try {
             // 入力チェック - 年月日が存在しているか、空でないかをチェック
@@ -81,9 +85,38 @@ public class At_Reservation extends HttpServlet {
                 System.out.println("[DEBUG] ソロライブモード");
                 // ソロの場合の処理は特に追加データは不要
             } else if ("multi".equalsIgnoreCase(livehouseType)) {
-                System.err.println("[ERROR] Multi live request without required parameters");
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "マルチライブのリクエストには追加情報が必要です");
-                return;
+                System.out.println("[DEBUG] マルチライブモード");
+
+                // userId と applicationId のチェック
+                if (userIdParam == null || userIdParam.trim().isEmpty()) {
+                    System.err.println("[ERROR] userId is missing for multi live request");
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "マルチライブのリクエストにはユーザーIDが必要です");
+                    return;
+                }
+                if (applicationIdParam == null || applicationIdParam.trim().isEmpty()) {
+                    System.err.println("[ERROR] applicationId is missing for multi live request");
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "マルチライブのリクエストには申請IDが必要です");
+                    return;
+                }
+
+                // userId と applicationId を整数に変換
+                int userId;
+                int applicationId;
+                try {
+                    userId = Integer.parseInt(userIdParam);
+                    applicationId = Integer.parseInt(applicationIdParam);
+                } catch (NumberFormatException e) {
+                    System.err.println("[ERROR] Invalid userId or applicationId format");
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なユーザーIDまたは申請ID形式です");
+                    return;
+                }
+
+                // リクエストスコープに追加データをセット
+                request.setAttribute("userId", userId);
+                request.setAttribute("applicationId", applicationId);
+
+                // ログ確認
+                System.out.println("[DEBUG] Multi live request attributes set: userId=" + userId + ", applicationId=" + applicationId);
             } else {
                 System.err.println("[ERROR] Invalid livehouseType: " + livehouseType);
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なライブハウスタイプです");

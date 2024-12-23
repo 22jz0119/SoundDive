@@ -59,7 +59,7 @@
 		        <form action="<%= request.getContextPath() %>/At_Cogig" method="post">
 		            <input type="hidden" name="action" value="apply">
 		            <input type="hidden" name="applicationId" value="${artist.id}">
-		            
+
 		            <%
 		                // applicationIdをセッションから取得し、存在しない場合はリクエストから取得
 		                String livehouseApplicationId = (String) session.getAttribute("livehouseApplicationId");
@@ -98,18 +98,24 @@
 		        </form>
 		    </div>
 		</c:forEach>
-
 	</div>
 
     <!-- 次へボタン -->
     <div class="next-button-container">
         <%
-            Integer livehouseApplicationId = (Integer) session.getAttribute("livehouseApplicationId");
-            String nextPageUrl = livehouseApplicationId != null 
-                ? request.getContextPath() + "/At-livehouse_search?applicationId=" + livehouseApplicationId
-                : request.getContextPath() + "/At-livehouse_search";
-        %>
-        <a href="<%= nextPageUrl %>" class="co-gig-btn">次へ</a>
+		    String livehouseApplicationId = (String) session.getAttribute("livehouseApplicationId");
+		    String livehouseType = request.getParameter("livehouse_type");
+		    if (livehouseType == null) {
+		        livehouseType = "multi";  // デフォルト値
+		    }
+		    String nextPageUrl = request.getContextPath() + "/At-livehouse_search";
+		    if (livehouseApplicationId != null) {
+		        nextPageUrl += "?applicationId=" + livehouseApplicationId + "&livehouse_type=" + livehouseType;
+		    } else {
+		        nextPageUrl += "?livehouse_type=" + livehouseType;
+		    }
+		%>
+<a href="<%= nextPageUrl %>" class="co-gig-btn">次へ</a>
     </div>
 </body>
 </html>

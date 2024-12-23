@@ -120,7 +120,7 @@
 		
 		<!-- Debug 3: Form submission details -->
         <p>[DEBUG 3] Form details:</p>
-        <form action="<%= request.getContextPath() %>/At_booking_confirmation" method="post">
+        <form action="<%= request.getContextPath() %>/At_livehouse_reservation_completed" method="post">
 		    <input type="hidden" name="year" value="${selectedYear}">
 		    <input type="hidden" name="month" value="${selectedMonth}">
 		    <input type="hidden" name="day" value="${selectedDay}">
@@ -131,19 +131,19 @@
 		    <!-- ソロ用データ -->
 		    <c:if test="${livehouseType eq 'solo'}">
 		        <input type="hidden" name="soloSpecificData" value="ソロ専用データ">
-		        <p>[DEBUG 3.1] Solo-specific data is being sent.</p>
-    			<p>[DEBUG] soloSpecificData: ソロ専用データ</p>
 		    </c:if>
 		
 		    <!-- マルチ用データ -->
 		    <c:if test="${livehouseType eq 'multi'}">
 		        <input type="hidden" name="userId" value="${user.id}">
 		        <input type="hidden" name="applicationId" value="${application.id}">
-		        <p>[DEBUG 3.2] Multi-specific data is being sent.</p>
 		    </c:if>
 		
+		    <!-- このボタンでのみフォーム送信 -->
 		    <button type="submit" class="btn">予約を確定する</button>
 		</form>
+
+
     </main>
 </body>
 </html>
