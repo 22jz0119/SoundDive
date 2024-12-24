@@ -17,12 +17,11 @@ import dao.Livehouse_applicationDAO;
 public class At_booking_confirmation extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("[DEBUG] doGet: Preparing confirmation page.");
 
         try {
-            // 確認画面のパラメータ取得
+            // パラメータ取得
             String year = request.getParameter("year");
             String month = request.getParameter("month");
             String day = request.getParameter("day");
@@ -30,19 +29,14 @@ public class At_booking_confirmation extends HttpServlet {
             String livehouseId = request.getParameter("livehouseId");
             String livehouseType = request.getParameter("livehouse_type");
 
-            System.out.println("[DEBUG] doGet: Received parameters:");
-            System.out.println("  year: " + year + ", month: " + month + ", day: " + day);
-            System.out.println("  time: " + time + ", livehouseId: " + livehouseId);
-            System.out.println("  livehouseType: " + livehouseType);
-
-            // パラメータの検証
+            // データ検証
             if (isNullOrEmpty(year, month, day, time, livehouseId, livehouseType)) {
                 System.err.println("[ERROR] doGet: Missing parameters.");
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "必要なパラメータが指定されていません。");
                 return;
             }
 
-            // 確認画面のデータを設定
+            // JSPにデータを渡す
             request.setAttribute("selectedYear", year);
             request.setAttribute("selectedMonth", month);
             request.setAttribute("selectedDay", day);
@@ -50,7 +44,7 @@ public class At_booking_confirmation extends HttpServlet {
             request.setAttribute("livehouseId", livehouseId);
             request.setAttribute("livehouseType", livehouseType);
 
-            System.out.println("[DEBUG] doGet: Forwarding to confirmation page.");
+            // 確認画面にフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at-booking-confirmation.jsp").forward(request, response);
         } catch (Exception e) {
             System.err.println("[ERROR] doGet: Error while preparing confirmation page: " + e.getMessage());
@@ -77,7 +71,6 @@ public class At_booking_confirmation extends HttpServlet {
             String time = request.getParameter("time");
             String livehouseId = request.getParameter("livehouseId");
             String livehouseType = request.getParameter("livehouse_type");
-            String soloSpecificData = request.getParameter("soloSpecificData");
 
             String userId = request.getParameter("userId");
             String applicationId = request.getParameter("applicationId");
@@ -94,7 +87,6 @@ public class At_booking_confirmation extends HttpServlet {
             System.out.println("  year: " + year + ", month: " + month + ", day: " + day);
             System.out.println("  time: " + time + ", livehouseId: " + livehouseId);
             System.out.println("  livehouseType: " + livehouseType);
-            System.out.println("  soloSpecificData: " + soloSpecificData); 
             System.out.println("  userId: " + userId + ", applicationId: " + applicationId);
 
             int livehouseInformationId = Integer.parseInt(livehouseId);

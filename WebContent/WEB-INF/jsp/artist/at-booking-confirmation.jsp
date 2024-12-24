@@ -128,11 +128,6 @@
 		    <input type="hidden" name="livehouseId" value="${livehouseId}">
 		    <input type="hidden" name="livehouse_type" value="${livehouseType}">
 		
-		    <!-- ソロ用データ -->
-		    <c:if test="${livehouseType eq 'solo'}">
-		        <input type="hidden" name="soloSpecificData" value="ソロ専用データ">
-		    </c:if>
-		
 		    <!-- マルチ用データ -->
 		    <c:if test="${livehouseType eq 'multi'}">
 		        <input type="hidden" name="userId" value="${user.id}">
@@ -142,6 +137,7 @@
 		    <!-- このボタンでのみフォーム送信 -->
 		    <button type="submit" class="btn">予約を確定する</button>
 		</form>
+
 
 
     </main>
