@@ -386,13 +386,6 @@ public class Livehouse_applicationDAO {
         return null;
     }
 
-
-
-
-
-
-
-
     // 指定された年と月のライブハウス予約件数を取得するメソッド
     public Map<Integer, Integer> getReservationCountByMonth(int year, int month) {
         Map<Integer, Integer> reservationCounts = new HashMap<>();
@@ -440,12 +433,12 @@ public class Livehouse_applicationDAO {
         List<LivehouseApplicationWithGroup> reservations = new ArrayList<>();
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+        	
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     // groupId を取得
                     int groupId = rs.getInt("artist_group_id");
-
+                    
                     // メンバー情報を取得
                     List<Member> members = getMembersByGroupId(groupId);
 
@@ -506,9 +499,6 @@ public class Livehouse_applicationDAO {
 
         return null;  // 取得できなかった場合はnullを返す
     }
-
-
-
 
     public Map<Integer, String> getDailyReservationStatus(Livehouse_information livehouse, int year, int month) {
         int livehouseInformationId = livehouse.getId();  // Livehouse_informationからIDを取得
@@ -703,13 +693,12 @@ return -1; // エラー時に -1 を返す
         String sql = "SELECT DAY(date_time) AS day, true_false " +
                      "FROM livehouse_application_table " +
                      "WHERE livehouse_information_id = ? " +
-                     "AND date_time IS NOT NULL " +  // NULL を除外
+                     "AND date_time IS NOT NULL " +
                      "AND YEAR(date_time) = ? " +
                      "AND MONTH(date_time) = ?";
 
         Map<Integer, String> reservationStatus = new HashMap<>();
 
-        // クエリおよびパラメータのデバッグログ
         System.out.println("[DEBUG] Executing SQL Query: " + sql);
         System.out.println("[DEBUG] Parameters - livehouseInformationId: " + livehouseId + ", Year: " + year + ", Month: " + month);
 
@@ -720,38 +709,27 @@ return -1; // エラー時に -1 を返す
             pstmt.setInt(2, year);
             pstmt.setInt(3, month);
 
-            // クエリ実行
             try (ResultSet rs = pstmt.executeQuery()) {
-                int rowCount = 0; // 結果の行数をカウント
+                int rowCount = 0;
                 while (rs.next()) {
-                    int day = rs.getInt("day"); // 日付を取得
-                    boolean isReserved = rs.getBoolean("true_false"); // true_false を取得
+                    int day = rs.getInt("day");
+                    boolean isReserved = rs.getInt("true_false") == 1; // 1が予約済みの場合
 
-                    // デバッグログ
-                    System.out.println("[DEBUG] Fetched Row - Day: " + day + ", True_False: " + isReserved);
-
-                    // 日付が存在する場合は "〇" を設定 (予約済み)
                     reservationStatus.put(day, isReserved ? "〇" : "×");
-
-                    // 更新内容のログ
-                    System.out.println("[DEBUG] Reservation Map Update: " + day + " -> " + (isReserved ? "〇" : "×"));
                     rowCount++;
                 }
-
-                // 結果の行数ログ
                 System.out.println("[DEBUG] Total Rows Fetched: " + rowCount);
             }
         } catch (SQLException e) {
-            // SQL例外発生時のログ
             System.err.println("[ERROR] SQL Exception occurred while fetching reservation status");
             e.printStackTrace();
+            throw new RuntimeException("Failed to fetch reservation status", e); // 必要に応じて例外をスロー
         }
 
-        // 最終的なマップの内容をログ
         System.out.println("[DEBUG] Final Reservation Status Map: " + reservationStatus);
-
         return reservationStatus;
     }
+
 
     // Livehouse_applicationの情報を表示するメソッド
     public void printLivehouse_application(Livehouse_application livehouse_application) {

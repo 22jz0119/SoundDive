@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*, java.time.*" %>
+<%@ page import="com.google.gson.Gson" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="ja">
@@ -38,23 +39,40 @@
                 <h2 class="OpenSpots-Reserve">空き状況・予約</h2>
                 <p class="OpenSpots-Reserve-detile">空いてる日にちを選択して、予約に進んでください</p>
                 <p class="Notes-or-Cautions">※誰も予約していない〇
-                    ※確定していないが予約者多数△</p>
             </div>
 
             <div class="a-t-detail-calendar-containar">
                 <button id="prev-month" type="button">前の月</button>
+                <span id="current-month" class="current-month"></span>
                 <button id="next-month" type="button">次の月</button>
             </div>
             <div id="calendar-container"></div>
         </section>
     </main>
-    
-    <!-- JSPからJavaScriptにデータを渡す -->
-    <script>
+
+    <%
+ 	// `reservationStatus` の定義
+    Map<Integer, String> reservationStatus = new HashMap<>();
+    reservationStatus.put(1, "〇");
+    reservationStatus.put(2, "×");
+    reservationStatus.put(3, "〇");
+    reservationStatus.put(4, "〇");
+    reservationStatus.put(5, "×");
+    // 現在の年月を取得
+    LocalDate currentDate = LocalDate.now();
+    int year = request.getParameter("year") != null ? Integer.parseInt(request.getParameter("year")) : currentDate.getYear();
+    int month = request.getParameter("month") != null ? Integer.parseInt(request.getParameter("month")) : currentDate.getMonthValue();
+    int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
+
+    // ReservationStatusをJSON形式に変換
+    String reservationStatusJson = new Gson().toJson(reservationStatus);
+%>
+
+<script>
     const contextPath = '<%= request.getContextPath() %>';
-    const livehouseType = '<c:out value="${livehouseType}" escapeXml="true" />'; // 修正
-    const userId = livehouseType === 'multi' ? '<c:out value="${userId}" escapeXml="true" />' : null; // 修正
-    const applicationId = livehouseType === 'multi' ? '<c:out value="${applicationId}" escapeXml="true" />' : null; // 修正
+    const livehouseType = '<c:out value="${livehouseType}" escapeXml="true" />';
+    const userId = livehouseType === 'multi' ? '<c:out value="${userId}" escapeXml="true" />' : null;
+    const applicationId = livehouseType === 'multi' ? '<c:out value="${applicationId}" escapeXml="true" />' : null;
     const livehouseId = '<c:out value="${livehouse.id}" escapeXml="true" />';
     const reservationDataRaw = '<c:out value="${reservationStatus}" escapeXml="false" />';
     let reservationData = {};
@@ -72,21 +90,19 @@
         console.error("[ERROR] Failed to parse reservationData:", error);
     }
 
-    const currentYear = ${year != null ? year : 2024};
-    const currentMonth = ${month != null ? month : 12};
-    const daysInCurrentMonth = ${daysInMonth != null ? daysInMonth : 31};
+    const now = new Date();
+    const defaultYear = now.getFullYear();
+    const defaultMonth = now.getMonth() + 1; // JavaScriptの月は0ベース
+    const defaultDaysInMonth = new Date(defaultYear, defaultMonth, 0).getDate();
 
-    console.log("[DEBUG] JSP contextPath:", contextPath);
-    console.log("[DEBUG] JSP livehouseType:", livehouseType);
-    console.log("[DEBUG] JSP userId:", userId);
-    console.log("[DEBUG] JSP applicationId:", applicationId);
-    console.log("[DEBUG] JSP livehouseId:", livehouseId);
-    console.log("[DEBUG] Parsed reservationData:", reservationData);
-    console.log("[DEBUG] currentYear:", currentYear);
-    console.log("[DEBUG] currentMonth:", currentMonth);
-    console.log("[DEBUG] daysInCurrentMonth:", daysInCurrentMonth);
+    const currentYear = ${year != null ? year : defaultYear};
+    const currentMonth = ${month != null ? month : defaultMonth};
+    const daysInCurrentMonth = ${daysInMonth != null ? daysInMonth : defaultDaysInMonth};
+
+    console.log("[DEBUG] Calculated Year:", currentYear);
+    console.log("[DEBUG] Calculated Month:", currentMonth);
+    console.log("[DEBUG] Days in Current Month:", daysInCurrentMonth);
 </script>
-
 
     <script src="<%= request.getContextPath() %>/assets/js/at_calender.js" defer></script>
 
