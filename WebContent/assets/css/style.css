@@ -1234,7 +1234,7 @@ th.b {
 }
 
 .co-gig-one {
-    width: 45%;
+    width: 35%;
     margin: 10px;
     text-align: center;
     display: flex;
@@ -1249,7 +1249,7 @@ th.b {
 
 .taibantable th, .taibantable td {
     border: 1px solid #ccc; /* セルに枠線を追加 */
-    padding: 8px; /* セルの内側に余白を追加 */
+    padding: 10px; /* セルの内側に余白を追加 */
     text-align: center; /* テキストを中央揃え */
 }
 
@@ -2191,3 +2191,81 @@ th.b {
     background: rgba(65, 194, 45, 0.403);
     border-radius: 10px;
 }
+
+.cogig-containar {
+    display: flex;
+    flex-wrap: wrap; /* Allows the items to wrap to the next row */
+    justify-content: center; /* Centers the items horizontally */
+    align-items: center; /* Centers the items vertically */
+    gap: 20px; /* Space between the items */
+}
+
+.band-image{
+	width: 100px;
+	height: 100px;
+	object-fit: cover;
+}
+
+.cogig-prof-frame{
+	
+	background: linear-gradient(to right, #FF6500, #1E3E62, #0B192C, #000000) ;
+	margin: 50px;
+	padding: 20px 150px;
+}
+
+.cogig-prof-title{
+	display: flex;
+	justify-content: left;
+	list-style: none;
+	font-size: 1.7rem;
+}
+
+.cogig-prof-ul1{
+	list-style: none;
+	display: flex;
+}
+
+.cogig-prof-ul1-li1{
+	margin-right: 20px;
+}
+
+.cogig-prof-ul2{
+	list-style: none;
+	display: flex;
+}
+
+/* ボタン全体のスタイル */
+#cogig-prof-join-btn {
+  padding: 12px 24px; /* ボタンの内側の余白 */
+  font-size: 16px; /* フォントサイズ */
+  font-weight: bold; /* 太字 */
+  color: #fff; /* 文字色 */
+  background-color: #4CAF50; /* ボタンの背景色 */
+  border: none; /* ボーダーなし */
+  border-radius: 30px; /* 丸みのある角 */
+  cursor: pointer; /* マウスカーソルをポインタに */
+  transition: all 0.3s ease; /* スムーズなトランジション効果 */
+}
+
+/* ボタンにマウスを乗せたときのホバー効果 */
+#cogig-prof-join-btn:hover {
+  background-color: #45a049; /* ホバー時の背景色 */
+  transform: scale(1.05); /* 少し大きくなる */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 影を付けて浮き上がらせる */
+}
+
+/* フォーカス時のスタイル */
+#cogig-prof-join-btn:focus {
+  outline: none; /* フォーカス時のアウトラインを削除 */
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.6); /* ボタンを際立たせる緑色のアウトライン */
+}
+
+/* ボタンの親リストの余白を調整 */
+.cogig-prof-buttton-li1 {
+  list-style: none; /* リストのデフォルトのマーカーを削除 */
+  margin: 10px 0; /* 上下の余白 */
+}
+
+
+
+

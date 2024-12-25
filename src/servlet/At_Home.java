@@ -56,8 +56,6 @@ public class At_Home extends HttpServlet {
                 Livehouse_information livehouseInfo = livehouseInfoDAO.findLivehouseInformationById(app.getLivehouse_information_id());
                 if (livehouseInfo != null) {
                     app.setLivehouse_information(livehouseInfo);
-                } else {
-                    System.err.println("Livehouse information not found for ID: " + app.getLivehouse_information_id());
                 }
             }
 
@@ -66,9 +64,7 @@ public class At_Home extends HttpServlet {
                 Livehouse_information livehouseInfo = livehouseInfoDAO.findLivehouseInformationById(app.getLivehouse_information_id());
                 if (livehouseInfo != null) {
                     app.setLivehouse_information(livehouseInfo);
-                } else {
-                    System.err.println("Livehouse information not found for ID: " + app.getLivehouse_information_id());
-                }
+                } 
             }
 
             // 取得した情報をリクエストにセット

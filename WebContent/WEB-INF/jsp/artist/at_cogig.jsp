@@ -51,6 +51,51 @@
 		    </form>
 		</div>
     </section>
+    
+    <div class="cogig-containar">
+    	<c:forEach var="artist" items="${artistGroups}">
+    		<form action="<%= request.getContextPath() %>/At_Cogig" method="post">
+    			<input type="hidden" name="action" value="apply">
+		            <input type="hidden" name="applicationId" value="${artist.id}">
+		            
+		            <%
+		                // applicationIdをセッションから取得し、存在しない場合はリクエストから取得
+		                String livehouseApplicationId = (String) session.getAttribute("livehouseApplicationId");
+		                if (livehouseApplicationId == null) {
+		                    livehouseApplicationId = request.getParameter("applicationId");
+		                }
+		            %>
+		            <input type="hidden" name="livehouseApplicationId" value="<%= livehouseApplicationId %>">
+    				
+    				<div class="cogig-prof-frame">
+    					<c:if test="${not empty artist.picture_image_movie}">
+		                    <img src="${pageContext.request.contextPath}${artist.picture_image_movie}" alt="バンドのイラスト" class="band-image" width="100px" height="100px">
+		                </c:if>
+    					<ul class="cogig-prof-title">
+    						<li><p>${artist.account_name}</p></li>
+    					</ul>
+    					<ul class="cogig-prof-ul1">
+    						<li class="cogig-prof-ul1-li1"><p>バンド歴</p></li>
+    						<li class="cogig-prof-ul1-li2"><p>${artist.band_years} 年</p></li>
+    					</ul>
+    					<ul class="cogig-prof-ul2">
+    						<li class="cogig-prof-ul2-li1"><p>ジャンル</p></li>
+    						<li class="cogig-prof-ul2-li2"><p>${artist.group_genre}</p></li>
+    					</ul>
+    					<ul class="cogig-prof-button">
+						  <li class="cogig-prof-buttton-li1">
+						    <button type="submit" id="cogig-prof-join-btn">申請する</button>
+						  </li>
+						</ul>    					
+			                
+    				</div>
+    				
+    				
+    				
+    		</form>
+    		
+    	</c:forEach>
+    </div>
 
     <div class="co-gig-group">
         <!-- ユニークなアーティストグループのリストを表示 -->
