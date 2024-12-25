@@ -118,8 +118,6 @@
             </div>
         </section>
 		
-		<!-- Debug 3: Form submission details -->
-        <p>[DEBUG 3] Form details:</p>
         <form action="<%= request.getContextPath() %>/At_livehouse_reservation_completed" method="post">
 		    <input type="hidden" name="year" value="${selectedYear}">
 		    <input type="hidden" name="month" value="${selectedMonth}">
@@ -127,19 +125,14 @@
 		    <input type="hidden" name="time" value="${selectedTime}">
 		    <input type="hidden" name="livehouseId" value="${livehouseId}">
 		    <input type="hidden" name="livehouse_type" value="${livehouseType}">
-		
-		    <!-- マルチ用データ -->
+		    <input type="hidden" name="userId" value="${userId}">
+		    
 		    <c:if test="${livehouseType eq 'multi'}">
-		        <input type="hidden" name="userId" value="${user.id}">
-		        <input type="hidden" name="applicationId" value="${application.id}">
+		        <input type="hidden" name="applicationId" value="${applicationId}">
 		    </c:if>
-		
-		    <!-- このボタンでのみフォーム送信 -->
+		    
 		    <button type="submit" class="btn">予約を確定する</button>
 		</form>
-
-
-
     </main>
 </body>
 </html>
