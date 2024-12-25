@@ -86,7 +86,8 @@
 						  <li class="cogig-prof-buttton-li1">
 						    <button type="submit" id="cogig-prof-join-btn">申請する</button>
 						  </li>
-						</ul>    					
+						</ul> 
+						   					
 			                
     				</div>
     				
