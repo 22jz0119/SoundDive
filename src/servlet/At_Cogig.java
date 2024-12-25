@@ -1,6 +1,8 @@
 package servlet;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,37 +31,99 @@ public class At_Cogig extends HttpServlet {
         super.init();
         DBManager dbManager = DBManager.getInstance();
         artistGroupDAO = Artist_groupDAO.getInstance(dbManager);
-        livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager); // Livehouse_applicationDAO の初期化を追加
+        livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
         System.out.println("[DEBUG] At_Cogig Servlet Initialized.");
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            String query = request.getParameter("q");
-            System.out.println("[DEBUG] Received search query: " + query);
-            List<Artist_group> artistGroups;
+            // livehouse_type をパラメータとして受け取る
+            String livehouseType = request.getParameter("livehouse_type");
+            System.out.println("[DEBUG] Received livehouse_type: " + livehouseType);
 
-            if (query != null && !query.isEmpty()) {
-                artistGroups = artistGroupDAO.searchGroupsByName(query);
+            // livehouse_type が null の場合は "multi" に設定
+            if (livehouseType == null) {
+                livehouseType = "multi"; // デフォルト値
+                System.out.println("[DEBUG] livehouse_type is null, setting default value to 'multi'.");
+            }
+
+            // 'multi' の場合のみ処理
+            if (livehouseType.equals("multi")) {
+                // 検索クエリを受け取る
+                String query = request.getParameter("q");
+                System.out.println("[DEBUG] Received search query: " + query);
+                List<Artist_group> artistGroups;
+
+                // 検索クエリがあれば、それでフィルタリング
+                if (query != null && !query.isEmpty()) {
+                    artistGroups = artistGroupDAO.searchGroupsByName(query);
+                } else {
+                    artistGroups = artistGroupDAO.getAllGroups();
+                }
+
+                // 重複を排除するために user_id でフィルタリング
+                Map<Integer, Artist_group> uniqueArtists = new HashMap<>();
+                for (Artist_group artist : artistGroups) {
+                    uniqueArtists.putIfAbsent(artist.getUser_id(), artist);
+                }
+
+                // JSTLで利用できる形でデータをリクエストスコープに設定
+                request.setAttribute("artistGroups", uniqueArtists.values());
+
+                // メンバー数データもリクエストスコープに設定
+                Map<Integer, Integer> memberCounts = artistGroupDAO.getMemberCounts();
+                request.setAttribute("memberCounts", memberCounts);
+
+                // 'multi' に関連するアーティストグループがあれば表示
+                request.getRequestDispatcher("WEB-INF/jsp/artist/at_cogig.jsp").forward(request, response);
             } else {
-                artistGroups = artistGroupDAO.getAllGroups();
+                // 'multi' 以外の livehouse_type が指定された場合、エラー処理なしに通常の処理を続ける
+                System.out.println("[ERROR] Invalid livehouse_type or not specified. Proceeding to default behavior.");
+
+                // 検索クエリを受け取る
+                String query = request.getParameter("q");
+                System.out.println("[DEBUG] Received search query: " + query);
+                List<Artist_group> artistGroups;
+
+                // 検索クエリがあれば、それでフィルタリング
+                if (query != null && !query.isEmpty()) {
+                    artistGroups = artistGroupDAO.searchGroupsByName(query);
+                } else {
+                    artistGroups = artistGroupDAO.getAllGroups();
+                }
+
+                // 重複を排除するために user_id でフィルタリング
+                Map<Integer, Artist_group> uniqueArtists = new HashMap<>();
+                for (Artist_group artist : artistGroups) {
+                    uniqueArtists.putIfAbsent(artist.getUser_id(), artist);
+                }
+
+                // JSTLで利用できる形でデータをリクエストスコープに設定
+                request.setAttribute("artistGroups", uniqueArtists.values());
+
+                // メンバー数データもリクエストスコープに設定
+                Map<Integer, Integer> memberCounts = artistGroupDAO.getMemberCounts();
+                request.setAttribute("memberCounts", memberCounts);
+
+                // URLエンコードを適用してからリダイレクト
+                try {
+                    // クエリパラメータがnullでないことを確認してからエンコード
+                    String redirectUrl = request.getRequestURI();
+                    if (query != null && !query.isEmpty()) {
+                        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8.name());
+                        redirectUrl = redirectUrl + "?livehouse_type=multi&q=" + encodedQuery;
+                    } else {
+                        redirectUrl = redirectUrl + "?livehouse_type=multi"; // qがnullの場合
+                    }
+
+                    System.out.println("[DEBUG] Redirecting to: " + redirectUrl);  // リダイレクト先URLをログに出力
+                    response.sendRedirect(redirectUrl);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    response.sendRedirect(request.getContextPath() + "/At_Cogig?error=エラーが発生しました。");
+                }
             }
-
-            // 重複を排除するために user_id でフィルタリング
-            Map<Integer, Artist_group> uniqueArtists = new HashMap<>();
-            for (Artist_group artist : artistGroups) {
-                uniqueArtists.putIfAbsent(artist.getUser_id(), artist);
-            }
-
-            // JSTLで利用できる形でデータをリクエストスコープに設定
-            request.setAttribute("artistGroups", uniqueArtists.values());
-
-            // メンバー数データもリクエストスコープに設定
-            Map<Integer, Integer> memberCounts = artistGroupDAO.getMemberCounts();
-            request.setAttribute("memberCounts", memberCounts);
-
-            request.getRequestDispatcher("WEB-INF/jsp/artist/at_cogig.jsp").forward(request, response);
         } catch (Exception e) {
             System.err.println("[ERROR] Exception in doGet method.");
             e.printStackTrace();
@@ -77,7 +141,11 @@ public class At_Cogig extends HttpServlet {
 
         if ("apply".equals(action)) {
             String applicationIdParam = request.getParameter("applicationId");
-            System.out.println("[DEBUG] Received applicationId (id): " + applicationIdParam);
+            String livehouseType = request.getParameter("livehouse_type"); // livehouse_type を取得
+            if (livehouseType == null) {
+                livehouseType = "multi"; // デフォルト値を設定
+            }
+            System.out.println("[DEBUG] livehouse_type in doPost: " + livehouseType);
 
             if (applicationIdParam != null) {
                 try {
@@ -112,10 +180,17 @@ public class At_Cogig extends HttpServlet {
                             HttpSession session = request.getSession();
                             session.setAttribute("applicationId", applicationId);
 
-                            // リダイレクトで userId と applicationId を渡す
-                            response.sendRedirect(request.getContextPath() 
-                                    + "/At_livehouse_search?userId=" + userId 
-                                    + "&applicationId=" + applicationId);
+                            // リダイレクトで userId と applicationId と livehouse_type を渡す
+                            String redirectUrl = String.format(
+                                "%s/At_livehouse_search?userId=%d&applicationId=%d&livehouse_type=%s",
+                                request.getContextPath(),
+                                userId,
+                                applicationId,
+                                URLEncoder.encode(livehouseType, StandardCharsets.UTF_8.name())
+                            );
+
+                            System.out.println("[DEBUG] Redirecting to: " + redirectUrl);
+                            response.sendRedirect(redirectUrl);
                             return; // 処理を終了
                         } else {
                             System.err.println("[ERROR] Failed to create livehouse application.");
@@ -142,6 +217,7 @@ public class At_Cogig extends HttpServlet {
         // 現在のページを再表示
         doGet(request, response);
     }
+
 
     /**
      * ログイン状態をチェックする共通メソッド

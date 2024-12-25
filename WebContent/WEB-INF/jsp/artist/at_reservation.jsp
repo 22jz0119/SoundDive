@@ -48,7 +48,7 @@
 </section>
 
 <!-- 時間選択フォーム -->
-<form action="<%= request.getContextPath() %>/At_booking_confirmation" method="post" class="timeschedule">
+<form action="<%= request.getContextPath() %>/At_booking_confirmation" method="get" class="timeschedule">
     <label for="time">開始時間を選択してください:</label>
     <select id="time" name="time" class="timeschedule" required>
         <option value="08:00">08:00</option>
