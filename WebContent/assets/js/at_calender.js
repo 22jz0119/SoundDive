@@ -46,7 +46,7 @@ function updateCurrentMonthDisplay() {
 function generateCalendar() {
     console.log("[DEBUG] generateCalendar function called");
 
-    const daysInCurrentMonth = new Date(currentYear, currentMonth, 0).getDate();
+    const daysInCurrentMonth = new Date(window.currentYear, window.currentMonth, 0).getDate();
     console.log(`[DEBUG] Recalculated daysInCurrentMonth=${daysInCurrentMonth}`);
 
     const calendarBody = document.getElementById("calendar-body");
@@ -59,7 +59,7 @@ function generateCalendar() {
 
     calendarBody.innerHTML = ""; // カレンダーのリセット
     let date = 1;
-    const firstDay = new Date(currentYear, currentMonth - 1, 1).getDay();
+    const firstDay = new Date(window.currentYear, window.currentMonth - 1, 1).getDay();
     console.log(`[DEBUG] 今月の最初の曜日 (0=日曜): ${firstDay}`);
 
     while (date <= daysInCurrentMonth) {
@@ -87,20 +87,18 @@ function generateCalendar() {
 
                 if (status === "〇") {
                     td.classList.add("clickable");
-                    const currentDate = date;
-                    td.addEventListener("click", () => {
-                        let url;
-                        if (livehouseType === "solo") {
-                            url = `${contextPath}/At_Reservation?year=${currentYear}&month=${currentMonth}&day=${currentDate}&livehouseId=${livehouseId}&livehouse_type=${livehouseType}`;
-                        } else if (livehouseType === "multi") {
-                            url = `${contextPath}/At_Reservation?year=${currentYear}&month=${currentMonth}&day=${currentDate}&userId=${userId}&livehouseId=${livehouseId}&applicationId=${applicationId}&livehouse_type=${livehouseType}`;
-                        } else {
-                            console.error("[ERROR] 無効な livehouseType:", livehouseType);
-                            return;
-                        }
-                        console.log(`[DEBUG] Generated URL: ${url}`);
-                        window.location.href = url;
-                    });
+                    const currentDate = date; // ローカル変数
+				td.addEventListener("click", () => {
+				    let url;
+				    if (livehouseType === "solo") {
+				        url = `${contextPath}/At_Reservation?year=${window.currentYear}&month=${window.currentMonth}&day=${currentDate}&livehouseId=${livehouseId}&livehouse_type=${livehouseType}`;
+				    } else if (livehouseType === "multi") {
+				        url = `${contextPath}/At_Reservation?year=${window.currentYear}&month=${window.currentMonth}&day=${currentDate}&userId=${userId}&livehouseId=${livehouseId}&applicationId=${applicationId}&livehouse_type=${livehouseType}`;
+				    }
+				    console.log(`[DEBUG] Generated URL: ${url}`);
+				    window.location.href = url;
+				});
+
                 } else {
                     td.classList.add("non-clickable");
                 }

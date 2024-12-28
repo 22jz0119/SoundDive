@@ -66,7 +66,7 @@ public class At_Mypage extends HttpServlet {
             request.setAttribute("errorMessage", "データ取得中にエラーが発生しました。");
         }
 
-        request.getRequestDispatcher("/WEB-INF/jsp/at_mypage.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/jsp/artist/at_mypage.jsp").forward(request, response);
     }
 
     @Override
@@ -117,7 +117,7 @@ public class At_Mypage extends HttpServlet {
                 bandYears = Integer.parseInt(bandYearsParam);
             } catch (NumberFormatException e) {
                 request.setAttribute("errorMessage", "バンド歴は数値で入力してください。");
-                request.getRequestDispatcher("/WEB-INF/jsp/at_mypage.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/jsp/artist/at_mypage.jsp").forward(request, response);
                 return;
             }
         }
@@ -141,7 +141,7 @@ public class At_Mypage extends HttpServlet {
                 java.nio.file.Files.copy(inputStream, java.nio.file.Paths.get(uploadDir + File.separator + fileName));
             } catch (IOException e) {
                 request.setAttribute("errorMessage", "画像アップロード中にエラーが発生しました。");
-                request.getRequestDispatcher("/WEB-INF/jsp/at_mypage.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/jsp/artist/at_mypage.jsp").forward(request, response);
                 return;
             }
         }

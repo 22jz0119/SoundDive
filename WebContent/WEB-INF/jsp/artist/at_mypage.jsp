@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -15,8 +16,8 @@
             </div>
             <nav class="header-nav">
                 <ul class="header-nav-ul">
-                    <li><a href="at_home.jsp">HOME</a></li>
-                    <li><a href="at_mypage.jsp">MY PAGE</a></li>
+                    <li><a href="At_Home">HOME</a></li>
+                    <li><a href="At_Mypage">MY PAGE</a></li>
                     <li><a href="#">000</a></li>
                     <li><a href="#">000</a></li>
                 </ul>
@@ -26,42 +27,73 @@
     <h2>マイページ</h2>
     
     <form action="<%= request.getContextPath() %>/At_Mypage" method="POST" enctype="multipart/form-data">
+        <!-- プロフィール画像 -->
         <div class="profile-container">
             <label class="profile-icon" for="fileInput">
-                <span class="placeholder-text">アイコンをアップロード</span>
-                <img id="profileImage" src="" alt="" style="display: none;">
+                <c:choose>
+                    <c:when test="${not empty userGroup.picture_image_movie}">
+                        <!-- 画像がある場合 -->
+                        <img src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" alt="Profile Image" />
+                    </c:when>
+                    <c:otherwise>
+                        <!-- 画像がない場合 -->
+                        <span class="placeholder-text">アイコンをアップロード</span>
+                        <img id="profileImage" src="" alt="" style="display: none;">
+                    </c:otherwise>
+                </c:choose>
             </label>
-            <input type="file" id="fileInput" name="profile_icon" accept="image/*" style="display: none;" onchange="previewImage()">
-        </div>            
-        
+            <input type="file" id="fileInput" name="picture_image_movie" accept="image/*" style="display: none;" onchange="previewImage()">
+        </div>
+
         <!-- バンド名入力 -->
         <div class="form-group-1">
-            <input type="text" id="band-name" class="form-groupp" name="band_name" placeholder="バンド名を入力" required>
+            <c:choose>
+                <c:when test="${not empty userGroup}">
+                    <input type="text" id="band-name" class="form-groupp" name="account_name" 
+                           placeholder="バンド名を入力" value="${userGroup.account_name}" required>
+                </c:when>
+                <c:otherwise>
+                    <input type="text" id="band-name" class="form-groupp" name="account_name" 
+                           placeholder="バンド名を入力" required>
+                </c:otherwise>
+            </c:choose>
         </div>
-        
+
         <!-- メンバー詳細 -->
-        <div class="member-details">
-            <div class="member-1">
-                <input type="text" class="profile-card" id="member1-name" name="member1_name" placeholder="氏名" required><br>
-                <input type="text" class="profile-card p-c-sub" id="member1-role" name="member1_role" placeholder="役割 例: ボーカル" required><br>
-            </div>
-            <div class="member-1">
-                <input type="text" class="profile-card" id="member2-name" name="member2_name" placeholder="氏名" required><br>
-                <input type="text" class="profile-card p-c-sub" id="member2-role" name="member2_role" placeholder="役割 例: ギター" required><br>
-            </div>
-            <div class="member-1">
-                <input type="text" class="profile-card" id="member3-name" name="member3_name" placeholder="氏名" required><br>
-                <input type="text" class="profile-card p-c-sub" id="member3-role" name="member3_role" placeholder="役割 例: ドラム" required><br>
-            </div>
-            <div class="member-1">
-                <input type="text" class="profile-card" id="member4-name" name="member4_name" placeholder="氏名" required><br>
-                <input type="text" class="profile-card p-c-sub" id="member4-role" name="member4_role" placeholder="役割 例: ベース" required><br>
-            </div>
+        <div id="member-details-container">
+            <c:forEach var="member" items="${members}">
+                <div class="member-detail">
+                    <!-- メンバーID（隠しフィールド） -->
+                    <input type="hidden" name="existing_member_ids[]" value="${member.id}">
+                    
+                    <!-- 氏名 -->
+                    <input type="text" class="profile-card" name="member_name[]" placeholder="氏名" 
+                           value="${member.member_name}" required><br>
+                    
+                    <!-- 役割 -->
+                    <input type="text" class="profile-card p-c-sub" name="member_role[]" placeholder="役割 例: ボーカル" 
+                           value="${member.member_position}" required><br>
+                    
+                    <!-- 削除チェックボックス -->
+                    <label>
+                        <input type="checkbox" name="deleted_member_ids[]" value="${member.id}">
+                        削除
+                    </label>
+                </div>
+            </c:forEach>
         </div>
+        <button type="button" onclick="addMember()">メンバーを追加</button>
 
         <!-- バンド歴入力 -->
         <div class="form-group-2">
-            <textarea id="band-history" name="band_history" placeholder="バンド歴、詳細など.." rows="4" required></textarea>
+            <c:choose>
+                <c:when test="${not empty userGroup}">
+                    <textarea id="band-history" name="band_years" placeholder="バンド歴、詳細など.." rows="4" required>${userGroup.band_years}</textarea>
+                </c:when>
+                <c:otherwise>
+                    <textarea id="band-history" name="band_years" placeholder="バンド歴、詳細など.." rows="4" required></textarea>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <!-- サンプル音源 -->
@@ -82,13 +114,37 @@
             const file = document.getElementById('fileInput').files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('profileImage').src = e.target.result;
-                document.getElementById('profileImage').style.display = 'block';
+                const profileImage = document.getElementById('profileImage');
+                profileImage.src = e.target.result;
+                profileImage.style.display = 'block';
+
+                const placeholderText = document.querySelector('.placeholder-text');
+                if (placeholderText) placeholderText.style.display = 'none';
             }
             if (file) {
                 reader.readAsDataURL(file);
             }
         }
+
+        function addMember() {
+            const container = document.getElementById('member-details-container');
+            const memberDetail = document.createElement('div');
+            memberDetail.className = 'member-detail';
+
+            memberDetail.innerHTML = `
+                <input type="text" class="profile-card" name="member_name[]" placeholder="氏名" required><br>
+                <input type="text" class="profile-card p-c-sub" name="member_role[]" placeholder="役割 例: ボーカル" required><br>
+                <button type="button" class="remove-member-button" onclick="removeMember(this)">閉じる</button>
+            `;
+
+            container.appendChild(memberDetail);
+        }
+
+        function removeMember(button) {
+            const memberDetail = button.parentElement; // ボタンの親要素（メンバーフィールド全体）を取得
+            memberDetail.remove(); // フィールドを削除
+        }
+
     </script>
 </body>
 </html>

@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<<%@ page import="java.util.List" %>
-<%@ page import="model.Livehouse_application" %>
+<%@ page import="java.util.List" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="java.time.LocalDate" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -20,7 +23,7 @@
             </div>
             <nav class="header-nav">
                 <ul class="header-nav-ul">
-                    <li><a href="<%= request.getContextPath() %>/artist_mypage.html">MY PAGE</a></li>
+                    <li><a href="<%= request.getContextPath() %>/At_Mypage">MY PAGE</a></li>
                     <li><a href="#">000</a></li>
                     <li><a href="#">000</a></li>
                 </ul>
@@ -33,54 +36,69 @@
             <h2 class="booking-title-h2">Booking</h2>
         </div>
         <section class="booking-nav-section">
-            <form action="" method="post">
-                <div class="booking-button">
-                    <div class="booking-solo-button">
-    					<a href="<%= request.getContextPath() %>/At_Details" class="solo-button">SOLO LIVE</a>
-					</div>
-                    <div class="booking-multi-button">
-                        <a href="<%= request.getContextPath() %>/At_Cogig" class="multi-button">MULTI LIVE</a>
-                    </div>
-                </div>
-            </form>
+            <form action="<%= request.getContextPath() %>/At_Home" method="post">
+			    <div class="booking-button">
+			        <div class="booking-solo-button">
+			            <!-- SOLO LIVE ボタン -->
+			            <button type="submit" name="action" value="solo" class="solo-button">SOLO LIVE</button>
+			        </div>
+			        <div class="booking-multi-button">
+			            <!-- MULTI LIVE ボタン -->
+			            <button type="submit" name="action" value="multi" class="multi-button">MULTI LIVE</button>
+			        </div>
+			    </div>
+			</form>
+
         </section>
-        <ul>
-        	<li><p>aoooooooooooooo</p></li>
-        </ul>
-		
-		<!-- applicationsリストが空でない場合 -->
-    <c:if test="${not empty applications}">
-        <table border="1">
-            <tr>
-                <th>申請ID</th>
-                <th>ライブハウスID</th>
-                <th>申請日</th>
-                <th>開始時間</th>
-                <th>終了時間</th>
-                <th>コギグorソロ</th>
-                <th>アーティストグループID</th>
-            </tr>
-            <!-- applicationsリストをループして表示 -->
-            <c:forEach var="application" items="${applications}">
-                <tr>
-                    <td>${application.id}</td>
-                    <td>${application.livehouse_information_id}</td>
-                    <td>${application.date_time}</td>
-                    <td>${application.start_time}</td>
-                    <td>${application.finish_time}</td>
-                    <td>${application.cogig_or_solo}</td>
-                    <td>${application.artist_group_id}</td>
-                </tr>
-            </c:forEach>
-            <p>Applications List: ${applications}</p>
-        </table>
-    </c:if>
-
-    <!-- applicationsリストが空の場合 -->
-    <c:if test="${empty applications}">
-        <p>ライブハウス申請情報はありません。</p>
-    </c:if>
-
-		
+        
+        
+        <section class="booking-status-section">
+        	<p class="at-home-bs-title">ライブ予約状況</p>
+        	<div class="at-homr-status-containar">
+        		<p class="at-home-bs-done">ライブ予約完了</p>
+        		<c:forEach var="app" items="${applicationsTrue}">
+        			<div class="at-home-bs-done-frame">
+        				<img src="${app.livehouse_information.picture_image_naigaikan}" alt="Livehouse Image" width="100px" height="100px"/>
+	        			<ul>
+	        				<li>${app.livehouse_information.livehouse_name}</li>
+	        				<li>予約日</li>
+	        				<li>${app.date_time}</li>
+	        				
+	        			</ul>
+	        			<ul>
+	        				<li>
+	        				<li>${app.livehouse_information.live_address}</li>
+	        				<li>${app.livehouse_information.live_tel_number}</li>
+	        			</ul>
+        			</div>
+        			
+        		</c:forEach>
+        		<h2>予約申請中</h2>
+        		<c:forEach var="app" items="${applicationsFalse}">
+        			<div class="at-home-bs-request-frame">
+        				<img src="${app.livehouse_information.picture_image_naigaikan}" alt="Livehouse Image" width="100px" height="100px"/>
+	        			<ul>
+	        				<li>${app.livehouse_information.livehouse_name}</li>
+	        				<li>予約日</li>
+	        				<li>${app.date_time}</li>
+	        				
+	        			</ul>
+	        			<ul>
+	        				<li>
+	        				<li>${app.livehouse_information.live_address}</li>
+	        				<li>${app.livehouse_information.live_tel_number}</li>
+	        			</ul>
+        			</div>
+        			
+        		</c:forEach>
+        		
+        	</div>
+        </section>
+        
+       
+        
+     </main>   
+       
+    
 </body>
 </html>
