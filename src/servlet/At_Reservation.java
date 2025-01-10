@@ -38,7 +38,9 @@ public class At_Reservation extends HttpServlet {
         System.out.println("livehouseType: " + livehouseType);
         System.out.println("userId: " + userIdParam);
         System.out.println("applicationId: " + applicationIdParam);
-
+        
+        
+        Livehouse_informationDAO
         try {
             // 入力チェック - 年月日が存在しているか、空でないかをチェック
             if (yearParam == null || yearParam.trim().isEmpty()) {

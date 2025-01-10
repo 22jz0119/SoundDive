@@ -34,7 +34,7 @@ header>.header-container {
 }
 
 main{
-    margin: 0 500px;
+    margin: 0 300px;
 }
 
 
@@ -256,15 +256,23 @@ td.is-disabled {
     font-size: 25px;
 }
 
-.artist-result-container {
-    display: flex; /* フレックスボックスを使用 */
-    flex-wrap: wrap; /* 自動で折り返し */
-    justify-content: center; /* 水平中央揃え */
-    gap: 20px; /* ボックス間の隙間 */
-    margin-top: 20px;
-}
+/*.artist-result-container {*/
+/*    display: flex;  フレックスボックスを使用 */
+/*    flex-wrap: wrap;  自動で折り返し */
+/*    justify-content: center;  水平中央揃え */
+/*    gap: 20px;  ボックス間の隙間 */
+/*    margin-top: 20px;*/
+/*}*/
 
+.artist-result-container-div{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 20px;
+}
 .artist-result-box {
+	margin: 20px 30px;
     background: linear-gradient(to right, #FF6500, #1E3E62, #0B192C, #000000) ;
     border: 1px solid #ccc;
     padding: 20px;
@@ -2208,9 +2216,22 @@ th.b {
 
 .cogig-prof-frame{
 	
+	width: 600px;
+	height: 300px;
+	border: 1px solid white;
 	background: linear-gradient(to right, #FF6500, #1E3E62, #0B192C, #000000) ;
 	margin: 50px;
-	padding: 20px 150px;
+	padding: 20px 50px;
+}
+
+.cogig-prof-box{
+	display: flex;
+	
+}
+
+.cogig-prof-img-box{
+	display: flex;
+	align-items: center;
 }
 
 .cogig-prof-title{
@@ -2218,20 +2239,27 @@ th.b {
 	justify-content: left;
 	list-style: none;
 	font-size: 1.7rem;
+	margin: 0;
+	padding: 0;
 }
+
 
 .cogig-prof-ul1{
 	list-style: none;
 	display: flex;
+	margin: 0;
+	padding: 0;
 }
 
 .cogig-prof-ul1-li1{
-	margin-right: 20px;
+	margin-right: 15px;
 }
 
 .cogig-prof-ul2{
 	list-style: none;
 	display: flex;
+	margin: 0;
+	padding: 0;
 }
 
 /* ボタン全体のスタイル */

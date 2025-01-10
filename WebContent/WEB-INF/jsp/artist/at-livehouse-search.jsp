@@ -42,47 +42,49 @@
         </section>
 
         <section class="artist-result-container">
-            <c:forEach var="livehouse" items="${livehouseList}">
-                <div class="artist-result-box">
-                    <div class="artist-result-LiveHouseName1">
-                        <h3 class="artist-result-LiveHouseName2">${livehouse.livehouse_name}</h3>
-                    </div>
-                    <div class="artist-result-Div3">
-                        <div>
-                            <img src="../assets/img/Studio.jpg" alt="StudioImg" class="artist-result-img">
-                        </div>
-                        <ul class="artist-result-frame">
-                            <li class="LiveHousemain-img"></li>
-                            <li class="LiveHouseAddress"><p>住所</p></li>
-                            <li><p>${livehouse.live_address}</p></li>
-                            <li><p>キャパ</p></li>
-                            <li><p>100人</p></li>
-                            <li><p>${livehouse.livehouse_explanation_information}</p></li>
-                            <li class="artist-search-decision">
-                                <!-- ソロとマルチの分岐 -->
-                                <c:choose>
-                                    <c:when test="${param.livehouse_type == 'solo'}">
-                                        <!-- ソロライブの場合 -->
-                                        <a href="<c:url value='/At_details'>
-                                            <c:param name='livehouseId' value='${livehouse.id}' />
-                                            <c:param name='livehouse_type' value='solo'/>
-                                        </c:url>" class="artist-result-decision-button">詳細・予約</a>
-                                    </c:when>
-                                    <c:when test="${param.livehouse_type == 'multi'}">
-                                        <!-- マルチライブの場合 -->
-                                        <a href="<c:url value='/At_details'>
-                                            <c:param name='userId' value='${userId}' />
-                                            <c:param name='livehouseId' value='${livehouse.id}' />
-                                            <c:param name='applicationId' value='${applicationId}' />
-                                            <c:param name='livehouse_type' value='multi'/>
-                                        </c:url>" class="artist-result-decision-button">詳細・予約</a>
-                                    </c:when>
-                                </c:choose>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </c:forEach>
+        	<div class="artist-result-container-div">
+	            <c:forEach var="livehouse" items="${livehouseList}">
+	                <div class="artist-result-box">
+	                    <div class="artist-result-LiveHouseName1">
+	                        <h3 class="artist-result-LiveHouseName2">${livehouse.livehouse_name}</h3>
+	                    </div>
+	                    <div class="artist-result-Div3">
+	                        <div>
+	                            <img src="../assets/img/Studio.jpg" alt="StudioImg" class="artist-result-img">
+	                        </div>
+	                        <ul class="artist-result-frame">
+	                            <li class="LiveHousemain-img"></li>
+	                            <li class="LiveHouseAddress"><p>住所</p></li>
+	                            <li><p>${livehouse.live_address}</p></li>
+	                            <li><p>キャパ</p></li>
+	                            <li><p>100人</p></li>
+	                            <li><p>${livehouse.livehouse_explanation_information}</p></li>
+	                            <li class="artist-search-decision">
+	                                <!-- ソロとマルチの分岐 -->
+	                                <c:choose>
+	                                    <c:when test="${param.livehouse_type == 'solo'}">
+	                                        <!-- ソロライブの場合 -->
+	                                        <a href="<c:url value='/At_details'>
+	                                            <c:param name='livehouseId' value='${livehouse.id}' />
+	                                            <c:param name='livehouse_type' value='solo'/>
+	                                        </c:url>" class="artist-result-decision-button">詳細・予約</a>
+	                                    </c:when>
+	                                    <c:when test="${param.livehouse_type == 'multi'}">
+	                                        <!-- マルチライブの場合 -->
+	                                        <a href="<c:url value='/At_details'>
+	                                            <c:param name='userId' value='${userId}' />
+	                                            <c:param name='livehouseId' value='${livehouse.id}' />
+	                                            <c:param name='applicationId' value='${applicationId}' />
+	                                            <c:param name='livehouse_type' value='multi'/>
+	                                        </c:url>" class="artist-result-decision-button">詳細・予約</a>
+	                                    </c:when>
+	                                </c:choose>
+	                            </li>
+	                        </ul>
+	                    </div>
+	                </div>
+	            </c:forEach>
+	    	</div>
         </section>
     </main>
     <footer></footer>
