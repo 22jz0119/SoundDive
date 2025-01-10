@@ -2369,31 +2369,52 @@ th.b {
 }
 
 
+
 .at-detail-liveinfo-containar{
 	margin: 0;
-	background: rgb(18, 18, 18);
-	margin-top: 250px;
-	padding: 100px;
+	background-image: linear-gradient(90deg, rgba(52, 59, 202, 0.36), rgba(162, 120, 182, 0.71) 50%, rgba(243, 196, 170, 0.72));
+	border-radius: 10px;
+	margin-top: 50px;
+	padding: 50px;
+}
+
+.at-detail-liveinfo-title-frame{
+	margin-top: 100px;
+	text-align: center;
 }
 
 .at-detail-liveinfo-title{
-	font-size: 2.7rem;
+	font-size: 3rem;
 }
 
 .at-detail-liveinfo-main{
+	border-radius: 10px;
 	display: flex;
 	justify-content: center;
 }
 
 .at-detail-liveinfo-img-ul{
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	list-style: none;
+	margin-right: 150px;
 }
 
 .at-detail-liveinfo-main-ul{
 	list-style: none;
 }
 
+.at-detail-liveinfo-easyinfo-main{
+	padding-left: 70px;
+}
 
+.at-detail-liveinfo-main-li5{
+	margin-left: 30px;
+}
 
+.at-detail-liveinfo-main-li7{
+	margin-left: 30px;
+}
 
 
