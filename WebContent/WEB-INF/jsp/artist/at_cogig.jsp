@@ -105,7 +105,7 @@
     		
     	</c:forEach>
     </div>
-
+<%--  
     <div class="co-gig-group">
         <!-- ユニークなアーティストグループのリストを表示 -->
 		<c:forEach var="artist" items="${artistGroups}">
@@ -153,7 +153,7 @@
 		    </div>
 		</c:forEach>
 	</div>
-
+--%>
     <!-- 次へボタン -->
     <div class="next-button-container">
         <%
