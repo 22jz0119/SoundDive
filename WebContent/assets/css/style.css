@@ -21,8 +21,11 @@ header {
     width: 1920px;
     height: 100px;
     position: fixed;
+    top: 0;
+    left: 0;
     color: #fff;
     background-image: linear-gradient(90deg, rgba(248, 134, 57, 1), rgba(97, 48, 48, 1));
+    z-index: 10;
 }
 
 
@@ -324,9 +327,7 @@ td.is-disabled {
     color: #fff;
 }
 
-.artist-livehouse-detail-section{
-    padding-top: 100px;
-}
+
 
 .artist-livehouse-detail-title{
     font-size: 1.4rem;
@@ -463,11 +464,11 @@ td.is-disabled {
     border-collapse: collapse;
 }
 
-.calendar-cell {
-    border: 1px solid #ddd;
-    padding: 20px 80px 20px 80px;
-    text-align: center;
-}
+/*.calendar-cell {*/
+/*    border: 1px solid #ddd;*/
+/*    padding: 10px 40px 10px 40px;*/
+/*    text-align: center;*/
+/*}*/
 
 .calendar-cell:first-child {
     color: red;
@@ -482,7 +483,8 @@ td.is-disabled {
 }
 
 .calendar-cell {
-    width: 14%;
+    width: 10%;
+    height: 20%;
     height: 100px;
     text-align: center;
     vertical-align: middle;
@@ -507,21 +509,21 @@ td.is-disabled {
 }
 
 .status.o {
-    color: green;
+    color: rgb(53, 155, 19);
 }
 
 .calendar-cell.clickable {
     cursor: pointer;
-    background-color: #e0ffe0;
+    background-color: rgb(94, 142, 91);
 }
 
 .calendar-cell.clickable:hover {
-    background-color: #c0ffc0;
+    background-color: rgb(64, 128, 128);
 }
 
 .calendar-cell.non-clickable {
     cursor: not-allowed;
-    background-color: #ffe0e0;
+    background-color: rgb(64, 128, 128);
 }
 
 
@@ -2364,6 +2366,31 @@ th.b {
     background-color: #e0e0e0; /* 灰色 */
     color: #9e9e9e;
     cursor: not-allowed;
+}
+
+
+.at-detail-liveinfo-containar{
+	margin: 0;
+	background: rgb(18, 18, 18);
+	margin-top: 250px;
+	padding: 100px;
+}
+
+.at-detail-liveinfo-title{
+	font-size: 2.7rem;
+}
+
+.at-detail-liveinfo-main{
+	display: flex;
+	justify-content: center;
+}
+
+.at-detail-liveinfo-img-ul{
+	list-style: none;
+}
+
+.at-detail-liveinfo-main-ul{
+	list-style: none;
 }
 
 
