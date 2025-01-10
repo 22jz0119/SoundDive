@@ -107,7 +107,7 @@
 	    <div class="Applicationgroup">
 	        <c:forEach var="artist" items="${applyingArtists}">
 	            <div class="Applicationtable">
-	                <img src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" alt="バンドのイラスト" class="band-image">
+	                <img src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" alt="" class="band-image">
 	                <div class="artist-info">
 	                    <p class="artist-name">${artist.name}</p>
 	                    <p class="application-status">申請中</p>
@@ -117,7 +117,6 @@
 	    </div>
 	</c:if>
 
-    
     <script>
         function previewImage() {
             const file = document.getElementById('fileInput').files[0];
