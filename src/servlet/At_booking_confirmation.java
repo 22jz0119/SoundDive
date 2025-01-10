@@ -10,6 +10,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.Artist_groupDAO;
+import dao.DBManager;
+import dao.Livehouse_informationDAO;
+import dao.UserDAO;
+import model.Artist_group;
+import model.Livehouse_information;
+
 @WebServlet("/At_booking_confirmation")
 public class At_booking_confirmation extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -23,7 +30,7 @@ public class At_booking_confirmation extends HttpServlet {
             String month = request.getParameter("month");
             String day = request.getParameter("day");
             String time = request.getParameter("time");
-            String livehouseId = request.getParameter("livehouseId");
+            String livehouseIdParam = request.getParameter("livehouseId");
             String livehouseType = request.getParameter("livehouse_type");
             String userId = request.getParameter("userId");
             String applicationId = null;
@@ -39,40 +46,103 @@ public class At_booking_confirmation extends HttpServlet {
             System.out.println("  Month: " + month);
             System.out.println("  Day: " + day);
             System.out.println("  Time: " + time);
-            System.out.println("  LivehouseId: " + livehouseId);
+            System.out.println("  LivehouseId: " + livehouseIdParam);
             System.out.println("  LivehouseType: " + livehouseType);
             System.out.println("  UserId: " + userId);
             System.out.println("  ApplicationId: " + applicationId);
 
             // 必須パラメータの検証
-            if (isNullOrEmpty(year, month, day, time, livehouseId, livehouseType)) {
+            if (isNullOrEmpty(year, month, day, time, livehouseIdParam, livehouseType)) {
                 System.err.println("[ERROR] doGet: Missing parameters.");
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "必要なパラメータが指定されていません。");
                 return;
             }
 
+            int livehouseId;
+            try {
+                livehouseId = Integer.parseInt(livehouseIdParam);
+            } catch (NumberFormatException e) {
+                System.err.println("[ERROR] Invalid livehouseId format: " + livehouseIdParam);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なライブハウスID形式です。");
+                return;
+            }
+
+            // ライブハウス情報を取得
+            Livehouse_informationDAO livehouseDAO = new Livehouse_informationDAO(DBManager.getInstance());
+            Livehouse_information livehouse = livehouseDAO.getLivehouse_informationById(livehouseId);
+            if (livehouse == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "ライブハウス情報が見つかりませんでした。");
+                return;
+            }
+
+            // リクエストスコープにライブハウス情報を設定
+            request.setAttribute("livehouse", livehouse);
+            System.out.println("[DEBUG] Livehouse information loaded: " + livehouse.getLivehouse_name());
+
+            // マルチの場合のみ追加データを設定
             if ("multi".equalsIgnoreCase(livehouseType)) {
-                // マルチの場合は applicationId と userId を検証
                 if (isNullOrEmpty(userId, applicationId)) {
                     System.err.println("[ERROR] doGet: Missing userId or applicationId for multi.");
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "マルチ予約のためのユーザーIDまたは申請IDが不足しています。");
                     return;
                 }
+                request.setAttribute("userId", userId);
+                request.setAttribute("applicationId", applicationId);
             }
 
-            // 年月日と時間をリクエストスコープに設定
+            // UserDAOを使用してユーザー名を取得
+            if (userId != null && !userId.trim().isEmpty()) {
+                try {
+                    System.out.println("[DEBUG] Received userId: " + userId);
+                    int parsedUserId = Integer.parseInt(userId);
+
+                    UserDAO userDAO = new UserDAO(DBManager.getInstance());
+                    model.User user = userDAO.getUserById(parsedUserId);
+
+                    if (user != null) {
+                        String userName = user.getName(); // us_name を取得
+                        String telNumber = user.getTel_number(); // 電話番号を取得
+
+                        request.setAttribute("userName", userName);
+                        request.setAttribute("telNumber", telNumber);
+
+                        System.out.println("[DEBUG] User Name (us_name): " + userName);
+                        System.out.println("[DEBUG] Tel Number (with leading 0): " + telNumber);
+
+                        // アーティストグループ情報を取得
+                        Artist_groupDAO groupDAO = Artist_groupDAO.getInstance(DBManager.getInstance());
+                        Artist_group artistGroup = groupDAO.getGroupByUserId(parsedUserId);
+
+                        if (artistGroup != null) {
+                            request.setAttribute("artistGroup", artistGroup);
+                            request.setAttribute("account_Name", artistGroup.getAccount_name());
+                            System.out.println("[DEBUG] Artist Group found: " + artistGroup.getAccount_name());
+                        } else {
+                            System.out.println("[DEBUG] No Artist Group found for userId=" + parsedUserId);
+                        }
+
+                    } else {
+                        System.err.println("[ERROR] User not found for ID: " + userId);
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND, "指定されたユーザーが見つかりませんでした。");
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    System.err.println("[ERROR] Invalid userId format: " + userId);
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なユーザーID形式です。");
+                    return;
+                } catch (Exception e) {
+                    System.err.println("[ERROR] Exception during getUserById: " + e.getMessage());
+                    e.printStackTrace();
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "サーバーエラーが発生しました。");
+                    return;
+                }
+            }
+
+            // リクエストスコープに日付と時間を設定
             request.setAttribute("selectedYear", year);
             request.setAttribute("selectedMonth", month);
             request.setAttribute("selectedDay", day);
             request.setAttribute("selectedTime", time);
-            request.setAttribute("livehouseId", livehouseId);
-            request.setAttribute("livehouseType", livehouseType);
-
-            // マルチの場合のみ追加データを設定
-            if ("multi".equalsIgnoreCase(livehouseType)) {
-                request.setAttribute("userId", userId);
-                request.setAttribute("applicationId", applicationId);
-            }
 
             // 確認画面にフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at-booking-confirmation.jsp").forward(request, response);
@@ -82,7 +152,6 @@ public class At_booking_confirmation extends HttpServlet {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "サーバーでエラーが発生しました: " + e.getMessage());
         }
     }
-
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
