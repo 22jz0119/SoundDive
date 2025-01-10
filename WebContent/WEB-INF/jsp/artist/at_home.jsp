@@ -31,7 +31,7 @@
         </div>
     </header>
     <main>
-        <div><img src="<%= request.getContextPath() %>/assets/img/key-visual.jpg" alt=""></div>
+        <div class="a-t-home-keyvisual-div"><img src="<%= request.getContextPath() %>/assets/img/key-visual.jpg" alt="" class="a-t-home-key-visual"></div>
         <div class="booking-title">
             <h2 class="booking-title-h2">Booking</h2>
         </div>

@@ -21,8 +21,11 @@ header {
     width: 1920px;
     height: 100px;
     position: fixed;
+    top: 0;
+    left: 0;
     color: #fff;
     background-image: linear-gradient(90deg, rgba(248, 134, 57, 1), rgba(97, 48, 48, 1));
+    z-index: 10;
 }
 
 
@@ -34,7 +37,7 @@ header>.header-container {
 }
 
 main{
-    margin: 0 500px;
+    margin: 0 300px;
 }
 
 
@@ -74,10 +77,12 @@ main{
     justify-content: center;
 }
 .a-t-home-keyvisual-div{
+	
     display: flex;
     justify-content: center;
 }
 .a-t-home-key-visual{
+	padding-top: 150px;
     width: 1200px;
 
 }
@@ -174,7 +179,7 @@ td.is-disabled {
 .booking-title-h2{
     display: flex;
     justify-content: center;
-    font-size: 2.5rem;
+    font-size: 4rem;
 }
 
 
@@ -256,15 +261,23 @@ td.is-disabled {
     font-size: 25px;
 }
 
-.artist-result-container {
-    display: flex; /* フレックスボックスを使用 */
-    flex-wrap: wrap; /* 自動で折り返し */
-    justify-content: center; /* 水平中央揃え */
-    gap: 20px; /* ボックス間の隙間 */
-    margin-top: 20px;
-}
+/*.artist-result-container {*/
+/*    display: flex;  フレックスボックスを使用 */
+/*    flex-wrap: wrap;  自動で折り返し */
+/*    justify-content: center;  水平中央揃え */
+/*    gap: 20px;  ボックス間の隙間 */
+/*    margin-top: 20px;*/
+/*}*/
 
+.artist-result-container-div{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 20px;
+}
 .artist-result-box {
+	margin: 20px 30px;
     background: linear-gradient(to right, #FF6500, #1E3E62, #0B192C, #000000) ;
     border: 1px solid #ccc;
     padding: 20px;
@@ -303,14 +316,7 @@ td.is-disabled {
 }
 
 .artist-search-decision{
-    color: #fff;
-    width: 100px;
-    background: #000;
-    text-align: center;
-    border-radius: 3%;
-    
-    
-    
+       
 }
 
 .artist-search-decision-button{
@@ -321,9 +327,7 @@ td.is-disabled {
     color: #fff;
 }
 
-.artist-livehouse-detail-section{
-    padding-top: 100px;
-}
+
 
 .artist-livehouse-detail-title{
     font-size: 1.4rem;
@@ -460,11 +464,11 @@ td.is-disabled {
     border-collapse: collapse;
 }
 
-.calendar-cell {
-    border: 1px solid #ddd;
-    padding: 20px 80px 20px 80px;
-    text-align: center;
-}
+/*.calendar-cell {*/
+/*    border: 1px solid #ddd;*/
+/*    padding: 10px 40px 10px 40px;*/
+/*    text-align: center;*/
+/*}*/
 
 .calendar-cell:first-child {
     color: red;
@@ -479,7 +483,8 @@ td.is-disabled {
 }
 
 .calendar-cell {
-    width: 14%;
+    width: 10%;
+    height: 20%;
     height: 100px;
     text-align: center;
     vertical-align: middle;
@@ -504,21 +509,21 @@ td.is-disabled {
 }
 
 .status.o {
-    color: green;
+    color: rgb(53, 155, 19);
 }
 
 .calendar-cell.clickable {
     cursor: pointer;
-    background-color: #e0ffe0;
+    background-color: rgb(94, 142, 91);
 }
 
 .calendar-cell.clickable:hover {
-    background-color: #c0ffc0;
+    background-color: rgb(64, 128, 128);
 }
 
 .calendar-cell.non-clickable {
     cursor: not-allowed;
-    background-color: #ffe0e0;
+    background-color: rgb(64, 128, 128);
 }
 
 
@@ -2099,31 +2104,66 @@ th.b {
 
 }
 
-.booking-solo-button{
+.booking-solo-button {
     margin-right: 100px;
 }
 
-.solo-button{
+.solo-button {
     background-color: rgb(26, 26, 112);
-    padding: 30px 60px;
-    border-radius: 3px;
+    padding: 20px 50px;
+    border-radius: 5px;
     text-decoration: none;
     color: white;
     letter-spacing: 1px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.booking-multi-button{
+.solo-button:hover {
+    background-color: rgb(22, 22, 94);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px);
+}
+
+.solo-button:active {
+    background-color: rgb(18, 18, 85);
+    transform: translateY(1px);
+}
+
+.booking-multi-button {
     margin-left: 100px;
 }
 
-.multi-button{
+.multi-button {
     background-color: rgb(190, 39, 29);
-    padding: 30px 60px;
-    border-radius: 3px;
+    padding: 20px 50px;
+    border-radius: 5px;
     text-decoration: none;
     color: white;
     letter-spacing: 1px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.multi-button:hover {
+    background-color: rgb(170, 35, 24);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px);
+}
+
+.multi-button:active {
+    background-color: rgb(155, 31, 20);
+    transform: translateY(1px);
+}
+
 
 /* 予約済みの日付 */
 .reserved {
@@ -2208,9 +2248,22 @@ th.b {
 
 .cogig-prof-frame{
 	
+	width: 600px;
+	height: 300px;
+	border: 1px solid white;
 	background: linear-gradient(to right, #FF6500, #1E3E62, #0B192C, #000000) ;
 	margin: 50px;
-	padding: 20px 150px;
+	padding: 20px 50px;
+}
+
+.cogig-prof-box{
+	display: flex;
+	
+}
+
+.cogig-prof-img-box{
+	display: flex;
+	align-items: center;
 }
 
 .cogig-prof-title{
@@ -2218,20 +2271,27 @@ th.b {
 	justify-content: left;
 	list-style: none;
 	font-size: 1.7rem;
+	margin: 0;
+	padding: 0;
 }
+
 
 .cogig-prof-ul1{
 	list-style: none;
 	display: flex;
+	margin: 0;
+	padding: 0;
 }
 
 .cogig-prof-ul1-li1{
-	margin-right: 20px;
+	margin-right: 15px;
 }
 
 .cogig-prof-ul2{
 	list-style: none;
 	display: flex;
+	margin: 0;
+	padding: 0;
 }
 
 /* ボタン全体のスタイル */
@@ -2265,6 +2325,74 @@ th.b {
   list-style: none; /* リストのデフォルトのマーカーを削除 */
   margin: 10px 0; /* 上下の余白 */
 }
+
+/* artist-search-decisionのリストアイテム */
+.artist-search-decision {
+    list-style-type: none;
+    margin: 10px 0;
+}
+
+/* artist-result-decision-buttonのスタイル */
+.artist-result-decision-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #4CAF50; /* グリーン */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ホバー時のエフェクト */
+.artist-result-decision-button:hover {
+    background-color: #45a049; /* 濃い緑に変化 */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px); /* 少し浮き上がる */
+}
+
+/* ボタンがアクティブな状態のスタイル */
+.artist-result-decision-button:active {
+    background-color: #388e3c; /* さらに濃い緑 */
+    transform: translateY(1px); /* 少し押されたようなエフェクト */
+}
+
+/* ボタンが無効な場合のスタイル */
+.artist-result-decision-button:disabled {
+    background-color: #e0e0e0; /* 灰色 */
+    color: #9e9e9e;
+    cursor: not-allowed;
+}
+
+
+.at-detail-liveinfo-containar{
+	margin: 0;
+	background: rgb(18, 18, 18);
+	margin-top: 250px;
+	padding: 100px;
+}
+
+.at-detail-liveinfo-title{
+	font-size: 2.7rem;
+}
+
+.at-detail-liveinfo-main{
+	display: flex;
+	justify-content: center;
+}
+
+.at-detail-liveinfo-img-ul{
+	list-style: none;
+}
+
+.at-detail-liveinfo-main-ul{
+	list-style: none;
+}
+
 
 
 
