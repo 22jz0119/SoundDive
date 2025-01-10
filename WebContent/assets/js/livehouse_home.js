@@ -1,101 +1,233 @@
-// ページ読み込み後の初期化
+console.log("Context Path:", contextPath);
+console.log("Reservation Data Raw:", reservationDataRaw);
+console.log("Current Year:", currentYear);
+console.log("Current Month:", currentMonth);
+
 document.addEventListener("DOMContentLoaded", () => {
     console.log("[DEBUG] DOMContentLoaded event fired");
 
-    // サーバーから渡された予約データを解析
-    let reservationData = {};
-    try {
-        reservationData = JSON.parse(reservationDataRaw); // サーバーから渡される JSON 文字列
-        console.log("[DEBUG] Parsed reservationData:", reservationData);
-    } catch (error) {
-        console.error("[ERROR] Failed to parse reservationDataRaw:", error);
-        reservationData = {}; // パース失敗時は空のオブジェクト
-    }
+    let year = currentYear;
+    let month = currentMonth;
 
-    // カレンダーを生成
-    generateCalendar(reservationData);
-});
+    console.log(`[DEBUG] 初期年月: ${year}/${month}`);
 
-// カレンダーを生成する関数
-function generateCalendar(reservationData) {
-    console.log("[DEBUG] generateCalendar function called");
+    // ✅ ボタンID修正: prev -> prev-month, next -> next-month
+    const prevButton = document.getElementById("prev-month");
+    const nextButton = document.getElementById("next-month");
+    const currentMonthDisplay = document.getElementById("current-month");
 
-    // カレンダー本体要素を取得
-    const calendarBody = document.getElementById("calendar-body");
-    if (!calendarBody) {
-        console.error("[ERROR] カレンダー本体が見つかりません！");
+    if (!prevButton || !nextButton) {
+        console.error("[ERROR] ボタンが正しく設定されていません");
         return;
     }
 
-    // カレンダーをリセット
-    calendarBody.innerHTML = "";
+    // 初回表示用にreservationDataRawをパース
+    let reservationData = {};
 
-    // 現在の年月と月の日数を取得
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1; // 月は0始まりなので +1
-    const daysInCurrentMonth = new Date(currentYear, currentMonth, 0).getDate();
-    const firstDay = new Date(currentYear, currentMonth - 1, 1).getDay();
-
-    console.log(`[DEBUG] 現在の年: ${currentYear}, 現在の月: ${currentMonth}, 今月の日数: ${daysInCurrentMonth}`);
-    console.log(`[DEBUG] 今月の最初の曜日 (0=日曜): ${firstDay}`);
-
-    let date = 1;
-
-    // カレンダーを行単位で作成
-    while (date <= daysInCurrentMonth) {
-        const tr = document.createElement("tr");
-
-        for (let col = 0; col < 7; col++) {
-            const td = document.createElement("td");
-            td.classList.add("calendar-cell");
-
-            if ((date === 1 && col < firstDay) || date > daysInCurrentMonth) {
-                // 空白セル
-                td.textContent = "";
-            } else {
-                // 日付セル
-                const dayDiv = document.createElement("div");
-                dayDiv.classList.add("calendar-day");
-                dayDiv.textContent = date;
-
-                // 申請件数を取得
-                const applicationCount = reservationData[String(date)] || 0; // 申請件数（デフォルトは0）
-                const statusDiv = document.createElement("div");
-                statusDiv.classList.add("status");
-
-                if (applicationCount > 0) {
-                    // 申請件数が1以上の場合
-                    statusDiv.textContent = `${applicationCount}件`;
-                    td.classList.add("clickable");
-
-                    const currentDate = date;
-
-                    // クリックイベントの設定
-                    td.addEventListener("click", () => {
-                        const url = `${contextPath}/At_Reservation?year=${currentYear}&month=${currentMonth}&day=${currentDate}`;
-                        console.log(`[DEBUG] URL にリダイレクトします: ${url}`);
-                        window.location.href = url;
-                    });
-                } else {
-                    // 申請件数が0の場合
-                    statusDiv.textContent = "×";
-                    td.classList.add("non-clickable");
-                }
-
-                // 日付とステータスをセルに追加
-                td.appendChild(dayDiv);
-                td.appendChild(statusDiv);
-                date++;
-            }
-
-            // セルを行に追加
-            tr.appendChild(td);
-        }
-
-        // 行をカレンダー本体に追加
-        calendarBody.appendChild(tr);
+	try {
+    if (typeof reservationDataRaw === 'string') {
+        console.log("[DEBUG] reservationDataRaw is string:", reservationDataRaw);
+        reservationData = JSON.parse(reservationDataRaw);
+    } else if (typeof reservationDataRaw === 'object') {
+        console.log("[DEBUG] reservationDataRaw is already object:", reservationDataRaw);
+        reservationData = reservationDataRaw;
+    } else {
+        throw new Error("Invalid data format for reservationDataRaw");
     }
 
-    console.log("[DEBUG] カレンダー生成が完了しました");
+    console.log("[DEBUG] Parsed reservationData:", reservationData);
+
+} catch (error) {
+    console.error("[ERROR] Failed to parse reservationDataRaw:", error);
+    reservationData = {};
 }
+
+
+    // カレンダー初期化
+    updateCurrentMonthDisplay(year, month);
+    generateCalendar(year, month, reservationData);
+
+    // 前の月ボタンの処理
+    prevButton.addEventListener("click", () => {
+        console.log("[DEBUG] 前の月ボタンがクリックされました");
+        month--;
+        if (month < 1) {
+            month = 12;
+            year--;
+        }
+        updateCurrentMonthDisplay(year, month);
+        fetchReservationData(year, month);
+    });
+
+    // 次の月ボタンの処理
+    nextButton.addEventListener("click", () => {
+        console.log("[DEBUG] 次の月ボタンがクリックされました");
+        month++;
+        if (month > 12) {
+            month = 1;
+            year++;
+        }
+        updateCurrentMonthDisplay(year, month);
+        fetchReservationData(year, month);
+    });
+
+    // ✅ 月の表示を更新する関数
+    function updateCurrentMonthDisplay(year, month) {
+        if (currentMonthDisplay) {
+            currentMonthDisplay.textContent = `${year}年 ${month}月`;
+        }
+    }
+
+    // ✅ サーバーから予約データを取得する関数
+    function fetchReservationData(year, month) {
+        console.log(`[DEBUG] データ取得開始 - year: ${year}, month: ${month}`);
+
+        // ✅ キャッシュ防止のためにtimestamp追加
+        fetch(`${contextPath}/Livehouse_home?year=${year}&month=${month}&timestamp=${new Date().getTime()}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("[ERROR] サーバーからのレスポンスが不正です");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("[DEBUG] サーバーからのデータ取得成功:", data);
+                generateCalendar(year, month, data);
+            })
+            .catch(error => {
+                console.error("[ERROR] データ取得に失敗しました:", error);
+                alert("データの取得に失敗しました。しばらくしてから再度お試しください。");
+            });
+    }
+
+    // カレンダーを生成する関数
+    function generateCalendar(year, month, reservationData) {
+        console.log("[DEBUG] カレンダー生成開始");
+
+        const calendarBody = document.getElementById("calendar-body");
+        if (!calendarBody) {
+            console.error("[ERROR] カレンダー本体が見つかりません");
+            return;
+        }
+
+        calendarBody.innerHTML = "";
+
+        const daysInMonth = new Date(year, month, 0).getDate();
+        const firstDay = new Date(year, month - 1, 1).getDay();
+
+        let date = 1;
+
+        while (date <= daysInMonth) {
+            const tr = document.createElement("tr");
+
+            for (let col = 0; col < 7; col++) {
+                const td = document.createElement("td");
+                td.classList.add("calendar-cell");
+
+                if ((date === 1 && col < firstDay) || date > daysInMonth) {
+                    td.textContent = "";
+                } else {
+                    const dayDiv = document.createElement("div");
+                    dayDiv.classList.add("calendar-day");
+                    dayDiv.textContent = date;
+
+                    const applicationCount = reservationData[String(date)] || 0;
+                    const statusDiv = document.createElement("div");
+                    statusDiv.classList.add("status");
+
+                    if (applicationCount > 0) {
+                        statusDiv.textContent = `${applicationCount}件`;
+                        td.classList.add("clickable");
+
+                        td.addEventListener("click", () => {
+                            const url = `${contextPath}/At_Reservation?year=${year}&month=${month}&day=${date}`;
+                            console.log(`[DEBUG] URL にリダイレクトします: ${url}`);
+                            window.location.href = url;
+                        });
+                    } else {
+                        statusDiv.textContent = "×";
+                        td.classList.add("non-clickable");
+                    }
+
+                    td.appendChild(dayDiv);
+                    td.appendChild(statusDiv);
+                    date++;
+                }
+
+                tr.appendChild(td);
+            }
+
+            calendarBody.appendChild(tr);
+        }
+
+        console.log("[DEBUG] カレンダー生成完了");
+    }
+    // 新しい予約データを取得する関数
+async function fetchReservationData(year, month) {
+    const url = `${contextPath}/At_details?action=getReservationData&year=${year}&month=${month}&livehouseId=${livehouseId}&livehouse_type=${livehouseType}`;
+    console.log(`[DEBUG] Fetching URL: ${url}`);
+    try {
+        const response = await fetch(url);
+        console.log("[DEBUG] Response Content-Type:", response.headers.get("Content-Type"));
+        const textResponse = await response.text();
+        console.log("[DEBUG] Raw Response:", textResponse);
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch reservation data: ${response.statusText}`);
+        }
+
+        return JSON.parse(textResponse); // JSON形式でパース
+    } catch (error) {
+        console.error("[ERROR] Failed to fetch reservation data:", error);
+        return {}; // エラー時は空のオブジェクトを返す
+    }
+}
+
+// 月切り替え処理
+const prevMonthButton = document.getElementById("prev-month");
+const nextMonthButton = document.getElementById("next-month");
+
+// 前の月ボタンのクリック処理
+prevMonthButton.addEventListener("click", async () => {
+    // 月の更新処理
+    if (window.currentMonth === 1) {
+        window.currentMonth = 12;
+        window.currentYear--;
+    } else {
+        window.currentMonth--;
+    }
+
+    console.log(`[DEBUG] After prev-month click: currentYear=${window.currentYear}, currentMonth=${window.currentMonth}`);
+
+    // 新しい予約データを取得して `reservationData` を更新
+    reservationData = await fetchReservationData(window.currentYear, window.currentMonth);
+    console.log("[DEBUG] Updated reservationData:", reservationData);
+
+    // 表示を更新
+    updateCurrentMonthDisplay();
+    generateCalendar(); // 更新されたデータを使用して再描画
+});
+
+// 次の月ボタンのクリック処理
+nextMonthButton.addEventListener("click", async () => {
+    // 月の更新処理
+    if (window.currentMonth === 12) {
+        window.currentMonth = 1;
+        window.currentYear++;
+    } else {
+        window.currentMonth++;
+    }
+    console.log(`[DEBUG] After next-month click: currentYear=${window.currentYear}, currentMonth=${window.currentMonth}`);
+
+    // 新しい予約データを取得して `reservationData` を更新
+    reservationData = await fetchReservationData(window.currentYear, window.currentMonth);
+    console.log("[DEBUG] Updated reservationData:", reservationData);
+
+    // 表示を更新
+    updateCurrentMonthDisplay();
+    generateCalendar(); // 更新されたデータを使用して再描画
+});
+});

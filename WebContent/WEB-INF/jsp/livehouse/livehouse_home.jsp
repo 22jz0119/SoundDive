@@ -32,14 +32,9 @@
         <section class="calendar-section">
             <div>
                 <h2 class="OpenSpots-Reserve">アーティストからのライブハウス予約申請カレンダー</h2>
-                <p class="OpenSpots-Reserve-detile">件数表示されている日にちを選択して、申請情報の承認承諾へ進んでください</p>
+                <p class="OpenSpots-Reserve-detile">件数表示されている日にちを選択して、申請情報の可否へ進んでください</p>
                 <p class="Notes-or-Cautions">※申請データなし×</p>
                     
-            </div>
-
-            <div class="a-t-detail-calendar-containar">
-                <button id="prev-month" type="button">前の月</button>
-                <button id="next-month" type="button">次の月</button>
             </div>
             <div id="calendar-container"></div>
         </section>
@@ -56,54 +51,29 @@
 	</section>
 
 	<div class="live-main-calendar-button">
-		<div class="live-calendar-next-button">
-			<button id="prev" type="button">前の月</button>
-		</div>
-		<div class="live-calendar-back-button">
-			<button id="next" type="button">次の月</button>
-		</div>
+		<button id="prev-month" type="button">前の月</button>
+                <span id="current-month" class="current-month"></span>
+                <button id="next-month" type="button">次の月</button>
 	</div>
 
 	<div class="live-home-calendar-div">
 		<div id="calendar"></div>
 	</div>
-	<script>
-    const contextPath = '<%= request.getContextPath() %>';
-    const livehouseType = '<c:out value="${livehouseType}" escapeXml="true" />';
-    const userId = livehouseType === 'multi' ? '<c:out value="${userId}" escapeXml="true" />' : null;
-    const applicationId = livehouseType === 'multi' ? '<c:out value="${applicationId}" escapeXml="true" />' : null;
-    const livehouseId = '<c:out value="${livehouse.id}" escapeXml="true" />';
-    const reservationDataRaw = '<c:out value="${reservationStatus}" escapeXml="false" />';
-    let reservationData = {};
-
-    console.log("[DEBUG] Raw reservationData from JSP:", reservationDataRaw);
-
-    try {
-        if (reservationDataRaw && reservationDataRaw.trim() !== "") {
-            reservationData = JSON.parse(reservationDataRaw);
-        } else {
-            console.warn("[WARNING] reservationData is empty or null.");
-        }
-    } catch (error) {
-        console.error("[ERROR] Failed to parse reservationData:", error);
-    }
-
-    const currentYear = ${year != null ? year : 2024};
-    const currentMonth = ${month != null ? month : 12};
-    const daysInCurrentMonth = ${daysInMonth != null ? daysInMonth : 31};
-
-    console.log("[DEBUG] JSP contextPath:", contextPath);
-    console.log("[DEBUG] JSP livehouseType:", livehouseType);
-    console.log("[DEBUG] JSP userId:", userId);
-    console.log("[DEBUG] JSP applicationId:", applicationId);
-    console.log("[DEBUG] JSP livehouseId:", livehouseId);
-    console.log("[DEBUG] Parsed reservationData:", reservationData);
-    console.log("[DEBUG] currentYear:", currentYear);
-    console.log("[DEBUG] currentMonth:", currentMonth);
-    console.log("[DEBUG] daysInCurrentMonth:", daysInCurrentMonth);
-</script>
-
+	
+	<!-- 必要なデータをスクリプト内に渡す -->
+    <script>
+	    const contextPath = '<%= request.getContextPath() %>';
+	    const reservationDataRaw = ${reservationStatus != null ? reservationStatus : '{}'};
+	    const currentYear = ${year};  // サーバー側でセットされたyear属性
+	    const currentMonth = ${month};  // サーバー側でセットされたmonth属性
+	 // デバッグログ
+	    console.log("[DEBUG] contextPath:", contextPath);
+	    console.log("[DEBUG] reservationDataRaw:", reservationDataRaw);
+	    console.log("[DEBUG] currentYear:", currentYear);
+	    console.log("[DEBUG] currentMonth:", currentMonth);
+	</script>
 <script src="<%= request.getContextPath() %>/assets/js/livehouse_home.js" defer></script>
+
 
 <table id="calendar-table" class="calendar-table">
     <thead>

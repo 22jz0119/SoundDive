@@ -33,6 +33,7 @@ public class Application_confirmation extends HttpServlet {
         if (idParam != null) {
             try {
                 int applicationId = Integer.parseInt(idParam);
+                LivehouseApplicationWithGroup applicationDetails = livehouseApplicationDAO.getApplicationDetailsById(applicationId);     
 
                 // 承認ボタンが押された場合の処理
                 if ("approval".equals(action)) {
@@ -40,13 +41,14 @@ public class Application_confirmation extends HttpServlet {
                     updateTrueFalse(applicationId, dbManager);
 
                     // 承認ページに遷移
+                    request.setAttribute("application", applicationDetails);
                     request.setAttribute("applicationId", applicationId);
                     request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_approval.jsp").forward(request, response);
                     return;
                 }
 
                 // アプリケーション詳細データを取得
-                LivehouseApplicationWithGroup applicationDetails = livehouseApplicationDAO.getApplicationDetailsById(applicationId);
+                
 
                 if (applicationDetails != null) {
                     // アプリケーションデータをリクエストスコープにセット

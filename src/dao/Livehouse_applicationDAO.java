@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -533,24 +534,53 @@ public class Livehouse_applicationDAO {
     }
 
     //カレンダー申請件数表示
-    public Map<String, Integer> getReservationCountsForMonth(int year, int month) throws SQLException {
-        String query = "SELECT DATE_FORMAT(date_time, '%Y-%m-%d') AS date, COUNT(*) AS count " +
+    public Map<String, Integer> getReservationCountsByWeekday(int year, int month) throws SQLException {
+        String query = "SELECT DAYNAME(date_time) AS weekday, WEEKDAY(date_time) AS weekday_num, COUNT(*) AS count " +
                        "FROM livehouse_application_table " +
                        "WHERE YEAR(date_time) = ? AND MONTH(date_time) = ? " +
-                       "GROUP BY DATE(date_time)";
+                       "GROUP BY weekday, weekday_num " +
+                       "ORDER BY weekday_num";
+
+        System.out.println("[DEBUG] Executing query: " + query);
+        System.out.println("[DEBUG] Parameters - year: " + year + ", month: " + month);
+
+        Map<String, Integer> result = new LinkedHashMap<>();  // 曜日順保持
+
         try (Connection conn = dbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, year);
             stmt.setInt(2, month);
-            ResultSet rs = stmt.executeQuery();
+            System.out.println("[DEBUG] PreparedStatement parameters set successfully.");
 
-            Map<String, Integer> result = new HashMap<>();
-            while (rs.next()) {
-                result.put(rs.getString("date"), rs.getInt("count"));
+            try (ResultSet rs = stmt.executeQuery()) {
+                System.out.println("[DEBUG] Query executed successfully. Processing ResultSet...");
+
+                while (rs.next()) {
+                    String weekday = rs.getString("weekday");
+                    int count = rs.getInt("count");
+                    result.put(weekday, count);
+                    System.out.println("[DEBUG] Retrieved - weekday: " + weekday + ", count: " + count);
+                }
             }
-            return result;
+
+        } catch (SQLException e) {
+            System.err.println("[ERROR] SQLException occurred while executing query: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        } catch (Exception e) {
+            System.err.println("[ERROR] Unexpected exception occurred: " + e.getMessage());
+            e.printStackTrace();
+            throw new SQLException("Unexpected exception occurred while retrieving reservation counts by weekday.", e);
         }
+
+        System.out.println("[DEBUG] Returning result: " + result);
+        return result;
     }
+
+
+
+
         // `true_false`を更新するメソッド.
     
     public String updateTrueFalse(int applicationId, int trueFalseValue) {

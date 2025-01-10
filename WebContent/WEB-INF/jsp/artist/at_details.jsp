@@ -30,30 +30,37 @@
     </header>
 
     <main class="artist-livehouse-details-main">
+    
+    	<%
+			Livehouse_information livehouse = (Livehouse_information) request.getAttribute("livehouse");
+		%>
     	
-    	
+	    	<div class="at-detail-liveinfo-title-frame">
+				<p class="at-detail-liveinfo-title"><%= livehouse.getLivehouse_name() %></p>
+			</div>
 	    	<div class="at-detail-liveinfo-containar">
 	    	
-	    		<%
-				    Livehouse_information livehouse = (Livehouse_information) request.getAttribute("livehouse");
-				%>
-				<p class="at-detail-liveinfo-title"><%= livehouse.getLivehouse_name() %></p>
+	    		
+				
+				
 				<div class="at-detail-liveinfo-main">
 					<ul class="at-detail-liveinfo-img-ul">
-						<li class="at-detail-liveinfo-img-frame"><img src="<%= livehouse.getPicture_image_naigaikan() %>" alt="画像" class="at-detail-liveinfo-img"/></li>
+						<li class="at-detail-liveinfo-img-frame"><img src="<%= livehouse.getPicture_image_naigaikan() %>" alt="画像" class="at-detail-liveinfo-img" style="width: 200px;, height: 300px;"/></li>
 					</ul>
 					<ul class="at-detail-liveinfo-main-ul">
-						<li class="at-detail-liveinfo-main-li1"><p class="at-detail-liveinfo-main-li1-p">オーナー名 : <%= livehouse.getOwner_name() %></p></li>
-						<li class="at-detail-liveinfo-main-li2"><p class="at-detail-liveinfo-main-li2-p">住所 : <%= livehouse.getLive_address() %></p></li>
-						<li class="at-detail-liveinfo-main-li3"><p class="at-detail-liveinfo-main-li3-p">電話番号 : <%= livehouse.getLive_tel_number() %></p></li>
-						<li class="at-detail-liveinfo-main-li4"><p class="at-detail-liveinfo-main-li4-p">設備情報 : <%= livehouse.getEquipment_information() %></p></li>
-						<li class="at-detail-liveinfo-main-li5"><p class="at-detail-liveinfo-main-li5-p">詳細情報 : <%= livehouse.getLivehouse_detailed_information() %></p></li>
+						<li class="at-detail-liveinfo-main-li1"><p class="at-detail-liveinfo-main-li1-p">オーナー名  <%= livehouse.getOwner_name() %></p></li>
+						<li class="at-detail-liveinfo-main-li2"><p class="at-detail-liveinfo-main-li2-p">住所  <%= livehouse.getLive_address() %></p></li>
+						<li class="at-detail-liveinfo-main-li3"><p class="at-detail-liveinfo-main-li3-p">電話番号  <%= livehouse.getLive_tel_number() %></p></li>
+						<li class="at-detail-liveinfo-main-li4"><p class="at-detail-liveinfo-main-li4-p">設備情報</p></li>
+						<li class="at-detail-liveinfo-main-li5"><p><%= livehouse.getEquipment_information() %></p></li>
+						<li class="at-detail-liveinfo-main-li6"><p class="at-detail-liveinfo-main-li5-p">詳細情報</p></li>
+						<li class="at-detail-liveinfo-main-li7"><p><%= livehouse.getLivehouse_detailed_information() %></p></li>
 					</ul>
 				</div>	
-				<div>
+				<div class="at-detail-liveinfo-easyinfo-title">
 					<p>説明情報</p>
 				</div>
-				<div>
+				<div class="at-detail-liveinfo-easyinfo-main">
 					<p><%= livehouse.getLivehouse_explanation_information() %></p>
 				</div>
 			</div>
