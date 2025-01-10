@@ -81,66 +81,6 @@
         </div>
     </main>
 
-    <!-- スクリプトセクション -->
-    <script>
-        // 必要なデータを仮で埋め込む（サーバー側から渡される想定）
-        const daysInMonth = 31;
-        const year = 2024;
-        const month = 12;
-        const reservationStatus = { 15: "×", 20: "〇" }; // 仮データ
-
-        // カレンダー生成関数を呼び出す
-        document.addEventListener("DOMContentLoaded", () => {
-            console.log("[DEBUG] DOMContentLoaded event fired");
-            generateCalendar();
-        });
-
-        // カレンダー生成関数
-        function generateCalendar() {
-            const calendarBody = document.getElementById("calendar-body");
-            if (!calendarBody) {
-                console.error("[ERROR] Calendar body not found!");
-                return;
-            }
-
-            console.log("[DEBUG] generateCalendar function called");
-            calendarBody.innerHTML = ""; // カレンダーをリセット
-
-            const firstDay = new Date(year, month - 1, 1).getDay();
-            let date = 1;
-
-            while (date <= daysInMonth) {
-                const tr = document.createElement("tr");
-
-                for (let col = 0; col < 7; col++) {
-                    const td = document.createElement("td");
-                    td.classList.add("calendar-cell");
-
-                    if ((date === 1 && col < firstDay) || date > daysInMonth) {
-                        td.textContent = ""; // 空白セル
-                    } else {
-                        td.textContent = date;
-
-                        // 予約状況を反映
-                        const status = reservationStatus[date] || "〇";
-                        if (status === "〇") {
-                            td.classList.add("clickable");
-                        } else {
-                            td.classList.add("non-clickable");
-                        }
-
-                        date++;
-                    }
-
-                    tr.appendChild(td);
-                }
-
-                calendarBody.appendChild(tr);
-            }
-
-            console.log("[DEBUG] Calendar generated successfully");
-        }
-    </script>
     <script src="../assets/js/at_calender.js"></script>
 </body>
 </html>

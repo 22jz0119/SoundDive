@@ -10,7 +10,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import model.Livehouse_information;
 
@@ -28,6 +31,48 @@ public class Livehouse_informationDAO {
         System.err.println("Error Code: " + e.getErrorCode());
         e.printStackTrace();
     }
+    
+    public Map<Integer, Livehouse_information> findLivehouseInformationByIds(List<Integer> livehouseIds) throws SQLException {
+        if (livehouseIds == null || livehouseIds.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        String placeholders = livehouseIds.stream()
+                                          .map(id -> "?")
+                                          .collect(Collectors.joining(","));
+        String sql = "SELECT * FROM livehouse_information WHERE id IN (" + placeholders + ")";
+
+        Map<Integer, Livehouse_information> result = new HashMap<>();
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            for (int i = 0; i < livehouseIds.size(); i++) {
+                pstmt.setInt(i + 1, livehouseIds.get(i));
+            }
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Livehouse_information info = new Livehouse_information(
+                        rs.getInt("id"),
+                        rs.getString("owner_name"),
+                        rs.getString("equipment_information"),
+                        rs.getString("livehouse_explanation_information"),
+                        rs.getString("livehouse_detailed_information"),
+                        rs.getString("livehouse_name"),
+                        rs.getString("live_address"),
+                        rs.getString("live_tel_number"),
+                        rs.getString("picture_image_naigaikan"),
+                        rs.getTimestamp("create_date"),
+                        rs.getTimestamp("update_date"),
+                        rs.getInt("user_id")
+                    );
+                    result.put(info.getId(), info);
+                }
+            }
+        }
+        return result;
+    }
+
 
     // ライブハウス情報を挿入する 昆
     public boolean insertLivehouse_information(Livehouse_information livehouse) {

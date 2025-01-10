@@ -16,8 +16,8 @@
             </div>
             <nav class="header-nav">
                 <ul class="header-nav-ul">
-                    <li><a href="artist_home.html">HOME</a></li>
-                    <li><a href="artist_mypage.html">MY PAGE</a></li>
+                    <li><a href="<%= request.getContextPath() %>/At_Home">HOME</a></li>
+                    <li><a href="<%= request.getContextPath() %>/At_Mypage">MY PAGE</a></li>
                     <li><a href="">000</a></li>
                     <li><a href="">000</a></li>
                 </ul>
