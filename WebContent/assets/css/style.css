@@ -2266,6 +2266,16 @@ th.b {
   margin: 10px 0; /* 上下の余白 */
 }
 
+/*ライブハウスカレンダー*/
+
+/* クリック不可のマス */
+.calendar-cell.non-clickable {
+    pointer-events: none; /* クリックイベントを無効化 */
+    cursor: default; /* デフォルトのポインターに設定 */
+    background-color: black; /* 背景色を黒に設定 */
+}
+
+
 
 
 
