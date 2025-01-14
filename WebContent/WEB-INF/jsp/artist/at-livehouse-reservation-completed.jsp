@@ -45,14 +45,13 @@
     	</ul>
     	<ul>
     		<li>予約時間</li>
-    		<li>${application.date_time}</li>
-    		<li>${application.start_time}</li>
+    		<li>${selectedYear}年${selectedMonth}月${selectedDay}日 ${selectedTime}</li>
     	</ul>
         <div class="A-t-detail-livehousename">
             <p class="artist-livehouse-detail-oner">${livehouse.livehouse_name}</p>
         </div>
         <div class="artist_livehouse_details-Discription">
-            <div><img src="<%= request.getContextPath() %>/assets/img/Studio.jpg" alt="" class="artist_livehouse_details-img"></div>
+            <div><img src="${pageContext.request.contextPath}${livehouse.picture_image_naigaikan}" alt="" class="artist_livehouse_details-img"></div>
             <div>
                 <ul class="A-t-discription-ul">
                     <li><p>オーナー</p></li>
@@ -66,5 +65,23 @@
         </div>
     </div>
         <a href="<%= request.getContextPath() %>/At_Home" class="Return-to-home">ホームに戻る</a>
+        
+        <script>
+        function previewImage() {
+            const file = document.getElementById('fileInput').files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const profileImage = document.getElementById('profileImage');
+                profileImage.src = e.target.result;
+                profileImage.style.display = 'block';
+
+                const placeholderText = document.querySelector('.placeholder-text');
+                if (placeholderText) placeholderText.style.display = 'none';
+            }
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 </body>
 </html>

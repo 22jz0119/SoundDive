@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
+import dao.Livehouse_informationDAO;
+import model.Livehouse_information;
 
 @WebServlet("/At_livehouse_reservation_completed")
 public class At_livehouse_reservation_completed extends HttpServlet {
@@ -25,21 +27,31 @@ public class At_livehouse_reservation_completed extends HttpServlet {
             String month = request.getParameter("month");
             String day = request.getParameter("day");
             String time = request.getParameter("time");
-            String livehouseIdParam = request.getParameter("livehouseId");
+            String livehouseId = request.getParameter("livehouseId");
             String livehouseType = request.getParameter("livehouse_type");
             String userId = request.getParameter("userId");
+            
+            System.out.println("[DEBUG] -----------------------------");
+            System.out.println("[DEBUG] --- Request Parameters ---");
+            System.out.println("[DEBUG] year: " + year);
+            System.out.println("[DEBUG] month: " + month);
+            System.out.println("[DEBUG] day: " + day);
+            System.out.println("[DEBUG] time: " + time);
+            System.out.println("[DEBUG] livehouseId: " + livehouseId);
+            System.out.println("[DEBUG] livehouseType: " + livehouseType);
+            System.out.println("[DEBUG] userId: " + userId);
 
             // 必須パラメータの検証
-            if (isNullOrEmpty(year, month, day, time, livehouseIdParam, livehouseType, userId)) {
+            if (isNullOrEmpty(year, month, day, time, livehouseId, livehouseType)) {
                 System.err.println("[ERROR] doPost: Missing parameters.");
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "必要なパラメータが指定されていません。");
                 return;
             }
 
             // 数値形式のパラメータを変換
-            int livehouseId;
+            int livehouseIdInt;
             try {
-                livehouseId = Integer.parseInt(livehouseIdParam);
+                livehouseIdInt = Integer.parseInt(livehouseId);
             } catch (NumberFormatException e) {
                 System.err.println("[ERROR] doPost: Invalid number format for livehouseId.");
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な数値形式のライブハウスIDが含まれています。");
@@ -52,6 +64,22 @@ public class At_livehouse_reservation_completed extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な日時形式が指定されています。");
                 return;
             }
+            
+            request.setAttribute("selectedYear", year);
+            request.setAttribute("selectedMonth", month);
+            request.setAttribute("selectedDay", day);
+            request.setAttribute("selectedTime", time);
+
+            // 🔥 ライブハウス情報取得追加
+            Livehouse_informationDAO livehouseDAO = new Livehouse_informationDAO(DBManager.getInstance());
+            Livehouse_information livehouse = livehouseDAO.getLivehouse_informationById(livehouseIdInt);
+            if (livehouse == null) {
+                System.err.println("[ERROR] doPost: Livehouse not found for ID: " + livehouseIdInt);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "ライブハウス情報が見つかりませんでした。");
+                return;
+            }
+            request.setAttribute("livehouse", livehouse);
+            System.out.println("[DEBUG] Livehouse information loaded: " + livehouse.getLivehouse_name());
 
             // データベース操作
             DBManager dbManager = DBManager.getInstance();
@@ -60,7 +88,6 @@ public class At_livehouse_reservation_completed extends HttpServlet {
             if ("solo".equalsIgnoreCase(livehouseType)) {
                 System.out.println("[DEBUG] doPost: Processing solo reservation.");
 
-                // userId を数値に変換
                 int userIdInt;
                 try {
                     userIdInt = Integer.parseInt(userId);
@@ -70,8 +97,7 @@ public class At_livehouse_reservation_completed extends HttpServlet {
                     return;
                 }
 
-                // saveSoloReservation 呼び出し
-                boolean saveResult = applicationDAO.saveSoloReservation(livehouseId, userIdInt, startTime, startTime);
+                boolean saveResult = applicationDAO.saveSoloReservation(livehouseIdInt, userIdInt, startTime, startTime);
                 if (!saveResult) {
                     System.err.println("[ERROR] doPost: Failed to save solo reservation.");
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ソロライブ予約の保存に失敗しました。");
@@ -80,24 +106,23 @@ public class At_livehouse_reservation_completed extends HttpServlet {
             } else if ("multi".equalsIgnoreCase(livehouseType)) {
                 System.out.println("[DEBUG] doPost: Processing multi reservation.");
 
-                // applicationId の取得と検証
-                String applicationIdParam = request.getParameter("applicationId");
-                if (isNullOrEmpty(applicationIdParam)) {
+                String applicationId = request.getParameter("applicationId");
+                if (isNullOrEmpty(applicationId)) {
                     System.err.println("[ERROR] doPost: Missing applicationId.");
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "申請IDが指定されていません。");
                     return;
                 }
 
-                int applicationId;
+                int applicationIdInt;
                 try {
-                    applicationId = Integer.parseInt(applicationIdParam);
+                    applicationIdInt = Integer.parseInt(applicationId);
                 } catch (NumberFormatException e) {
                     System.err.println("[ERROR] doPost: Invalid number format for applicationId.");
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な数値形式の申請IDが含まれています。");
                     return;
                 }
 
-                boolean updateResult = applicationDAO.updateLivehouseApplication(applicationId, livehouseId, startTime, startTime);
+                boolean updateResult = applicationDAO.updateLivehouseApplication(applicationIdInt, livehouseIdInt, startTime, startTime);
                 if (!updateResult) {
                     System.err.println("[ERROR] doPost: Failed to save multi reservation.");
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "マルチライブ予約の保存に失敗しました。");
@@ -108,14 +133,8 @@ public class At_livehouse_reservation_completed extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なライブハウスタイプが指定されました。");
                 return;
             }
-
-            // 完了メッセージ
-            String reservationMessage = "予約が完了しました。";
-
-            // 必要なデータをリクエストスコープに設定
-            request.setAttribute("reservationMessage", reservationMessage);
-
-            // 完了ページにフォワード
+            
+            request.setAttribute("reservationMessage", "予約が完了しました。");
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at-livehouse-reservation-completed.jsp").forward(request, response);
 
         } catch (Exception e) {
@@ -144,4 +163,5 @@ public class At_livehouse_reservation_completed extends HttpServlet {
         }
         return false;
     }
+
 }

@@ -2326,11 +2326,24 @@ th.b {
   margin: 10px 0; /* 上下の余白 */
 }
 
+<<<<<<< HEAD
+/*ライブハウスカレンダー*/
+
+/* クリック不可のマス */
+.calendar-cell.non-clickable {
+    pointer-events: none; /* クリックイベントを無効化 */
+    cursor: default; /* デフォルトのポインターに設定 */
+    background-color: black; /* 背景色を黒に設定 */
+}
+
+
+=======
 /* artist-search-decisionのリストアイテム */
 .artist-search-decision {
     list-style-type: none;
     margin: 10px 0;
 }
+>>>>>>> branch 'main' of https://github.com/22jz0119/SoundDive.git
 
 /* artist-result-decision-buttonのスタイル */
 .artist-result-decision-button {

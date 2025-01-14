@@ -47,10 +47,17 @@
                 </div>
     
                 <!--電話番号-->
-                <h2 class="new-tel">電話番号<span class="Form-Item-Label-Required">必須</span></h2>
-                <input class="info-tel" type="tel" name="tel" pattern="\d*" placeholder="例）092999999999" required><br>
-                <span class="attention">※電話番号は半角英数字で入力してください。</span><br>
-                <span class="attention">※ハイフンは"-"は不要です。</span><br>
+				<h2 class="new-tel">電話番号<span class="Form-Item-Label-Required">必須</span></h2>
+				<input class="info-tel" 
+				       type="tel" 
+				       name="tel" 
+				       pattern="\d{10,11}" 
+				       maxlength="11" 
+				       placeholder="例）08011112222" 
+				       required><br>
+				<span class="attention">※電話番号は半角数字で10桁または11桁で入力してください。</span><br>
+				<span class="attention">※ハイフン「-」は不要です。</span><br>
+
     
                 <!--住所 都道府県-->
                 <h2 class="new-address">住所<span class="Form-Item-Label-Required">必須</span></h2>
