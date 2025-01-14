@@ -100,6 +100,7 @@
                 </ul>
             </div>
         </div>
+        
     </section>
     
     <c:if test="${livehouseType eq 'multi'}">
