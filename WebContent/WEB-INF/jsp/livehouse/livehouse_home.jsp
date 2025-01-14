@@ -61,7 +61,7 @@
 	</div>
 	
 	<!-- 必要なデータをスクリプト内に渡す -->
-    <script>
+     <script>
     const contextPath = '<%= request.getContextPath() %>';
 
     // ✅ livehouseId と livehouseType を埋め込む
@@ -73,16 +73,14 @@
     const currentMonth = <%= request.getAttribute("month") != null ? request.getAttribute("month") : "1" %>;
 
     console.log("[DEBUG] contextPath:", contextPath);
-    console.log("[DEBUG] livehouseId:", livehouseId);
+    console.log("[DEBUG] livehouseInformationId:", livehouseInformationId);
     console.log("[DEBUG] livehouseType:", livehouseType);
     console.log("[DEBUG] reservationDataRaw:", reservationDataRaw);
     console.log("[DEBUG] currentYear:", currentYear);
     console.log("[DEBUG] currentMonth:", currentMonth);
 </script>
 
-
 <script src="<%= request.getContextPath() %>/assets/js/livehouse_home.js" defer></script>
-
 
 <table id="calendar-table" class="calendar-table">
     <thead>
@@ -98,9 +96,5 @@
     </thead>
     <tbody id="calendar-body"></tbody>
 </table>
-
-	
-
-	<script src="${pageContext.request.contextPath}/assets/js/livehouse_home.js"></script>
 </body>
 </html>

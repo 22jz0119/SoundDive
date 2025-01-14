@@ -443,45 +443,49 @@ public class Livehouse_applicationDAO {
     }
 
     // リスト表示
-    public List<LivehouseApplicationWithGroup> getReservationsWithTrueFalseZero() {
-        // 修正したSQLクエリ
+    public List<LivehouseApplicationWithGroup> getReservationsWithTrueFalseZero(int year, int month, int day) {
+        // 修正したSQLクエリ：指定された日付に合わせてフィルタリング
         String sql = "SELECT DISTINCT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
                      "la.livehouse_information_id, la.user_id, la.artist_group_id, la.cogig_or_solo, " +
                      "ag.account_name, ag.group_genre, ag.band_years, u.us_name " +
                      "FROM livehouse_application_table la " +
                      "LEFT JOIN artist_group ag ON la.artist_group_id = ag.id " +
                      "LEFT JOIN user u ON la.user_id = u.id " +
-                     "WHERE la.true_false = 0"; // true_false = 0 のみを取得
+                     "WHERE la.true_false = 0 AND YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND DAY(la.date_time) = ?";  // ここで日付に絞り込む
 
         List<LivehouseApplicationWithGroup> reservations = new ArrayList<>();
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        	
+
+            // パラメータを設定
+            pstmt.setInt(1, year);
+            pstmt.setInt(2, month);
+            pstmt.setInt(3, day);
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     // groupId を取得
                     int groupId = rs.getInt("artist_group_id");
-                    
+
                     // メンバー情報を取得
                     List<Member> members = getMembersByGroupId(groupId);
 
-                 // データを LivehouseApplicationWithGroup に追加
+                    // データを LivehouseApplicationWithGroup に追加
                     reservations.add(new LivehouseApplicationWithGroup(
-                        rs.getInt("application_id"),                       // applicationId
-                        rs.getInt("application_id"),                       // id (同じカラムを代入)
-                        rs.getTimestamp("date_time") != null ? rs.getTimestamp("date_time").toLocalDateTime() : null, // dateTime (null 安全)
-                        rs.getBoolean("true_false"),                       // trueFalse
-                        rs.getTimestamp("start_time") != null ? rs.getTimestamp("start_time").toLocalDateTime() : null, // startTime (LocalDateTimeに変更)
-                        rs.getTimestamp("finish_time") != null ? rs.getTimestamp("finish_time").toLocalDateTime() : null, // finishTime (LocalDateTimeに変更)
-                        groupId,                                           // groupId
-                        rs.getString("account_name") != null ? rs.getString("account_name") : "", // accountName (null 安全)
-                        rs.getString("group_genre") != null ? rs.getString("group_genre") : "",   // groupGenre (null 安全)
-                        rs.getString("band_years") != null ? rs.getString("band_years") : "",    // bandYears (null 安全)
-                        rs.getInt("user_id"),                              // userId
-                        rs.getString("us_name") != null ? rs.getString("us_name") : "",           // usName (null 安全)
-                        members                                            // メンバーリスト
+                        rs.getInt("application_id"),
+                        rs.getInt("application_id"),
+                        rs.getTimestamp("date_time") != null ? rs.getTimestamp("date_time").toLocalDateTime() : null,
+                        rs.getBoolean("true_false"),
+                        rs.getTimestamp("start_time") != null ? rs.getTimestamp("start_time").toLocalDateTime() : null,
+                        rs.getTimestamp("finish_time") != null ? rs.getTimestamp("finish_time").toLocalDateTime() : null,
+                        groupId,
+                        rs.getString("account_name") != null ? rs.getString("account_name") : "",
+                        rs.getString("group_genre") != null ? rs.getString("group_genre") : "",
+                        rs.getString("band_years") != null ? rs.getString("band_years") : "",
+                        rs.getInt("user_id"),
+                        rs.getString("us_name") != null ? rs.getString("us_name") : "",
+                        members
                     ));
-
                 }
             }
         } catch (SQLException e) {
@@ -489,6 +493,7 @@ public class Livehouse_applicationDAO {
         }
         return reservations;
     }
+
 
  // ユーザーIDからus_nameを取得するメソッド
     public String getUserNameByUserId(int userId) {
