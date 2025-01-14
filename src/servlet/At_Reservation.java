@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.time.YearMonth;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,8 +10,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.Artist_groupDAO;
 import dao.DBManager;
+import dao.Livehouse_applicationDAO;
 import dao.Livehouse_informationDAO;
+import model.Artist_group;
 import model.Livehouse_information;
 
 @WebServlet("/At_Reservation")
@@ -23,6 +27,8 @@ public class At_Reservation extends HttpServlet {
 
         // DAOの初期化
         Livehouse_informationDAO livehouseDAO = new Livehouse_informationDAO(DBManager.getInstance());
+        Artist_groupDAO artistGroupDAO = Artist_groupDAO.getInstance(DBManager.getInstance());
+        Livehouse_applicationDAO applicationDAO = new Livehouse_applicationDAO(DBManager.getInstance());  // 追加
 
         try {
             // 必須パラメータの取得
@@ -31,6 +37,7 @@ public class At_Reservation extends HttpServlet {
             String dayParam = request.getParameter("day");
             String livehouseIdParam = request.getParameter("livehouseId");
             String livehouseType = request.getParameter("livehouse_type");
+            String artistGroupIdParam = request.getParameter("artistGroupId");
 
             // 入力チェック
             if (yearParam == null || yearParam.trim().isEmpty() ||
@@ -60,6 +67,22 @@ public class At_Reservation extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "ライブハウス情報が見つかりませんでした。");
                 return;
             }
+
+            // アーティストグループ情報の取得
+            if (artistGroupIdParam != null && !artistGroupIdParam.trim().isEmpty()) {
+                int artistGroupId = Integer.parseInt(artistGroupIdParam);
+                Artist_group artistGroup = artistGroupDAO.getGroupById(artistGroupId);
+                if (artistGroup != null) {
+                    request.setAttribute("artistGroup", artistGroup);
+                } else {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "アーティストグループ情報が見つかりませんでした。");
+                    return;
+                }
+            }
+
+            // 申請中アーティストの取得（追加）
+            List<Artist_group> applyingArtists = applicationDAO.getApplyingArtistsByLivehouseId(livehouseId);
+            request.setAttribute("applyingArtists", applyingArtists);
 
             // 必須データをリクエストスコープに設定
             request.setAttribute("selectedYear", year);

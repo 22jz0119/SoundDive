@@ -1,4 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -102,6 +107,14 @@
         </div>
     </section>
     
+    <c:if test="${not empty applyingArtists}">
+    <c:forEach var="artist" items="${applyingArtists}">
+        <img src="${pageContext.request.contextPath}${artist.picture_image_movie}" alt="" class="band-image">
+        <p class="artist-name">${artist.account_name}</p>
+    </c:forEach>
+</c:if>
+    
+    
     <c:if test="${livehouseType eq 'multi'}">
 	    <h2 class="Currentlyapplying">申請中アーティスト</h2>
 	    <div class="Applicationgroup">
@@ -109,13 +122,14 @@
 	            <div class="Applicationtable">
 	                <img src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" alt="" class="band-image">
 	                <div class="artist-info">
-	                    <p class="artist-name">${artist.name}</p>
+	                    <p class="artist-name">${artist.account_name}</p>
 	                    <p class="application-status">申請中</p>
 	                </div>
 	            </div>
 	        </c:forEach>
 	    </div>
 	</c:if>
+
 
     <script>
         function previewImage() {
