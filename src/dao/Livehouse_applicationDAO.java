@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import model.Artist_group;
 import model.LivehouseApplicationWithGroup;
 import model.Livehouse_application;
 import model.Livehouse_information;
@@ -25,6 +26,27 @@ public class Livehouse_applicationDAO {
 
     public Livehouse_applicationDAO(DBManager dbManager) {
         this.dbManager = dbManager;
+    }
+    
+    public String getArtistNameByApplicationId(int applicationId) {
+        String sql = "SELECT ag.account_name FROM livehouse_application_table la " +
+                     "JOIN artist_group ag ON la.artist_group_id = ag.id " +
+                     "WHERE la.id = ?";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, applicationId);  // 申請IDをセット
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("account_name");  // アーティスト名を取得
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;  // 見つからない場合はnull
     }
     
     //soloの場合の申請 梅島
@@ -954,5 +976,32 @@ return -1; // エラー時に -1 を返す
             create_date, update_date, cogig_or_solo, artist_group_id
         );
     }
+    
+    private Artist_group rs2model(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        int user_id = rs.getInt("user_id");
+        String account_name = rs.getString("account_name");
+        String picture_image_movie = rs.getString("picture_image_movie");
+        String group_genre = rs.getString("group_genre");
+        int band_years = rs.getInt("band_years");
+        Date create_date = rs.getDate("create_date");
+        Date update_date = rs.getDate("update_date");
+        String rating_star = rs.getString("rating_star");
+        boolean at_true_false = rs.getBoolean("at_true_false");
+
+        return new Artist_group(
+            id,
+            user_id,
+            account_name,
+            picture_image_movie,
+            group_genre,
+            band_years,
+            create_date != null ? create_date.toLocalDate() : null,
+            update_date != null ? update_date.toLocalDate() : null,
+            rating_star,
+            at_true_false
+        );
+    }
+
 
 }

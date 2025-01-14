@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.Artist_groupDAO;
 import dao.DBManager;
+import dao.Livehouse_applicationDAO;
 import dao.Livehouse_informationDAO;
 import model.Livehouse_information;
 
@@ -22,35 +24,46 @@ public class At_Reservation extends HttpServlet {
             throws ServletException, IOException {
 
         // DAOの初期化
-        Livehouse_informationDAO livehouseDAO = new Livehouse_informationDAO(DBManager.getInstance());
+        DBManager dbManager = DBManager.getInstance();
+        Livehouse_informationDAO livehouseDAO = new Livehouse_informationDAO(dbManager);
+        Artist_groupDAO artistGroupDAO = Artist_groupDAO.getInstance(dbManager);
+        Livehouse_applicationDAO applicationDAO = new Livehouse_applicationDAO(dbManager);
 
         try {
-            // 必須パラメータの取得
+            // パラメータの取得
             String yearParam = request.getParameter("year");
             String monthParam = request.getParameter("month");
             String dayParam = request.getParameter("day");
             String livehouseIdParam = request.getParameter("livehouseId");
             String livehouseType = request.getParameter("livehouse_type");
+            String applicationIdParam = request.getParameter("applicationId");
 
-            // 入力チェック
-            if (yearParam == null || yearParam.trim().isEmpty() ||
-                monthParam == null || monthParam.trim().isEmpty() ||
-                dayParam == null || dayParam.trim().isEmpty() ||
-                livehouseIdParam == null || livehouseIdParam.trim().isEmpty()) {
+            // 必須パラメータチェック
+            if (yearParam == null || monthParam == null || dayParam == null || livehouseIdParam == null) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "必要なパラメータが不足しています。");
                 return;
             }
 
-            // パラメータを整数に変換
+            // 型変換とエラーハンドリング
             int year = Integer.parseInt(yearParam);
             int month = Integer.parseInt(monthParam);
             int day = Integer.parseInt(dayParam);
             int livehouseId = Integer.parseInt(livehouseIdParam);
 
+            int applicationId = -1;  // 初期値
+            if (applicationIdParam != null && !applicationIdParam.isEmpty()) {
+                try {
+                    applicationId = Integer.parseInt(applicationIdParam);
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "申請IDの形式が正しくありません。");
+                    return;
+                }
+            }
+
             // 日付のバリデーション
             YearMonth yearMonth = YearMonth.of(year, month);
             if (day < 1 || day > yearMonth.lengthOfMonth()) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "日付が不正です");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "日付が不正です。");
                 return;
             }
 
@@ -61,7 +74,19 @@ public class At_Reservation extends HttpServlet {
                 return;
             }
 
-            // 必須データをリクエストスコープに設定
+            // マルチライブの場合の処理
+            if ("multi".equalsIgnoreCase(livehouseType) && applicationId != -1) {
+                // 申請IDからアーティスト名を取得
+                String artistName = applicationDAO.getArtistNameByApplicationId(applicationId);
+                if (artistName != null) {
+                    request.setAttribute("artistName", artistName);
+                } else {
+                    request.setAttribute("errorMessage", "アーティスト情報が見つかりませんでした。");
+                }
+                request.setAttribute("applicationId", applicationId);
+            }
+
+            // リクエストスコープにデータを設定
             request.setAttribute("selectedYear", year);
             request.setAttribute("selectedMonth", month);
             request.setAttribute("selectedDay", day);
@@ -69,25 +94,7 @@ public class At_Reservation extends HttpServlet {
             request.setAttribute("livehouseType", livehouseType);
             request.setAttribute("livehouse", livehouse);
 
-            // マルチライブ用の追加データチェック
-            if ("multi".equalsIgnoreCase(livehouseType)) {
-                String userIdParam = request.getParameter("userId");
-                String applicationIdParam = request.getParameter("applicationId");
-                if (userIdParam == null || userIdParam.trim().isEmpty() ||
-                    applicationIdParam == null || applicationIdParam.trim().isEmpty()) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "マルチライブにはユーザーIDと申請IDが必要です");
-                    return;
-                }
-
-                int userId = Integer.parseInt(userIdParam);
-                int applicationId = Integer.parseInt(applicationIdParam);
-
-                // マルチライブ用データをリクエストスコープに追加
-                request.setAttribute("userId", userId);
-                request.setAttribute("applicationId", applicationId);
-            }
-
-            // 次のページにフォワード
+            // 詳細画面へフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at_reservation.jsp").forward(request, response);
 
         } catch (NumberFormatException e) {
