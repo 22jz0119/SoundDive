@@ -28,26 +28,26 @@ public class Livehouse_applicationDAO {
         this.dbManager = dbManager;
     }
     
-    public List<Artist_group> getApplyingArtistsByLivehouseId(int livehouseId) {
-        String sql = "SELECT ag.* FROM livehouse_application_table lat " +
-                     "JOIN artist_group ag ON lat.artist_group_id = ag.id " +
-                     "WHERE lat.livehouse_id = ?";
-        List<Artist_group> applyingArtists = new ArrayList<>();
+    public String getArtistNameByApplicationId(int applicationId) {
+        String sql = "SELECT ag.account_name FROM livehouse_application_table la " +
+                     "JOIN artist_group ag ON la.artist_group_id = ag.id " +
+                     "WHERE la.id = ?";
 
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, livehouseId);
+
+            pstmt.setInt(1, applicationId);  // 申請IDをセット
+
             try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    applyingArtists.add(rs2model(rs));
+                if (rs.next()) {
+                    return rs.getString("account_name");  // アーティスト名を取得
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return applyingArtists;
+        return null;  // 見つからない場合はnull
     }
-
     
     //soloの場合の申請 梅島
     public boolean saveSoloReservation(int livehouseId, int userId, LocalDateTime dateTime, LocalDateTime startTime) {
