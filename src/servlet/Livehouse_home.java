@@ -56,7 +56,7 @@ public class Livehouse_home extends HttpServlet {
 
             // DAOメソッドの呼び出し (正しいメソッドを使用)
             log("[DEBUG] Calling DAO method: getReservationCountsByWeekday with year: " + year + ", month: " + month);
-            Map<String, Integer> reservationCounts = dao.getReservationCountsByWeekday(year, month);
+            Map<String, Integer> reservationCounts = dao.getReservationCountsByDay(year, month);
 
             if (reservationCounts == null) {
                 log("[DEBUG] DAO returned null for reservationCounts.");

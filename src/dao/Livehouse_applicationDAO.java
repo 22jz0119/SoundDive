@@ -534,17 +534,17 @@ public class Livehouse_applicationDAO {
     }
 
     //カレンダー申請件数表示
-    public Map<String, Integer> getReservationCountsByWeekday(int year, int month) throws SQLException {
-        String query = "SELECT DAYNAME(date_time) AS weekday, WEEKDAY(date_time) AS weekday_num, COUNT(*) AS count " +
+    public Map<String, Integer> getReservationCountsByDay(int year, int month) throws SQLException {
+        String query = "SELECT DAY(date_time) AS day, COUNT(*) AS count " +
                        "FROM livehouse_application_table " +
                        "WHERE YEAR(date_time) = ? AND MONTH(date_time) = ? " +
-                       "GROUP BY weekday, weekday_num " +
-                       "ORDER BY weekday_num";
+                       "GROUP BY day " +
+                       "ORDER BY day";
 
         System.out.println("[DEBUG] Executing query: " + query);
         System.out.println("[DEBUG] Parameters - year: " + year + ", month: " + month);
 
-        Map<String, Integer> result = new LinkedHashMap<>();  // 曜日順保持
+        Map<String, Integer> result = new LinkedHashMap<>();  // 日付順保持
 
         try (Connection conn = dbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -557,10 +557,10 @@ public class Livehouse_applicationDAO {
                 System.out.println("[DEBUG] Query executed successfully. Processing ResultSet...");
 
                 while (rs.next()) {
-                    String weekday = rs.getString("weekday");
-                    int count = rs.getInt("count");
-                    result.put(weekday, count);
-                    System.out.println("[DEBUG] Retrieved - weekday: " + weekday + ", count: " + count);
+                    int day = rs.getInt("day");   // 日付 (1～31)
+                    int count = rs.getInt("count"); // 予約件数
+                    result.put(Integer.toString(day), count); // dayを文字列に変換して格納
+                    System.out.println("[DEBUG] Retrieved - day: " + day + ", count: " + count);
                 }
             }
 
@@ -571,12 +571,13 @@ public class Livehouse_applicationDAO {
         } catch (Exception e) {
             System.err.println("[ERROR] Unexpected exception occurred: " + e.getMessage());
             e.printStackTrace();
-            throw new SQLException("Unexpected exception occurred while retrieving reservation counts by weekday.", e);
+            throw new SQLException("Unexpected exception occurred while retrieving reservation counts by day.", e);
         }
 
         System.out.println("[DEBUG] Returning result: " + result);
         return result;
     }
+
 
 
 

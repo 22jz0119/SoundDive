@@ -230,4 +230,14 @@ nextMonthButton.addEventListener("click", async () => {
     updateCurrentMonthDisplay();
     generateCalendar(); // 更新されたデータを使用して再描画
 });
+	// Application_list サーブレット遷移
+function openReservationList(element) {
+    const year = element.getAttribute('data-year');
+    const month = element.getAttribute('data-month');
+    const day = element.textContent;
+
+    // Application_list サーブレットに遷移
+    window.location.href = `/Application_list?year=${year}&month=${month}&day=${day}`;
+}
+
 });
