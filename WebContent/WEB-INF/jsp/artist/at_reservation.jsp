@@ -103,6 +103,7 @@
         
     </section>
     
+    
     <c:if test="${livehouseType eq 'multi'}">
 	    <h2 class="Currentlyapplying">申請中アーティスト</h2>
 	    <div class="Applicationgroup">
