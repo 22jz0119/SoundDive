@@ -21,6 +21,9 @@
                     <li><a href="<%= request.getContextPath() %>/At_Mypage">MY PAGE</a></li>
                     <li><a href="">000</a></li>
                     <li><a href="">000</a></li>
+                    <li>
+					    <a href="#" onclick="logoutAndRedirect();">ログアウト</a>
+					</li>
                 </ul>
             </nav>
         </div>
@@ -93,67 +96,11 @@
 								</ul> 
     						</div>
     					</div>
-    					
-    					
-						   					
-			                
     				</div>
-    				
-    				
-    				
     		</form>
-    		
     	</c:forEach>
     </div>
-<%--  
-    <div class="co-gig-group">
-        <!-- ユニークなアーティストグループのリストを表示 -->
-		<c:forEach var="artist" items="${artistGroups}">
-		    <div class="co-gig-one">
-		        <form action="<%= request.getContextPath() %>/At_Cogig" method="post">
-		            <input type="hidden" name="action" value="apply">
-		            <input type="hidden" name="applicationId" value="${artist.id}">
 
-		            <%
-		                // applicationIdをセッションから取得し、存在しない場合はリクエストから取得
-		                String livehouseApplicationId = (String) session.getAttribute("livehouseApplicationId");
-		                if (livehouseApplicationId == null) {
-		                    livehouseApplicationId = request.getParameter("applicationId");
-		                }
-		            %>
-		            <input type="hidden" name="livehouseApplicationId" value="<%= livehouseApplicationId %>">
-		
-		            <table class="taibantable">
-		                <tr class="a">
-		                    <th rowspan="4">
-		                        <c:if test="${not empty artist.picture_image_movie}">
-		                            <img src="${pageContext.request.contextPath}${artist.picture_image_movie}" 
-		                                 alt="バンドのイラスト" class="band-image">
-		                        </c:if>
-		                    </th>
-		                    <th>${artist.account_name}</th>
-		                    <th class="b">ステータス</th>
-		                </tr>
-		                <tr class="a">
-		                    <td class="b">${artist.account_name}</td>
-		                    <td class="b">Active</td>
-		                </tr>
-		                <tr class="a">
-		                    <td class="b">バンド歴: ${artist.band_years} 年</td>
-		                    <td class="b">メンバー数: ${memberCounts[artist.id]}</td>
-		                </tr>
-		                <tr class="a">
-		                    <td class="b">ジャンル: ${artist.group_genre}</td>
-		                    <td class="b">
-		                        <button type="submit">申請する</button>
-		                    </td>
-		                </tr>
-		            </table>
-		        </form>
-		    </div>
-		</c:forEach>
-	</div>
---%>
     <!-- 次へボタン -->
     <div class="next-button-container">
         <%
@@ -171,5 +118,25 @@
 		%>
 <a href="<%= nextPageUrl %>" class="co-gig-btn">次へ</a>
     </div>
+    
+    <script>
+	    function logoutAndRedirect() {
+	        // フォームを送信してログアウト処理を実行
+	        var form = document.createElement("form");
+	        form.method = "post";
+	        form.action = "<%= request.getContextPath() %>/At_Home";
+	        
+	        // 隠しフィールドにaction=logoutをセット
+	        var input = document.createElement("input");
+	        input.type = "hidden";
+	        input.name = "action";
+	        input.value = "logout";
+	        form.appendChild(input);
+	        
+	        // フォームを送信
+	        document.body.appendChild(form);
+	        form.submit();
+	    }
+	</script>
 </body>
 </html>

@@ -99,23 +99,23 @@
      </main>
      
      <script>
-    function logoutAndRedirect() {
-        // フォームを送信してログアウト処理を実行
-        var form = document.createElement("form");
-        form.method = "post";
-        form.action = "<%= request.getContextPath() %>/At_Home";
-        
-        // 隠しフィールドにaction=logoutをセット
-        var input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "action";
-        input.value = "logout";
-        form.appendChild(input);
-        
-        // フォームを送信
-        document.body.appendChild(form);
-        form.submit();
-    }
-</script>
+	    function logoutAndRedirect() {
+	        // フォームを送信してログアウト処理を実行
+	        var form = document.createElement("form");
+	        form.method = "post";
+	        form.action = "<%= request.getContextPath() %>/At_Home";
+	        
+	        // 隠しフィールドにaction=logoutをセット
+	        var input = document.createElement("input");
+	        input.type = "hidden";
+	        input.name = "action";
+	        input.value = "logout";
+	        form.appendChild(input);
+	        
+	        // フォームを送信
+	        document.body.appendChild(form);
+	        form.submit();
+	    }
+	</script>
 </body>
 </html>

@@ -22,8 +22,11 @@
                 <ul class="header-nav-ul">
                     <li><a href="<%= request.getContextPath() %>/At_Home">HOME</a></li>
                     <li><a href="<%= request.getContextPath() %>/At_Mypage">MY PAGE</a></li>
-                    <li><a href="">リンク1</a></li>
-                    <li><a href="">リンク2</a></li>
+                    <li><a href="">000</a></li>
+                    <li><a href="">000</a></li>
+                    <li>
+					    <a href="#" onclick="logoutAndRedirect();">ログアウト</a>
+					</li>
                 </ul>
             </nav>
         </div>
@@ -154,5 +157,25 @@
         </thead>
         <tbody id="calendar-body"></tbody>
     </table>
+    
+    <script>
+	    function logoutAndRedirect() {
+	        // フォームを送信してログアウト処理を実行
+	        var form = document.createElement("form");
+	        form.method = "post";
+	        form.action = "<%= request.getContextPath() %>/At_Home";
+	        
+	        // 隠しフィールドにaction=logoutをセット
+	        var input = document.createElement("input");
+	        input.type = "hidden";
+	        input.name = "action";
+	        input.value = "logout";
+	        form.appendChild(input);
+	        
+	        // フォームを送信
+	        document.body.appendChild(form);
+	        form.submit();
+	    }
+	</script>
 </body>
 </html>
