@@ -28,6 +28,34 @@ public class Livehouse_applicationDAO {
         this.dbManager = dbManager;
     }
     
+    public Integer getArtistGroupIdByApplicationId(int applicationId) {
+        String sql = "SELECT artist_group_id FROM livehouse_application_table WHERE id = ?";
+        
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            System.out.println("[DEBUG] Executing SQL: " + sql + " with applicationId = " + applicationId);  // SQL実行前にログ出力
+            pstmt.setInt(1, applicationId);
+            
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                int artistGroupId = rs.getInt("artist_group_id");
+                System.out.println("[DEBUG] Found artist_group_id: " + artistGroupId);  // 結果が見つかった場合にログ出力
+                return artistGroupId;
+            } else {
+                System.out.println("[DEBUG] No artist_group_id found for applicationId: " + applicationId);  // 結果がない場合のログ出力
+            }
+        } catch (SQLException e) {
+            System.err.println("[ERROR] SQLException occurred while getting artist_group_id for applicationId: " + applicationId);
+            e.printStackTrace();
+        }
+        
+        return null; // 見つからない場合は null を返す
+    }
+
+
+    
     public String getArtistNameByApplicationId(int applicationId) {
         String sql = "SELECT ag.account_name FROM livehouse_application_table la " +
                      "JOIN artist_group ag ON la.artist_group_id = ag.id " +

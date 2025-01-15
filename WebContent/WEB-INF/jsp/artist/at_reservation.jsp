@@ -32,6 +32,8 @@
         </div>
     </header>
     
+    
+    
     <section class="artist-livehouse-detail-section">
         <!-- タイトル -->
         <div class="artist-livehouse-detail-title">
@@ -96,7 +98,9 @@
 	    <h2 class="Currentlyapplying">申請中アーティスト</h2>
 	    <div class="Applicationgroup">
 	    	<div class="Applicationtable">
-	        <img src="${pageContext.request.contextPath}${artist.picture_image_movie}" alt="" class="band-image">
+	    	<c:if test="${not empty artist.picture_image_movie}">
+	        	<img src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" alt="バンドのイラスト" class="band-image">
+	        </c:if>
 		        <div class="artist-info">
 	            	<p class="artist-name">${artistName}</p>
 	                <p class="application-status">申請中</p>
