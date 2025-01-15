@@ -32,6 +32,8 @@
         </div>
     </header>
     
+    
+    
     <section class="artist-livehouse-detail-section">
         <!-- タイトル -->
         <div class="artist-livehouse-detail-title">

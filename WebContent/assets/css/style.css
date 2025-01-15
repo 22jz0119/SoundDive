@@ -403,6 +403,10 @@ td.is-disabled {
 
 }
 
+.artist-livehouse-detail-oner{
+	font-size: 3rem;
+}
+
 .A-t-discription-ul3{
     list-style: none;
 }
@@ -1388,6 +1392,8 @@ th.b {
 .timeschedule {
     text-align: center;
     font-size: 25px;
+    padding: 20px 30px;
+    
 }
 
 .Reservationlocation {
@@ -1753,7 +1759,8 @@ th.b {
 
 .rv-btn {
     text-align: right;
-    margin: 70px 0 0 1700px;
+    display: flex;
+    justify-content: center;
     font-size: 1.5rem;
 }
 
@@ -1805,6 +1812,15 @@ th.b {
 
 .A-t-discription-ul{
     list-style: none;
+    font-size: 1.4rem;
+}
+
+.A-t-discription-li4{
+	margin-left: 30px;
+}
+
+.A-t-discription-li6{
+	margin-left: 30px;
 }
 /*ライブハウスホームページ*/
 
@@ -2326,7 +2342,7 @@ th.b {
   margin: 10px 0; /* 上下の余白 */
 }
 
-<<<<<<< HEAD
+
 /*ライブハウスカレンダー*/
 
 /* クリック不可のマス */
@@ -2337,13 +2353,13 @@ th.b {
 }
 
 
-=======
+
 /* artist-search-decisionのリストアイテム */
 .artist-search-decision {
     list-style-type: none;
     margin: 10px 0;
 }
->>>>>>> branch 'main' of https://github.com/22jz0119/SoundDive.git
+
 
 /* artist-result-decision-buttonのスタイル */
 .artist-result-decision-button {
@@ -2430,4 +2446,86 @@ th.b {
 	margin-left: 30px;
 }
 
+.at-reservation-select-time{
+	margin: 300px 0;
+}
 
+.at-reservation-select-time-announce{
+	font-size: 2.5rem;
+}
+
+.at-booking-confirm-compleat-btn {
+	font-family: "Shippori Mincho B1", serif;
+    font-size: 18px;
+    color: white;
+    background-color: #e74c3c; /* 赤色 */
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.at-booking-confirm-compleat-btn:hover {
+    background-color: #c0392b; /* 少し暗い赤色 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.at-booking-confirm-cmp-div{
+	margin: 30px 0;
+	display: flex;
+	justify-content: center;
+}
+
+.at-booking-confirm-compleat-btn:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.6);
+}
+
+.artist-livehouse-detail-section3-ul1{
+	display: flex;
+	justify-content: center;
+	font-size: 1.4rem;
+	list-style: none;
+}
+
+.artist-livehouse-detail-section3-ul2{
+	display: flex;
+	justify-content: center;
+	list-style: none;
+	font-size: 1.3rem;
+	
+}
+
+.artist-livehouse-detail-section3-ul3{
+	display: flex;
+	justify-content: center;
+	list-style: none;
+	font-size: 1.5rem;
+	margin-left: 30px;
+}
+
+
+.at-livehouse-reservation-cmp-backhome-btn{
+	display: flex;
+	justify-content: center;
+	margin-top: 100px;
+}
+
+.at-livehouse-reservation-cmp-Return-to-home {
+        color: white; /* 文字色は白 */
+        background-color: red; /* 背景色は赤 */
+        font-size: 16px; /* フォントサイズ調整 */
+        text-decoration: none; /* 下線をなくす */
+        padding: 5px 10px; /* 余白を追加 */
+        border: 2px solid red; /* 赤色の枠線 */
+        border-radius: 5px; /* 角を丸くする */
+        transition: all 0.3s ease; /* スムーズな変化 */
+    }
+
+    .at-livehouse-reservation-cmp-Return-to-home:hover {
+        background-color: darkred; /* ホバー時に背景色を暗く */
+        border-color: darkred; /* ホバー時に枠線を暗く */
+    }
