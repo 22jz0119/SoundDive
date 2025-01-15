@@ -30,7 +30,6 @@ public class At_Reservation extends HttpServlet {
         Artist_groupDAO artistGroupDAO = Artist_groupDAO.getInstance(dbManager);  // 追加
         Livehouse_applicationDAO applicationDAO = new Livehouse_applicationDAO(dbManager);
 
-
         try {
             // パラメータの取得
             String yearParam = request.getParameter("year");
