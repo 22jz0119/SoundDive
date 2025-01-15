@@ -58,9 +58,9 @@
     <input type="hidden" name="day" value="${selectedDay}">
     <input type="hidden" name="livehouseId" value="${livehouseId}">
     <input type="hidden" name="livehouse_type" value="${livehouseType}">
+    <input type="hidden" name="userId" value="${userId}">
 
     <c:if test="${livehouseType eq 'multi'}">
-        <input type="hidden" name="userId" value="${userId}">
         <input type="hidden" name="applicationId" value="${applicationId}">
     </c:if>
 

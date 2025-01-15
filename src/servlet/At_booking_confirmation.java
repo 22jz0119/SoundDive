@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.DBManager;
+import dao.Livehouse_applicationDAO;
 import dao.Livehouse_informationDAO;
 import dao.UserDAO;
 import model.Livehouse_information;
@@ -21,121 +22,130 @@ public class At_booking_confirmation extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("[DEBUG] doGet: Preparing confirmation page.");
 
         try {
             // パラメータ取得
-            String year = request.getParameter("year");
-            String month = request.getParameter("month");
-            String day = request.getParameter("day");
-            String time = request.getParameter("time");
-            String livehouseIdStr = request.getParameter("livehouseId");
+            String yearParam = request.getParameter("year");
+            String monthParam = request.getParameter("month");
+            String dayParam = request.getParameter("day");
+            String timeParam = request.getParameter("time");
+            String livehouseIdParam = request.getParameter("livehouseId");
             String livehouseType = request.getParameter("livehouse_type");
-            String userId = request.getParameter("userId");
-            String applicationId = null;
-            
-            System.out.println("[DEBUG] -----------------------------");
-            System.out.println("[DEBUG] --- Request Parameters ---");
-            System.out.println("[DEBUG] year: " + year);
-            System.out.println("[DEBUG] month: " + month);
-            System.out.println("[DEBUG] day: " + day);
-            System.out.println("[DEBUG] time: " + time);
-            System.out.println("[DEBUG] livehouseId: " + livehouseIdStr);  // ✅ 修正
-            System.out.println("[DEBUG] livehouseType: " + livehouseType);
-            System.out.println("[DEBUG] userId: " + userId);
+            String userIdParam = request.getParameter("userId");
 
-            // マルチ予約なら applicationId を取得
-            if ("multi".equalsIgnoreCase(livehouseType)) {
-                applicationId = request.getParameter("applicationId");
-            }
+            // デバッグ: 取得したパラメータの出力
+            debugRequestParams(yearParam, monthParam, dayParam, timeParam, livehouseIdParam, livehouseType, userIdParam);
 
-            // デバッグログ（全パラメータ）
-            debugAllParams(year, month, day, time, livehouseIdStr, livehouseType, userId, applicationId);
-
-            // 必須パラメータの検証
-            if (isNullOrEmpty(year, month, day, time, livehouseIdStr, livehouseType, userId)) {
-                System.err.println("[ERROR] doGet: Missing required parameters.");
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "必要なパラメータが指定されていません。");
+            // 入力チェック（applicationIdは除外）
+            if (isNullOrEmpty(yearParam, monthParam, dayParam, timeParam, livehouseIdParam, livehouseType, userIdParam)) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "必要なパラメータが不足しています。");
                 return;
             }
 
-            // 日時情報の変換（★ここでparseDateTimeを活用）
-            LocalDateTime reservationDateTime = parseDateTime(year, month, day, time);
+            // 型変換とエラーハンドリング
+            int year = Integer.parseInt(yearParam);
+            int month = Integer.parseInt(monthParam);
+            int day = Integer.parseInt(dayParam);
+            int livehouseId = Integer.parseInt(livehouseIdParam);
+            int userId = Integer.parseInt(userIdParam);
+
+            // 日時の変換
+            LocalDateTime reservationDateTime = parseDateTime(year, month, day, timeParam);
             if (reservationDateTime == null) {
-                System.err.println("[ERROR] Invalid datetime format.");
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な日時形式です。");
                 return;
             }
-            System.out.println("[DEBUG] Parsed reservationDateTime: " + reservationDateTime);
-            
-            // livehouseId の数値変換
-            int livehouseId;
-            try {
-                livehouseId = Integer.parseInt(livehouseIdStr);
-            } catch (NumberFormatException e) {
-                System.err.println("[ERROR] Invalid livehouseId format: " + livehouseIdStr);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なライブハウスID形式です。");
-                return;
-            }
 
-            // ライブハウス情報取得
+            // ライブハウス情報の取得
             Livehouse_informationDAO livehouseDAO = new Livehouse_informationDAO(DBManager.getInstance());
             Livehouse_information livehouse = livehouseDAO.getLivehouse_informationById(livehouseId);
             if (livehouse == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "ライブハウス情報が見つかりませんでした。");
                 return;
             }
-            request.setAttribute("livehouse", livehouse);
 
-            // ユーザー情報取得
+            // ユーザー情報の取得
             UserDAO userDAO = new UserDAO(DBManager.getInstance());
-            model.User user = userDAO.getUserById(Integer.parseInt(userId));
-            if (user != null) {
-                request.setAttribute("userName", user.getName());
-                request.setAttribute("telNumber", user.getTel_number());
-            } else {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "指定されたユーザーが見つかりませんでした。");
+            model.User user = userDAO.getUserById(userId);
+            if (user == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "ユーザー情報が見つかりませんでした。");
                 return;
+            }
+
+            // マルチライブ判定の場合のみ applicationId を処理
+            if ("multi".equalsIgnoreCase(livehouseType)) {
+                String applicationIdParam = request.getParameter("applicationId");
+
+                // applicationId の必須チェック
+                if (isNullOrEmpty(applicationIdParam)) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "マルチライブには申請IDが必要です。");
+                    return;
+                }
+
+                int applicationId;
+                try {
+                    applicationId = Integer.parseInt(applicationIdParam);
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "申請IDの形式が正しくありません。");
+                    return;
+                }
+
+                // 申請IDからアーティスト情報を取得
+                Livehouse_applicationDAO applicationDAO = new Livehouse_applicationDAO(DBManager.getInstance());
+                String artistName = applicationDAO.getArtistNameByApplicationId(applicationId);
+                if (artistName != null) {
+                    request.setAttribute("artistName", artistName);
+                } else {
+                    request.setAttribute("errorMessage", "アーティスト情報が見つかりませんでした。");
+                }
+
+                request.setAttribute("applicationId", applicationId);
             }
 
             // リクエストスコープにパラメータを設定
             request.setAttribute("selectedYear", year);
             request.setAttribute("selectedMonth", month);
             request.setAttribute("selectedDay", day);
-            request.setAttribute("selectedTime", time);
-            request.setAttribute("reservationDateTime", reservationDateTime);  // ★追加
+            request.setAttribute("selectedTime", timeParam);
+            request.setAttribute("reservationDateTime", reservationDateTime);
+            request.setAttribute("livehouse", livehouse);
+            request.setAttribute("userName", user.getName());
+            request.setAttribute("telNumber", user.getTel_number());
+            request.setAttribute("livehouseId", livehouseId);
+            request.setAttribute("livehouseType", livehouseType);
             request.setAttribute("userId", userId);
-            request.setAttribute("applicationId", applicationId);
-            request.setAttribute("livehouseId", livehouseId);        // ★ livehouseId を追加
-            request.setAttribute("livehouseType", livehouseType);    // ★ livehouseType を追加
 
             // 確認画面へフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at-booking-confirmation.jsp").forward(request, response);
 
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なパラメータ形式です。");
         } catch (Exception e) {
             System.err.println("[ERROR] doGet: Error occurred: " + e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "サーバーエラーが発生しました。");
         }
     }
 
-
-    // 日時変換
-    private LocalDateTime parseDateTime(String year, String month, String day, String time) {
-        try {
-            String dateTimeStr = year + "-" + String.format("%02d", Integer.parseInt(month)) + "-" +
-                                 String.format("%02d", Integer.parseInt(day)) + " " + time;
-            return LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        } catch (Exception e) {
-            System.err.println("[ERROR] parseDateTime: Invalid format: " + e.getMessage());
-            return null;
-        }
+    // デバッグ用: リクエストパラメータの出力
+    private void debugRequestParams(String year, String month, String day, String time, String livehouseId, String livehouseType, String userId) {
+        System.out.println("[DEBUG] year: " + year);
+        System.out.println("[DEBUG] month: " + month);
+        System.out.println("[DEBUG] day: " + day);
+        System.out.println("[DEBUG] time: " + time);
+        System.out.println("[DEBUG] livehouseId: " + livehouseId);
+        System.out.println("[DEBUG] livehouseType: " + livehouseType);
+        System.out.println("[DEBUG] userId: " + userId);
     }
 
-    // パラメータのデバッグ出力
-    private void debugAllParams(String... params) {
-        String[] paramNames = {"year", "month", "day", "time", "livehouseId", "livehouseType", "userId", "applicationId"};
-        for (int i = 0; i < params.length; i++) {
-            System.out.println("[DEBUG] " + paramNames[i] + ": " + params[i]);
+    // 日時変換メソッド
+    private LocalDateTime parseDateTime(int year, int month, int day, String time) {
+        try {
+            String dateTimeStr = String.format("%04d-%02d-%02d %s", year, month, day, time);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            return LocalDateTime.parse(dateTimeStr, formatter);
+        } catch (Exception e) {
+            System.err.println("[ERROR] parseDateTime: 無効な日時形式です - " + e.getMessage());
+            return null;
         }
     }
 
