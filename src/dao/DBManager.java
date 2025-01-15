@@ -21,47 +21,28 @@ public class DBManager {
     // インスタンスを取得するメソッド
     public static DBManager getInstance() {
         if (instance == null) {
-            System.out.println("[DEBUG] DBManager instance is null. Creating new instance.");
             instance = new DBManager();
         } else {
-            System.out.println("[DEBUG] DBManager instance already exists.");
         }
         return instance;
     }
 
     // データベース接続を取得するメソッド
     public Connection getConnection() throws SQLException {
-        System.out.println("[DEBUG] Attempting to load JDBC Driver...");
-
-        // JDBCドライバを手動で登録
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            System.out.println("[DEBUG] JDBC Driver loaded successfully.");
         } catch (ClassNotFoundException e) {
-            System.err.println("[ERROR] JDBC Driver not found.");
             e.printStackTrace();
             throw new SQLException("JDBC Driver not found.");
         }
 
-        // 接続情報の確認ログ
-        System.out.println("[DEBUG] Attempting to connect to DB...");
-        System.out.println("[DEBUG] URL: " + URL);
-        System.out.println("[DEBUG] USER: " + USER);
-
-        // 接続取得
         try {
             Connection connection = DriverManager.getConnection(URL, USER, PASS);
             if (connection != null) {
-                System.out.println("[DEBUG] DB connection established successfully.");
             } else {
-                System.err.println("[ERROR] DB connection failed. Connection object is null.");
             }
             return connection;
         } catch (SQLException e) {
-            System.err.println("[ERROR] Failed to connect to DB.");
-            System.err.println("[ERROR] SQL State: " + e.getSQLState());
-            System.err.println("[ERROR] Error Code: " + e.getErrorCode());
-            System.err.println("[ERROR] Message: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
@@ -69,20 +50,13 @@ public class DBManager {
 
     // データベースに接続するテストメソッド
     public boolean testConnection() {
-        System.out.println("[DEBUG] Testing DB connection...");
         try (Connection conn = getConnection()) {
             if (conn != null && !conn.isClosed()) {
-                System.out.println("[DEBUG] DB connection test successful.");
                 return true;
             } else {
-                System.err.println("[ERROR] DB connection test failed. Connection is null or closed.");
                 return false;
             }
         } catch (SQLException e) {
-            System.err.println("[ERROR] DB connection test failed.");
-            System.err.println("[ERROR] SQL State: " + e.getSQLState());
-            System.err.println("[ERROR] Error Code: " + e.getErrorCode());
-            System.err.println("[ERROR] Message: " + e.getMessage());
             e.printStackTrace();
             return false;
         }

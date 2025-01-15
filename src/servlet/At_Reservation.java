@@ -13,7 +13,6 @@ import dao.Artist_groupDAO;
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
 import dao.Livehouse_informationDAO;
-import model.Artist_group;
 import model.Livehouse_information;
 
 @WebServlet("/At_Reservation")
@@ -24,7 +23,7 @@ public class At_Reservation extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-    	// DAOの初期化
+        // DAOの初期化
         DBManager dbManager = DBManager.getInstance();
         Livehouse_informationDAO livehouseDAO = new Livehouse_informationDAO(dbManager);
         Artist_groupDAO artistGroupDAO = Artist_groupDAO.getInstance(dbManager);  // 追加
@@ -74,38 +73,23 @@ public class At_Reservation extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "ライブハウス情報が見つかりませんでした。");
                 return;
             }
-            
-            String artistIdParam = request.getParameter("artist_id");  // artist_idをリクエストパラメータから取得
 
-            System.out.println("[DEBUG] artistIdParam: " + artistIdParam);  // パラメータの値をログ出力
-            if (artistIdParam != null) {
-                try {
-                    int artistId = Integer.parseInt(artistIdParam);  // artist_idを整数に変換
-
-                    // artist_id を使って Artist_group を取得
-                    Artist_group artistGroup = artistGroupDAO.getGroupById(artistId);
-
-                    if (artistGroup != null) {
-                        // Artist_group オブジェクトから picture_image_movie を取得
-                        String pictureImageMovie = artistGroup.getPicture_image_movie();
-                        if (pictureImageMovie != null) {
-                            System.out.println("Artist group picture: " + pictureImageMovie);
-                            // 画像URLをリクエストスコープにセット
-                            request.setAttribute("pictureImageMovie", pictureImageMovie);
-                        } else {
-                            System.out.println("No picture found for this artist group.");
-                            request.setAttribute("errorMessage", "アーティストグループの画像が見つかりませんでした。");
-                        }
+            // 申請IDがあれば、artist_group_idを取得して画像情報を取得する
+            if (applicationId != -1) {
+                Integer artistGroupId = applicationDAO.getArtistGroupIdByApplicationId(applicationId);  // applicationIdからartist_group_idを取得
+                if (artistGroupId != null) {
+                    String pictureImageMovie = artistGroupDAO.getPictureImageMovieByArtistGroupId(artistGroupId);  // artist_group_idを使って画像を取得
+                    if (pictureImageMovie != null) {
+                        // 画像が見つかった場合、リクエストスコープに設定
+                        request.setAttribute("pictureImageMovie", pictureImageMovie);
                     } else {
-                        System.out.println("No artist group found with the given artist_id.");
-                        request.setAttribute("errorMessage", "指定されたアーティストグループが見つかりませんでした。");
+                        // 画像が見つからなかった場合
+                        request.setAttribute("errorMessage", "アーティストグループの画像が見つかりませんでした。");
                     }
-                } catch (NumberFormatException e) {
-                    System.err.println("Invalid artist_id format: " + artistIdParam);
-                    request.setAttribute("errorMessage", "無効なアーティストIDです。");
+                } else {
+                    // artist_group_idが見つからなかった場合
+                    request.setAttribute("errorMessage", "アーティストグループが見つかりませんでした。");
                 }
-            } else {
-                System.out.println("[DEBUG] artistIdParam is null or empty");
             }
 
             // マルチライブの場合の処理
