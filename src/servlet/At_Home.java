@@ -72,7 +72,6 @@ public class At_Home extends HttpServlet {
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "データベースエラー");
-            
         }
     }
 
@@ -83,6 +82,14 @@ public class At_Home extends HttpServlet {
         }
 
         String action = request.getParameter("action");
+
+        // ログアウト処理の追加
+        if ("logout".equals(action)) {
+            logout(request.getSession());  // ログアウト実行
+            response.sendRedirect(request.getContextPath() + "/Top");  // ログアウト後にトップページへリダイレクト
+            return;
+        }
+
         String redirectPath = switch (action) {
             case "solo" -> "/At_livehouse_search?livehouse_type=solo";
             case "multi" -> "/At_Cogig?livehouse_type=multi";
@@ -92,6 +99,25 @@ public class At_Home extends HttpServlet {
         response.sendRedirect(request.getContextPath() + redirectPath);
     }
 
+    private void logout(HttpSession session) {
+        if (isLoggedIn(session)) {
+            // ログアウト前のログ
+            Integer userId = (Integer) session.getAttribute("userId");
+            System.out.println("Logging out user with ID: " + userId + ". Session ID: " + session.getId());
+
+            // ユーザーIDをセッションから削除し、セッション無効化
+            session.removeAttribute("userId");
+            session.invalidate();
+
+            // ログアウト後のログ
+            System.out.println("User with ID: " + userId + " logged out successfully. Session invalidated.");
+        } else {
+            // ログインしていない場合のログ
+            System.out.println("No user is currently logged in.");
+        }
+    }
+
+
     private boolean isLoggedIn(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
@@ -99,5 +125,9 @@ public class At_Home extends HttpServlet {
             return false;
         }
         return true;
+    }
+
+    private boolean isLoggedIn(HttpSession session) {
+        return session != null && session.getAttribute("userId") != null;
     }
 }
