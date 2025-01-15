@@ -99,7 +99,7 @@
 	    <div class="Applicationgroup">
 	    	<div class="Applicationtable">
 	    	<c:if test="${not empty artist.picture_image_movie}">
-	        	<img src="${pageContext.request.contextPath}${artist.picture_image_movie}" alt="バンドのイラスト" class="band-image">
+	        	<img src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" alt="バンドのイラスト" class="band-image">
 	        </c:if>
 		        <div class="artist-info">
 	            	<p class="artist-name">${artistName}</p>
