@@ -143,8 +143,23 @@ public class Artist_groupDAO {
         return null;
     }
 
-    
-
+    public String getPictureImageMovieByArtistGroupId(int artistGroupId) {
+        String sql = "SELECT picture_image_movie FROM artist_group WHERE id = ?";
+        
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, artistGroupId);
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getString("picture_image_movie");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return null; // 見つからない場合は null を返す
+    }
 
     // user_id に紐づくアーティストグループを取得するメソッド
     public Artist_group getGroupByUserId(int userId) {
