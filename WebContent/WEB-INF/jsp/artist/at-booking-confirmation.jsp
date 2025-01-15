@@ -123,8 +123,10 @@
 		    <c:if test="${livehouseType eq 'multi'}">
 		        <input type="hidden" name="applicationId" value="${applicationId}">
 		    </c:if>
+		    <div class="at-booking-confirm-cmp-div">
+		    	<button type="submit" class="at-booking-confirm-compleat-btn">予約を確定する</button>
+		    </div>
 		    
-		    <button type="submit" class="btn">予約を確定する</button>
 		</form>
     </main>
 </body>

@@ -39,12 +39,14 @@
 
 
     <div class="artist-livehouse-detail-section3">
-    	<ul>
+    	<ul class="artist-livehouse-detail-section3-ul1">
     		<li>予約情報</li>
     		
     	</ul>
-    	<ul>
-    		<li>予約時間</li>
+    	<ul class="artist-livehouse-detail-section3-ul2">
+    		<li>予約時間</li>    		
+    	</ul>
+    	<ul class="artist-livehouse-detail-section3-ul3">
     		<li>${selectedYear}年${selectedMonth}月${selectedDay}日 ${selectedTime}</li>
     	</ul>
         <div class="A-t-detail-livehousename">
@@ -64,7 +66,10 @@
             </div>
         </div>
     </div>
-        <a href="<%= request.getContextPath() %>/At_Home" class="Return-to-home">ホームに戻る</a>
+    <div class="at-livehouse-reservation-cmp-backhome-btn">
+    	<a href="<%= request.getContextPath() %>/At_Home" class="at-livehouse-reservation-cmp-Return-to-home">ホームに戻る</a>
+    </div>
+        
         
         <script>
         function previewImage() {
