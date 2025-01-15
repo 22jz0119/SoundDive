@@ -39,8 +39,9 @@ public class AuthLogic {
 
     public void logout(HttpSession session) {
         if (isLoggedIn(session)) {
-            System.out.println("Logging out user.");
+            System.out.println("Logging out user. Session ID: " + session.getId());
             session.removeAttribute("loginUser");
+            System.out.println("User logged out successfully. Session ID: " + session.getId());
         } else {
             System.out.println("No user is currently logged in.");
         }

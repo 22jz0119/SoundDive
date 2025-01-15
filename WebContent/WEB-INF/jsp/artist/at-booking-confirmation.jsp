@@ -22,6 +22,9 @@
                     <li><a href="<%= request.getContextPath() %>/At_Mypage">MY PAGE</a></li>
                     <li><a href="">000</a></li>
                     <li><a href="">000</a></li>
+                    <li>
+					    <a href="#" onclick="logoutAndRedirect();">ログアウト</a>
+					</li>
                 </ul>
             </nav>
         </div>
@@ -57,30 +60,32 @@
                 </ul>
             </div>
             <div>
+            <c:if test="${livehouseType eq 'multi'}">
                 <h2>予約アーティスト</h2>
-            <div class="a-t-booking-gourp-main">
-                <div class="a-t-booking-group-containar">
-                    <ul class="a-t-booking-group-frame">
-                        <li><img src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" id="a-t-booking-group-img" alt="Profile Image" />
-                    </ul>
-                    <ul class="a-t-booking-group-frame">
-                        <li class="a-t-booking-group-li1"><p>アーティスト名</p></li>
-                        <li class="a-t-booking-group-li2"><p>${account_Name}</p></li>
-                    </ul>
-                    <ul class="a-t-booking-group-frame">
-                        <li class="a-t-booking-group-li1"><p>バンド歴</p></li>
-                        <li class="a-t-booking-group-li2"><p>${artistGroup.band_years}</p></li>
-                    </ul>
-                    <ul class="a-t-booking-group-frame">
-                        <li class="a-t-booking-group-li1"><p>評価</p></li>
-                        <li class="a-t-booking-group-li2"><p>${artistGroup.rating_star}</p></li>
-                    </ul>
-                    <ul class="a-t-booking-group-frame">
-                        <li class="a-t-booking-group-li1"><p>ジャンル</p></li>
-                        <li class="a-t-booking-group-li2"><p>${artistGroup.group_genre}</p></li>
-                    </ul>
-                </div>
-            </div>
+	            <div class="a-t-booking-gourp-main">
+	                <div class="a-t-booking-group-containar">
+	                    <ul class="a-t-booking-group-frame">
+	                        <li><img src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" id="a-t-booking-group-img" alt="Profile Image" />
+	                    </ul>
+	                    <ul class="a-t-booking-group-frame">
+	                        <li class="a-t-booking-group-li1"><p>アーティスト名</p></li>
+	                        <li class="a-t-booking-group-li2"><p>${account_Name}</p></li>
+	                    </ul>
+	                    <ul class="a-t-booking-group-frame">
+	                        <li class="a-t-booking-group-li1"><p>バンド歴</p></li>
+	                        <li class="a-t-booking-group-li2"><p>${artistGroup.band_years}</p></li>
+	                    </ul>
+	                    <ul class="a-t-booking-group-frame">
+	                        <li class="a-t-booking-group-li1"><p>評価</p></li>
+	                        <li class="a-t-booking-group-li2"><p>${artistGroup.rating_star}</p></li>
+	                    </ul>
+	                    <ul class="a-t-booking-group-frame">
+	                        <li class="a-t-booking-group-li1"><p>ジャンル</p></li>
+	                        <li class="a-t-booking-group-li2"><p>${artistGroup.group_genre}</p></li>
+	                    </ul>
+	                </div>
+            	</div>
+            </c:if>
 
             <h2 class="a-t-booking-place-title">予約場所</h2>
             <div class="a-t-booking-place-main-div">
@@ -129,5 +134,25 @@
 		    
 		</form>
     </main>
+    
+    <script>
+	    function logoutAndRedirect() {
+	        // フォームを送信してログアウト処理を実行
+	        var form = document.createElement("form");
+	        form.method = "post";
+	        form.action = "<%= request.getContextPath() %>/At_Home";
+	        
+	        // 隠しフィールドにaction=logoutをセット
+	        var input = document.createElement("input");
+	        input.type = "hidden";
+	        input.name = "action";
+	        input.value = "logout";
+	        form.appendChild(input);
+	        
+	        // フォームを送信
+	        document.body.appendChild(form);
+	        form.submit();
+	    }
+	</script>
 </body>
 </html>

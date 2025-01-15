@@ -38,16 +38,19 @@ public class Livehouse_home extends HttpServlet {
 
         String yearParam = request.getParameter("year");
         String monthParam = request.getParameter("month");
+        String dayParam = request.getParameter("day");  // 追加: dayパラメータを取得
 
-        log("[DEBUG] Received parameters - year: " + yearParam + ", month: " + monthParam);
+        log("[DEBUG] Received parameters - year: " + yearParam + ", month: " + monthParam + ", day: " + dayParam);
 
         try {
             // 年と月のデフォルト値を現在の日付から設定
             int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam) : LocalDate.now().getYear();
             int month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam) : LocalDate.now().getMonthValue();
 
-            log("[DEBUG] Parsed year: " + year);
-            log("[DEBUG] Parsed month: " + month);
+            // 日付が指定されていれば、それを取得
+            int day = (dayParam != null && !dayParam.isEmpty()) ? Integer.parseInt(dayParam) : -1;
+
+            log("[DEBUG] Parsed year: " + year + ", month: " + month + ", day: " + day);
 
             // 月の値が有効範囲かチェック
             if (month < 1 || month > 12) {
@@ -55,8 +58,8 @@ public class Livehouse_home extends HttpServlet {
             }
 
             // DAOメソッドの呼び出し (正しいメソッドを使用)
-            log("[DEBUG] Calling DAO method: getReservationCountsByWeekday with year: " + year + ", month: " + month);
-            Map<String, Integer> reservationCounts = dao.getReservationCountsByWeekday(year, month);
+            log("[DEBUG] Calling DAO method: getReservationCountsByDay with year: " + year + ", month: " + month);
+            Map<String, Integer> reservationCounts = dao.getReservationCountsByDay(year, month);
 
             if (reservationCounts == null) {
                 log("[DEBUG] DAO returned null for reservationCounts.");
@@ -66,13 +69,24 @@ public class Livehouse_home extends HttpServlet {
                 log("[DEBUG] DAO returned reservationCounts: " + reservationCounts);
             }
 
-            // ✅ JSON形式に変換してJSPに渡す
+            // JSON形式に変換してJSPに渡す
             String reservationStatusJson = new Gson().toJson(reservationCounts);
             request.setAttribute("reservationStatus", reservationStatusJson);
 
             // JSPに渡すデータをリクエストスコープに設定
             request.setAttribute("year", year);
             request.setAttribute("month", month);
+            request.setAttribute("day", day); // 日付も渡す
+
+         // 日付が指定されていれば、Application_listにリダイレクト
+            if (day != -1) {
+                // Application_listにリダイレクトするURLを構築
+                String redirectUrl = String.format("/Application_list?year=%d&month=%d&day=%d", year, month, day);
+                log("[DEBUG] Redirecting to: " + redirectUrl);
+                response.sendRedirect(request.getContextPath() + redirectUrl);
+                return; // ここでリダイレクトするので、後続の処理は実行しない
+            }
+
 
             // JSPにフォワード
             request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
