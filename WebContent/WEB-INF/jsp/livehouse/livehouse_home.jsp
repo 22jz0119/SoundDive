@@ -16,7 +16,7 @@
 			<nav class="header-nav">
 				<ul class="header-nav-ul">
 					<li><a href="<%= request.getContextPath() %>/Livehouse_mypage">MY PAGE</a></li>
-					<li><a href="#">リンク1</a></li>
+					<li><a href="<%= request.getContextPath() %>/Approval_history">承認履歴</a></li>
 					<li><a href="#">リンク2</a></li>
 				</ul>
 			</nav>
@@ -27,23 +27,27 @@
         <section class="artist-livehouse-detail-section">
             <!-- ライブハウス情報を表示 -->
         </section>
-
-        <!-- カレンダーと空き状況 -->
-        <section class="calendar-section">
+        
+        
+        
+        
+        
+        <section class="application-list-count">
+		<div class="main-application_list">
+			<h2 class="application_list_h2">アーティスト申請カレンダートップ</h2>
+		</div>
+		<section class="calendar-section">
             <div>
+            <!-- 
                 <h2 class="OpenSpots-Reserve">アーティストからのライブハウス予約申請カレンダー</h2>
-                <p class="OpenSpots-Reserve-detile">件数表示されている日にちを選択して、申請情報の可否へ進んでください</p>
-                <p class="Notes-or-Cautions">※申請データなし×</p>
+             -->
+                <p class="OpenSpots-Reserve-detile">緑の日にちを選択して、申請情報の可否へ進んでください</p>
+                <p class="Notes-or-Cautions">※申請データなし 青</p>
                     
             </div>
             <div id="calendar-container"></div>
         </section>
-    </main>
-
-	<section class="application-list-count">
-		<div class="main-application_list">
-			<h2 class="application_list_h2">アーティスト申請カレンダートップ</h2>
-		</div>
+		
 		<div class="reservation-date">
 			<p class="application-date">日付 ${year}/${month}/${day}</p>
 			<p class="application-number">件数 ${reservationCount}件</p>
@@ -58,7 +62,11 @@
 
 	<div class="live-home-calendar-div">
 		<div id="calendar"></div>
-	</div>
+	</div>    
+
+    </main>
+
+	
 	
 	<!-- 必要なデータをスクリプト内に渡す -->
      <script>
