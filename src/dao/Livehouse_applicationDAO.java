@@ -523,40 +523,61 @@ public class Livehouse_applicationDAO {
     }
     
  // 承認済み（true_false = 1）のデータのみを取得するメソッド
-
- // Livehouse_applicationDAO.java
-
-    public Map<String, Integer> getApprovedReservationCounts(int year, int month, int userId) {
-        String sql = "SELECT la.livehouse_information_id, DAY(la.date_time) AS day, COUNT(*) AS count " +
+    public List<LivehouseApplicationWithGroup> getApprovedReservations(int year, int month, int day) {
+        // SQL: 承認済みのデータ（true_false = 1）を取得
+        String sql = "SELECT DISTINCT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
+                     "la.livehouse_information_id, la.user_id, la.artist_group_id, la.cogig_or_solo, " +
+                     "ag.account_name, ag.group_genre, ag.band_years, u.us_name " +
                      "FROM livehouse_application_table la " +
-                     "JOIN livehouse_information li ON la.livehouse_information_id = li.id " +
-                     "WHERE YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND li.user_id = ? AND la.true_false = 1 " +
-                     "GROUP BY la.livehouse_information_id, day " +
-                     "ORDER BY day";
+                     "LEFT JOIN artist_group ag ON la.artist_group_id = ag.id " +
+                     "LEFT JOIN user u ON la.user_id = u.id " +
+                     "WHERE la.true_false = 1 AND YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND DAY(la.date_time) = ?";  // 承認済み（true_false = 1）
 
-        Map<String, Integer> result = new LinkedHashMap<>();
+        List<LivehouseApplicationWithGroup> approvedReservations = new ArrayList<>();
 
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+            // パラメータの設定
             pstmt.setInt(1, year);
             pstmt.setInt(2, month);
-            pstmt.setInt(3, userId);
+            pstmt.setInt(3, day);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    String day = String.valueOf(rs.getInt("day"));
-                    int count = rs.getInt("count");
-                    result.put(day, count);
-                    System.out.println("[DEBUG] Retrieved - day: " + day + ", count: " + count);
+                    // artist_group_id からメンバー情報を取得
+                    int groupId = rs.getInt("artist_group_id");
+                    List<Member> members = getMembersByGroupId(groupId);
+
+                    // 承認済みの予約データをオブジェクトに格納
+                    approvedReservations.add(new LivehouseApplicationWithGroup(
+                        rs.getInt("application_id"),
+                        rs.getInt("application_id"),
+                        rs.getTimestamp("date_time") != null ? rs.getTimestamp("date_time").toLocalDateTime() : null,
+                        rs.getBoolean("true_false"),
+                        rs.getTimestamp("start_time") != null ? rs.getTimestamp("start_time").toLocalDateTime() : null,
+                        rs.getTimestamp("finish_time") != null ? rs.getTimestamp("finish_time").toLocalDateTime() : null,
+                        groupId,
+                        rs.getString("account_name") != null ? rs.getString("account_name") : "",
+                        rs.getString("group_genre") != null ? rs.getString("group_genre") : "",
+                        rs.getString("band_years") != null ? rs.getString("band_years") : "",
+                        rs.getInt("user_id"),
+                        rs.getString("us_name") != null ? rs.getString("us_name") : "",
+                        members
+                    ));
+                    
+                    // デバッグ出力
+                    System.out.println("[DEBUG] 承認済み予約データ取得: " + rs.getInt("application_id") + " - " + rs.getString("account_name"));
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return result;
+        return approvedReservations;
     }
+
+
 
  // ユーザーIDからus_nameを取得するメソッド
     public String getUserNameByUserId(int userId) {
