@@ -73,22 +73,29 @@ public class At_Reservation extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "ライブハウス情報が見つかりませんでした。");
                 return;
             }
-
-            // 申請IDがあれば、artist_group_idを取得して画像情報を取得する
+            
+         // 申請IDがあれば、artist_group_idを取得して画像情報を取得する
             if (applicationId != -1) {
                 Integer artistGroupId = applicationDAO.getArtistGroupIdByApplicationId(applicationId);  // applicationIdからartist_group_idを取得
+                System.out.println("[DEBUG] 取得したartistGroupId: " + artistGroupId);
+
                 if (artistGroupId != null) {
                     String pictureImageMovie = artistGroupDAO.getPictureImageMovieByArtistGroupId(artistGroupId);  // artist_group_idを使って画像を取得
-                    if (pictureImageMovie != null) {
-                        // 画像が見つかった場合、リクエストスコープに設定
+                    System.out.println("[DEBUG] 取得したpictureImageMovie: " + pictureImageMovie);
+
+                    if (pictureImageMovie != null && !pictureImageMovie.isEmpty()) {
+                        // ❌ request.getContextPath()は付与しない
                         request.setAttribute("pictureImageMovie", pictureImageMovie);
+                        System.out.println("[DEBUG] 修正後の画像パス（contextPathなし）: " + pictureImageMovie);
                     } else {
-                        // 画像が見つからなかった場合
-                        request.setAttribute("errorMessage", "アーティストグループの画像が見つかりませんでした。");
+                        // デフォルト画像もcontextPathなしで設定
+                        String defaultImagePath = "/assets/img/default-band.png";
+                        request.setAttribute("pictureImageMovie", defaultImagePath);
+                        System.out.println("[DEBUG] デフォルト画像が設定されました: " + defaultImagePath);
                     }
                 } else {
-                    // artist_group_idが見つからなかった場合
                     request.setAttribute("errorMessage", "アーティストグループが見つかりませんでした。");
+                    System.out.println("[ERROR] artist_group_idが見つかりませんでした。applicationId: " + applicationId);
                 }
             }
 
