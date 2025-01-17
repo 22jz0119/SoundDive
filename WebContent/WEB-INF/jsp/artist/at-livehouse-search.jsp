@@ -33,14 +33,14 @@
                 <h2 class="livehouse-search-title-h2">ライブハウス検索画面</h2>
             </div>
             <div class="livehouse-search-form">
-                <form action="At-livehouse_search" method="post">
+                <form action="At_livehouse_search" method="post">
                     <div class="livehouse-search-box">
                         <input type="search" id="livehouse-search-textbox" name="q">
                     </div>
                     <div class="livehouse-search-button">
                         <button type="submit" class="livehouse-search-btn">検索</button>
                     </div>
-                </form>               
+                </form>
             </div>
         </section>
 
