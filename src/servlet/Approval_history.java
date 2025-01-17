@@ -1,7 +1,7 @@
 package servlet;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
+import model.LivehouseApplicationWithGroup;
 
 /**
  * Servlet implementation class Approval_history
@@ -18,8 +19,6 @@ import dao.Livehouse_applicationDAO;
 @WebServlet("/Approval_history")
 public class Approval_history extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
- // Approval_history.java
 
  // Approval_history.java
 
@@ -40,11 +39,15 @@ public class Approval_history extends HttpServlet {
             return;
         }
 
-        // 承認済みの予約データを取得
-        Map<String, Integer> approvedReservations = livehouseApplicationDAO.getApprovedReservationCounts(year, month, userId);
+        // List<LivehouseApplicationWithGroup>型に変更
+        List<LivehouseApplicationWithGroup> approvedReservations = livehouseApplicationDAO.getApprovedReservations(year, month, userId);
 
         if (approvedReservations != null && !approvedReservations.isEmpty()) {
             System.out.println("[DEBUG] 承認済みの予約データ件数: " + approvedReservations.size());
+
+            for (LivehouseApplicationWithGroup app : approvedReservations) {
+                System.out.println("[DEBUG] 予約: " + app.getAccountName() + " | ジャンル: " + app.getGroupGenre());
+            }
         } else {
             System.out.println("[DEBUG] 承認済みの予約データが存在しません。");
         }
@@ -53,11 +56,24 @@ public class Approval_history extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/approval_history.jsp").forward(request, response);
     }
 
-    
-
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
+        String applicationIdStr = request.getParameter("applicationId");
+
+        if (applicationIdStr != null && !applicationIdStr.isEmpty()) {
+            int applicationId = Integer.parseInt(applicationIdStr);
+
+            Livehouse_applicationDAO dao = new Livehouse_applicationDAO(DBManager.getInstance());
+            boolean isDeleted = dao.deleteReservationById(applicationId);
+
+            if (isDeleted) {
+                System.out.println("[DEBUG] 予約ID " + applicationId + " を削除しました。");
+            } else {
+                System.out.println("[ERROR] 予約ID " + applicationId + " の削除に失敗しました。");
+            }
+        }
+
+        // 削除後に承認履歴ページにリダイレクト
+        response.sendRedirect(request.getContextPath() + "/Approval_history");
     }
 }
