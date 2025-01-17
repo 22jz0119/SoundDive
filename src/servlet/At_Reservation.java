@@ -91,6 +91,7 @@ public class At_Reservation extends HttpServlet {
                     request.setAttribute("errorMessage", "アーティストグループが見つかりませんでした。");
                 }
             }
+            
 
             // マルチライブの場合の処理
             if ("multi".equalsIgnoreCase(livehouseType) && applicationId != -1) {
