@@ -143,7 +143,35 @@ public class Artist_groupDAO {
         return null;
     }
 
-    
+    public String getPictureImageMovieByArtistGroupId(int artistGroupId) {
+        String sql = "SELECT picture_image_movie FROM artist_group WHERE id = ?";
+        
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            // SQLの実行前にログを出力
+            System.out.println("[DEBUG] Executing SQL: " + sql + " with artistGroupId = " + artistGroupId);
+            
+            pstmt.setInt(1, artistGroupId);
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                String pictureImageMovie = rs.getString("picture_image_movie");
+                // 結果が見つかった場合のログ出力
+                System.out.println("[DEBUG] Found picture_image_movie: " + pictureImageMovie);
+                return pictureImageMovie;
+            } else {
+                // 結果が見つからない場合のログ出力
+                System.out.println("[DEBUG] No picture_image_movie found for artistGroupId: " + artistGroupId);
+            }
+        } catch (SQLException e) {
+            // SQLException発生時のログ出力
+            System.err.println("[ERROR] SQLException occurred while getting picture_image_movie for artistGroupId: " + artistGroupId);
+            e.printStackTrace();
+        }
+        
+        return null; // 見つからない場合は null を返す
+    }
 
 
     // user_id に紐づくアーティストグループを取得するメソッド

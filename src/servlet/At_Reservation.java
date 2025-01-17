@@ -26,7 +26,7 @@ public class At_Reservation extends HttpServlet {
         // DAOの初期化
         DBManager dbManager = DBManager.getInstance();
         Livehouse_informationDAO livehouseDAO = new Livehouse_informationDAO(dbManager);
-        Artist_groupDAO artistGroupDAO = Artist_groupDAO.getInstance(dbManager);
+        Artist_groupDAO artistGroupDAO = Artist_groupDAO.getInstance(dbManager);  // 追加
         Livehouse_applicationDAO applicationDAO = new Livehouse_applicationDAO(dbManager);
 
         try {
@@ -72,6 +72,24 @@ public class At_Reservation extends HttpServlet {
             if (livehouse == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "ライブハウス情報が見つかりませんでした。");
                 return;
+            }
+
+            // 申請IDがあれば、artist_group_idを取得して画像情報を取得する
+            if (applicationId != -1) {
+                Integer artistGroupId = applicationDAO.getArtistGroupIdByApplicationId(applicationId);  // applicationIdからartist_group_idを取得
+                if (artistGroupId != null) {
+                    String pictureImageMovie = artistGroupDAO.getPictureImageMovieByArtistGroupId(artistGroupId);  // artist_group_idを使って画像を取得
+                    if (pictureImageMovie != null) {
+                        // 画像が見つかった場合、リクエストスコープに設定
+                        request.setAttribute("pictureImageMovie", pictureImageMovie);
+                    } else {
+                        // 画像が見つからなかった場合
+                        request.setAttribute("errorMessage", "アーティストグループの画像が見つかりませんでした。");
+                    }
+                } else {
+                    // artist_group_idが見つからなかった場合
+                    request.setAttribute("errorMessage", "アーティストグループが見つかりませんでした。");
+                }
             }
 
             // マルチライブの場合の処理

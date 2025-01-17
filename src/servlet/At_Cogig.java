@@ -151,7 +151,7 @@ public class At_Cogig extends HttpServlet {
                 try {
                     int artistId = Integer.parseInt(applicationIdParam); // 申請先のアーティストID
                     System.out.println("[DEBUG] Parsed artistId: " + artistId);
-
+                    
                     // ログイン中のユーザーIDをセッションから取得
                     Integer userId = (Integer) request.getSession().getAttribute("userId");
                     System.out.println("[DEBUG] Logged-in userId: " + userId);
@@ -172,6 +172,9 @@ public class At_Cogig extends HttpServlet {
                             2,                       // cogigOrSolo: 固定値
                             artist.getId()           // artist_group_id（申請先のアーティストID）
                         );
+                        
+                     // リクエストスコープに artistId を設定
+                        request.setAttribute("artistId", artistId);  // リクエストスコープに設定
 
                         if (applicationId > 0) {
                             System.out.println("[DEBUG] Created livehouse application with ID: " + applicationId);

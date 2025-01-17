@@ -25,7 +25,6 @@ public class At_livehouse_search extends HttpServlet {
         livehouseInformationDAO = new Livehouse_informationDAO(dbManager);
     }
 
-    // GETメソッド（ライブハウス情報の取得）
  // GETメソッド（ライブハウス情報の取得）
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -35,6 +34,16 @@ public class At_livehouse_search extends HttpServlet {
             String applicationIdParam = request.getParameter("applicationId");
             Integer userId = null;
             Integer applicationId = null;
+            
+         // サーブレット内で artistId を取得
+            Integer artistId = (Integer) request.getAttribute("artistId");
+
+            if (artistId != null) {
+                System.out.println("Artist ID from request: " + artistId);
+            } else {
+                System.out.println("Artist ID not found in request.");
+            }
+
 
             // パラメータのデバッグ
             System.out.println("[DEBUG] Received userIdParam: " + userIdParam);
