@@ -49,7 +49,6 @@
 		    <input type="file" id="fileInput" name="picture_image_movie" accept="image/*" style="display: none;" onchange="previewImage()">
 		</div>
 
-
         <!-- バンド名入力 -->
         <div class="form-group-1">
             <c:choose>
