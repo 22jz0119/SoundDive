@@ -22,10 +22,6 @@ public class Approval_history extends HttpServlet {
 
  // Approval_history.java
 
- // Approval_history.java
-
- // Approval_history.java
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         DBManager dbManager = DBManager.getInstance();
@@ -60,5 +56,24 @@ public class Approval_history extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/approval_history.jsp").forward(request, response);
     }
 
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String applicationIdStr = request.getParameter("applicationId");
 
+        if (applicationIdStr != null && !applicationIdStr.isEmpty()) {
+            int applicationId = Integer.parseInt(applicationIdStr);
+
+            Livehouse_applicationDAO dao = new Livehouse_applicationDAO(DBManager.getInstance());
+            boolean isDeleted = dao.deleteReservationById(applicationId);
+
+            if (isDeleted) {
+                System.out.println("[DEBUG] 予約ID " + applicationId + " を削除しました。");
+            } else {
+                System.out.println("[ERROR] 予約ID " + applicationId + " の削除に失敗しました。");
+            }
+        }
+
+        // 削除後に承認履歴ページにリダイレクト
+        response.sendRedirect(request.getContextPath() + "/Approval_history");
+    }
 }

@@ -71,11 +71,21 @@
                             </ul>
                             <ul class="application-artist-list-ul5">
                                 <li>
-                                    <a href="<c:url value='/Application_confirmation' />?id=${application.id}" class="application-artist-list-ul5-li1-a">
+                                    <a href="<c:url value='/Application_approval' />?id=${application.id}" class="application-artist-list-ul5-li1-a">
                                         詳細を見る
                                     </a>
-                                </li>
+                                </li>                              
                             </ul>
+                            <!-- 削除ボタン追加 -->
+							<ul class="application-artist-list-ul5">
+							    <li>
+							        <form action="${pageContext.request.contextPath}/Approval_history" method="post" onsubmit="return confirm('本当に削除しますか？');">
+							            <input type="hidden" name="applicationId" value="${application.id}">
+							            <button type="submit" class="delete-button">削除する</button>
+							        </form>
+							    </li>
+							</ul>
+                            
                         </div>
                     </div>
                 </c:forEach>

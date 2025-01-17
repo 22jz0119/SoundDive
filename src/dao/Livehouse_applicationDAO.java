@@ -522,6 +522,26 @@ public class Livehouse_applicationDAO {
         return reservations;
     }
     
+    //履歴削除ボタン
+    public boolean deleteReservationById(int applicationId) {
+        String sql = "DELETE FROM livehouse_application_table WHERE id = ?";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, applicationId);
+
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    
  // 承認済み（true_false = 1）のデータのみを取得するメソッド
     public List<LivehouseApplicationWithGroup> getApprovedReservations(int year, int month, int day) {
         // SQL: 承認済みのデータ（true_false = 1）を取得
