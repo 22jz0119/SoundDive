@@ -90,9 +90,10 @@ public class At_Mypage extends HttpServlet {
                 try {
                     deletedMemberIdList.add(Integer.parseInt(id));
                 } catch (NumberFormatException e) {
-                    System.err.println("[Error] 無効な削除ID: " + id);
+                    System.err.println("[ERROR] 無効な削除ID: " + id);
                 }
             }
+            System.out.println("[DEBUG] 削除予定メンバーID: " + deletedMemberIdList);
         }
 
         // 新規メンバーの処理
@@ -104,6 +105,7 @@ public class At_Mypage extends HttpServlet {
             for (int i = 0; i < memberNames.length; i++) {
                 newMembers.add(new Member(0, 0, memberNames[i], memberRoles[i]));
             }
+            System.out.println("[DEBUG] 追加予定メンバー: " + newMembers);
         }
 
         // バンド情報の更新
@@ -122,6 +124,10 @@ public class At_Mypage extends HttpServlet {
             }
         }
 
+        System.out.println("[DEBUG] 更新するバンド名: " + accountName);
+        System.out.println("[DEBUG] 更新するジャンル: " + groupGenre);
+        System.out.println("[DEBUG] 更新するバンド歴: " + bandYears);
+
         // 画像処理
         Part profileImagePart = request.getPart("picture_image_movie");
         String pictureImagePath = null;
@@ -139,6 +145,7 @@ public class At_Mypage extends HttpServlet {
 
             try (InputStream inputStream = profileImagePart.getInputStream()) {
                 java.nio.file.Files.copy(inputStream, java.nio.file.Paths.get(uploadDir + File.separator + fileName));
+                System.out.println("[DEBUG] アップロードされた画像のパス: " + pictureImagePath);
             } catch (IOException e) {
                 request.setAttribute("errorMessage", "画像アップロード中にエラーが発生しました。");
                 request.getRequestDispatcher("/WEB-INF/jsp/artist/at_mypage.jsp").forward(request, response);
@@ -146,13 +153,14 @@ public class At_Mypage extends HttpServlet {
             }
         }
 
+        // データベースへの接続とトランザクション処理
         try (Connection conn = DBManager.getInstance().getConnection()) {
             conn.setAutoCommit(false);
 
             Artist_group existingGroup = artistGroupDAO.getGroupByUserId(userId);
 
             if (existingGroup != null) {
-                // バンド情報の更新
+                // === 既存グループの更新処理 ===
                 existingGroup.setAccount_name(accountName);
                 if (pictureImagePath != null) {
                     existingGroup.setPicture_image_movie(pictureImagePath);
@@ -160,25 +168,58 @@ public class At_Mypage extends HttpServlet {
                 existingGroup.setGroup_genre(groupGenre);
                 existingGroup.setBand_years(bandYears);
                 existingGroup.setUpdate_date(LocalDate.now());
-                
+
                 boolean isUpdated = artistGroupDAO.updateArtistGroupByUserId(userId, existingGroup);
                 if (!isUpdated) {
                     conn.rollback();
+                    System.err.println("[ERROR] バンド情報の更新に失敗しました。");
                     request.setAttribute("errorMessage", "プロフィール更新中にエラーが発生しました。");
                     return;
                 }
 
-                // サービス層の利用
+                System.out.println("[DEBUG] バンド情報が正常に更新されました: " + existingGroup);
+
+                // メンバー情報の更新
                 MemberService memberService = new MemberService(Member_tableDAO.getInstance(DBManager.getInstance()));
                 memberService.manageMembers(conn, existingGroup.getId(), deletedMemberIdList, newMembers);
 
                 conn.commit();
+                System.out.println("[DEBUG] メンバー情報が正常に更新されました。");
                 request.setAttribute("successMessage", "プロフィールが正常に更新されました。");
+
+            } else {
+                // === 新規グループの作成処理 ===
+                System.out.println("[DEBUG] 新規グループ作成処理を開始します (userId: " + userId + ")");
+
+                Artist_group newGroup = new Artist_group();
+                newGroup.setUser_id(userId);
+                newGroup.setAccount_name(accountName);
+                newGroup.setGroup_genre(groupGenre);
+                newGroup.setBand_years(bandYears);
+                newGroup.setCreate_date(LocalDate.now());
+                newGroup.setUpdate_date(LocalDate.now());
+                newGroup.setPicture_image_movie(pictureImagePath != null ? pictureImagePath : "");
+
+                int newGroupId = artistGroupDAO.createAndReturnId(newGroup, newMembers);
+
+                if (newGroupId > 0) {
+                    conn.commit();
+                    System.out.println("[DEBUG] 新規グループが作成されました (groupId: " + newGroupId + ")");
+                    request.setAttribute("successMessage", "新規グループが作成されました。");
+                } else {
+                    conn.rollback();
+                    System.err.println("[ERROR] 新規グループ作成に失敗しました。");
+                    request.setAttribute("errorMessage", "新規グループ作成中にエラーが発生しました。");
+                }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "サーバーでエラーが発生しました。もう一度お試しください。");
         }
+
+        // 更新後にマイページを再表示
         doGet(request, response);
     }
+
 }

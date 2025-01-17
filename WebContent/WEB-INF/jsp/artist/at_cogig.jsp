@@ -116,7 +116,6 @@
 		        nextPageUrl += "?livehouse_type=" + livehouseType;
 		    }
 		%>
-<a href="<%= nextPageUrl %>" class="co-gig-btn">次へ</a>
     </div>
     
     <script>

@@ -86,15 +86,28 @@
             </c:forEach>
         </div>
         <button type="button" onclick="addMember()">メンバーを追加</button>
+        
+        <!-- ジャンル入力 -->
+		<div class="form-group-genre">
+		    <label for="group-genre">ジャンル:</label>
+		    <c:choose>
+		        <c:when test="${not empty userGroup}">
+		            <input type="text" id="group-genre" name="group_genre" placeholder="ジャンルを入力" value="${userGroup.group_genre}" required>
+		        </c:when>
+		        <c:otherwise>
+		            <input type="text" id="group-genre" name="group_genre" placeholder="ジャンルを入力" required>
+		        </c:otherwise>
+		    </c:choose>
+		</div>
 
         <!-- バンド歴入力 -->
         <div class="form-group-2">
             <c:choose>
                 <c:when test="${not empty userGroup}">
-                    <textarea id="band-history" name="band_years" placeholder="バンド歴、詳細など.." rows="4" required>${userGroup.band_years}</textarea>
+                    <textarea id="band-history" name="band_years" placeholder="バンド歴" rows="4" required>${userGroup.band_years}</textarea>
                 </c:when>
                 <c:otherwise>
-                    <textarea id="band-history" name="band_years" placeholder="バンド歴、詳細など.." rows="4" required></textarea>
+                    <textarea id="band-history" name="band_years" placeholder="バンド歴" rows="4" required></textarea>
                 </c:otherwise>
             </c:choose>
         </div>

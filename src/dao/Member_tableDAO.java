@@ -30,8 +30,13 @@ public class Member_tableDAO {
     public boolean insertMembers(int artistGroupId, List<Member> members) {
         String sql = "INSERT INTO member_table (artist_group_id, member_name, member_position) VALUES (?, ?, ?)";
         System.out.println("[insertMembers] Start - artistGroupId=" + artistGroupId + ", members=" + members);
+
         try (Connection connection = dbManager.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+
+            // トランザクションの開始
+            connection.setAutoCommit(false);
+
             for (Member member : members) {
                 pstmt.setInt(1, artistGroupId);
                 pstmt.setString(2, member.getMember_name());
@@ -41,9 +46,12 @@ public class Member_tableDAO {
                                    ", member_position=" + member.getMember_position());
                 pstmt.addBatch();
             }
+
+            // バッチ処理実行
             int[] rowsAffected = pstmt.executeBatch();
             System.out.println("[Result] Rows affected (insertMembers): " + rowsAffected.length);
 
+            // 自動生成キーの取得
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                 int index = 0;
                 while (generatedKeys.next() && index < members.size()) {
@@ -54,11 +62,28 @@ public class Member_tableDAO {
                 }
             }
 
+            // コミット
+            connection.commit();
+            System.out.println("[DEBUG] トランザクションが正常にコミットされました。");
+
             return rowsAffected.length == members.size();
+
         } catch (SQLException e) {
-            System.err.println("[Error] Failed to insert members");
+            System.err.println("[ERROR] Failed to insert members due to SQLException.");
             e.printStackTrace();
+
+            // エラー時にロールバック
+            try (Connection connection = dbManager.getConnection()) {
+                if (connection != null) {
+                    connection.rollback();
+                    System.err.println("[DEBUG] ロールバックが正常に実行されました。");
+                }
+            } catch (SQLException rollbackEx) {
+                System.err.println("[ERROR] ロールバック失敗");
+                rollbackEx.printStackTrace();
+            }
             return false;
+
         } finally {
             System.out.println("[insertMembers] End");
         }
