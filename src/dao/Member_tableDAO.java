@@ -88,7 +88,6 @@ public class Member_tableDAO {
             System.out.println("[insertMembers] End");
         }
     }
-
     // メンバーを更新するメソッド
     public boolean updateMember(Member member) {
         String sql = "UPDATE member_table SET member_name = ?, member_position = ? WHERE id = ?";
