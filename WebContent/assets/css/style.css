@@ -2529,3 +2529,13 @@ th.b {
         background-color: darkred; /* ホバー時に背景色を暗く */
         border-color: darkred; /* ホバー時に枠線を暗く */
     }
+    
+    
+.LivehouseAddress-main{
+	margin-left: 50px;
+}
+
+.LivehouseCapa-main{
+	margin-left: 50px;
+}
+

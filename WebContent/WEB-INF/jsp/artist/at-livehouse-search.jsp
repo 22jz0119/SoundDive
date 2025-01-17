@@ -58,9 +58,9 @@
 	                        <ul class="artist-result-frame">
 	                            <li class="LiveHousemain-img"></li>
 	                            <li class="LiveHouseAddress"><p>住所</p></li>
-	                            <li><p>${livehouse.live_address}</p></li>
-	                            <li><p>キャパ</p></li>
-	                            <li><p>100人</p></li>
+	                            <li class="LivehouseAddress-main"><p>${livehouse.live_address}</p></li>
+	                            <li class="LivehouseCapa"><p>キャパ</p></li>
+	                            <li class="LivehouseCapa-main"><p>100人</p></li>
 	                            <li><p>${livehouse.livehouse_explanation_information}</p></li>
 	                            <li class="artist-search-decision">
 	                                <!-- ソロとマルチの分岐 -->
