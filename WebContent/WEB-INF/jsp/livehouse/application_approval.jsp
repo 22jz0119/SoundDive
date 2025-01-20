@@ -33,7 +33,7 @@
             </div>
             <p class="approvaled-application-title">以下の予約が完了されました。</p>
         </section>
-        <h1>test</h1>
+    
 
         <section class="application-approval-section">
             <ul class="application-approval-ul-1">
@@ -45,7 +45,8 @@
             <div class="application-approval-div1">
                 <c:choose>
     <c:when test="${application != null}">
-        <p>デバッグ: ${application.datetime}</p> <!-- datetimeの値を表示 -->
+    	<p>申請日</p>
+        <p>${application.datetime}</p> <!-- datetimeの値を表示 -->
         <ul class="application-approval-ul-2">
             <li class="application-approval-li-1"><p>予約者名</p></li>
             <li class="application-approval-li-2">

@@ -68,11 +68,11 @@
 						</li>
 
                         
-                        <!-- 
+                        <%-- 
                          <ul class="application-artist-list-ul5">
                             <li class="application-artist-list-ul5-li1"><a href="" class="application-artist-list-ul5-li1-a">対バンを申し込む</a></li>--!>
                         </ul>
-                         -->
+                         --%> 
                     </div>
                 </div>
             </c:forEach>
