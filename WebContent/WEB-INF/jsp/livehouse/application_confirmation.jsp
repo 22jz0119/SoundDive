@@ -53,7 +53,9 @@
                     <div class="reservation-details-container">
                         <h2>予約詳細</h2>
                         <ul class="reservation-details-container-info">
+                        	<%-- 
                         	<li>申請ID: ${application.applicationId}</li>
+                        	--%>
                             <li>予約者名: ${application.us_name}</li>
                             <li>予約日時: ${application.datetime}</li>
                             <li>開始時間: ${application.startTime}</li>
