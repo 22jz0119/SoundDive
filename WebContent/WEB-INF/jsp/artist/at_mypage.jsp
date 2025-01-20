@@ -31,22 +31,23 @@
     
     <form action="<%= request.getContextPath() %>/At_Mypage" method="POST" enctype="multipart/form-data">
         <!-- プロフィール画像 -->
-        <div class="profile-container">
-            <label class="profile-icon" for="fileInput">
-                <c:choose>
-                    <c:when test="${not empty userGroup.picture_image_movie}">
-                        <!-- 画像がある場合 -->
-                        <img src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" alt="Profile Image" />
-                    </c:when>
-                    <c:otherwise>
-                        <!-- 画像がない場合 -->
-                        <span class="placeholder-text">アイコンをアップロード</span>
-                        <img id="profileImage" src="" alt="" style="display: none;">
-                    </c:otherwise>
-                </c:choose>
-            </label>
-            <input type="file" id="fileInput" name="picture_image_movie" accept="image/*" style="display: none;" onchange="previewImage()">
-        </div>
+		<div class="profile-container">
+		    <label class="profile-icon" for="fileInput">
+		        <c:choose>
+		            <c:when test="${not empty userGroup.picture_image_movie}">
+		                <!-- 画像がある場合 -->
+		                <img id="profileImage" src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" alt="Profile Image" width="150px" height="150px" style="border-radius: 50%;">
+		            </c:when>
+		            <c:otherwise>
+		                <!-- 画像がない場合 -->
+		                <span class="placeholder-text">アイコンをアップロード</span>
+		            </c:otherwise>
+		        </c:choose>
+		    </label>
+		
+		    <!-- ファイル選択ボタン -->
+		    <input type="file" id="fileInput" name="picture_image_movie" accept="image/*" style="display: none;" onchange="previewImage()">
+		</div>
 
         <!-- バンド名入力 -->
         <div class="form-group-1">
@@ -133,21 +134,33 @@
     </form>
 
     <script>
-        function previewImage() {
-            const file = document.getElementById('fileInput').files[0];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput) {
+            fileInput.addEventListener('change', previewImage);
+        }
+    });
+
+    
+    function previewImage() {
+        const file = document.getElementById('fileInput').files[0];
+        if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const profileImage = document.getElementById('profileImage');
-                profileImage.src = e.target.result;
-                profileImage.style.display = 'block';
-
-                const placeholderText = document.querySelector('.placeholder-text');
-                if (placeholderText) placeholderText.style.display = 'none';
-            }
-            if (file) {
-                reader.readAsDataURL(file);
-            }
+                if (profileImage) {
+                    profileImage.src = e.target.result;
+                    profileImage.style.display = 'block';
+                    const placeholderText = document.querySelector('.placeholder-text');
+                    if (placeholderText) placeholderText.style.display = 'none';
+                } else {
+                    console.error("⚠️ プロフィール画像が見つかりません。");
+                }
+            };
+            reader.readAsDataURL(file);
         }
+    }
 
         function addMember() {
             const container = document.getElementById('member-details-container');
