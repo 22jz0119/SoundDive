@@ -815,6 +815,7 @@ input[type="submit"]:active, .info-check:active {
 
 .keep-btn {
     padding: 12px 24px;
+    margin:850px 0 0 0px;
     font-size: 18px;
     font-weight: bold;
     color: white;
@@ -824,8 +825,6 @@ input[type="submit"]:active, .info-check:active {
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
-    display: flex;
-    justify-content: center;
   }
 
 
