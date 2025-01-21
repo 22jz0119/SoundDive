@@ -41,22 +41,25 @@ public class Livehouse_home extends HttpServlet {
         String yearParam = request.getParameter("year");
         String monthParam = request.getParameter("month");
         String dayParam = request.getParameter("day");
+        String cogigOrSoloParam = request.getParameter("cogig_or_solo");  // 追加: cogig_or_solo パラメータの取得
 
-        log("[DEBUG] Received parameters - year: " + yearParam + ", month: " + monthParam + ", day: " + dayParam);
+        log("[DEBUG] Received parameters - year: " + yearParam + ", month: " + monthParam + ", day: " + dayParam + ", cogig_or_solo: " + cogigOrSoloParam);
 
         try {
             int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam) : LocalDate.now().getYear();
             int month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam) : LocalDate.now().getMonthValue();
             int day = (dayParam != null && !dayParam.isEmpty()) ? Integer.parseInt(dayParam) : -1;
 
-            log("[DEBUG] Parsed year: " + year + ", month: " + month + ", day: " + day);
+            // cogig_or_soloをデータに基づいて設定
+            int cogigOrSolo = (cogigOrSoloParam != null && !cogigOrSoloParam.isEmpty()) ? Integer.parseInt(cogigOrSoloParam) : 1;
+
+            log("[DEBUG] Parsed year: " + year + ", month: " + month + ", day: " + day + ", cogig_or_solo: " + cogigOrSolo);
 
             if (month < 1 || month > 12) {
                 throw new IllegalArgumentException("月の値が不正です: " + month);
             }
 
             // セッションからログインユーザー情報を取得
-         // セッションからログインユーザー情報を取得
             HttpSession session = request.getSession(false);  // 既存のセッションのみ取得
 
             if (session == null) {
@@ -65,7 +68,7 @@ public class Livehouse_home extends HttpServlet {
                 return;
             }
 
-            // 修正: セッションキーを "userId" に変更
+            // セッションからユーザーIDを取得
             Integer userId = (Integer) session.getAttribute("userId");
 
             if (userId == null) {
@@ -76,7 +79,7 @@ public class Livehouse_home extends HttpServlet {
 
             log("[DEBUG] 取得したユーザーID: " + userId);
 
-            // userIdからライブハウスIDを取得
+            // ライブハウスIDを取得
             int livehouseId = dao.getLivehouseIdByUserId(userId);
 
             if (livehouseId == -1) {
@@ -87,7 +90,7 @@ public class Livehouse_home extends HttpServlet {
 
             log("[DEBUG] 取得したライブハウスID: " + livehouseId);
 
-
+            // 予約データの取得
             log("[DEBUG] DAO method呼び出し直前 - year: " + year + ", month: " + month + ", userId: " + userId);
             Map<String, Integer> reservationCounts = dao.getReservationCountsByLivehouse(year, month, userId);
             log("[DEBUG] DAO method実行後 - reservationCounts: " + reservationCounts);
@@ -105,9 +108,10 @@ public class Livehouse_home extends HttpServlet {
             request.setAttribute("year", year);
             request.setAttribute("month", month);
             request.setAttribute("day", day);
+            request.setAttribute("cogig_or_solo", cogigOrSolo);  // 追加: cogig_or_solo パラメータをリクエスト属性に設定
 
             if (day != -1) {
-                String redirectUrl = String.format("/Application_list?year=%d&month=%d&day=%d", year, month, day);
+                String redirectUrl = String.format("/Application_list?year=%d&month=%d&day=%d&cogig_or_solo=%d", year, month, day, cogigOrSolo);
                 log("[DEBUG] Redirecting to: " + redirectUrl);
                 response.sendRedirect(request.getContextPath() + redirectUrl);
                 return;
