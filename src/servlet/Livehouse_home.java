@@ -105,35 +105,21 @@ public class Livehouse_home extends HttpServlet {
             request.setAttribute("day", day);
             request.setAttribute("cogig_or_solo", cogigOrSolo);
 
-            // cogig_or_soloによる処理分岐
-            List<LivehouseApplicationWithGroup> reservations = new ArrayList<>();
+            // 1のデータと2のデータを別々に取得
+            List<LivehouseApplicationWithGroup> cogigOrSolo1Reservations = new ArrayList<>();
+            List<LivehouseApplicationWithGroup> cogigOrSolo2Reservations = new ArrayList<>();
 
-            if (cogigOrSolo == 1) {
-                log("[DEBUG] cogig_or_solo = 1 での処理");
+            // cogig_or_solo = 1 のデータを取得
+            cogigOrSolo1Reservations = dao.getReservationsWithTrueFalseZero(year, month, day);
+            log("[DEBUG] Retrieved cogig_or_solo = 1 reservations: " + cogigOrSolo1Reservations);
 
-                // 1の場合: getReservationsWithTrueFalseZeroメソッドを使用してデータを取得
-                reservations = dao.getReservationsWithTrueFalseZero(year, month, day);
-                log("[DEBUG] getReservationsWithTrueFalseZero method result: " + reservations);
+            // cogig_or_solo = 2 のデータを取得
+            cogigOrSolo2Reservations = dao.getReservationsByCogigOrSolo(year, month, day);
+            log("[DEBUG] Retrieved cogig_or_solo = 2 reservations: " + cogigOrSolo2Reservations);
 
-                // 追加で必要な処理があれば記述
-
-            } else if (cogigOrSolo == 2) {
-                log("[DEBUG] cogig_or_solo = 2 での処理");
-
-                // 2の場合: getReservationsWithTrueFalseZero と LivehouseApplicationWithGroup のデータ両方を表示
-                reservations = dao.getReservationsWithTrueFalseZero(year, month, day);
-                log("[DEBUG] getReservationsWithTrueFalseZero method result: " + reservations);
-
-                // LivehouseApplicationWithGroupのデータを取得
-                List<LivehouseApplicationWithGroup> groupReservations = dao.getReservationsByCogigOrSolo(year, month, day);
-                log("[DEBUG] getReservationsByCogigOrSolo method result: " + groupReservations);
-
-                // 両方のデータをリクエスト属性に設定
-                request.setAttribute("groupReservations", groupReservations);
-            }
-
-            // 結果の表示
-            request.setAttribute("reservations", reservations);
+            // 両方のデータをリクエストに設定
+            request.setAttribute("cogigOrSolo1Reservations", cogigOrSolo1Reservations);
+            request.setAttribute("cogigOrSolo2Reservations", cogigOrSolo2Reservations);
 
             if (day != -1) {
                 String redirectUrl = String.format("/Application_list?year=%d&month=%d&day=%d&cogig_or_solo=%d", year, month, day, cogigOrSolo);
@@ -141,6 +127,9 @@ public class Livehouse_home extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + redirectUrl);
                 return;
             }
+
+            // 予約データが別々に設定されたことを確認
+            log("[DEBUG] Successfully set both cogig_or_solo = 1 and cogig_or_solo = 2 reservations in request.");
 
             request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
             log("[DEBUG] Successfully forwarded to JSP.");
@@ -163,3 +152,5 @@ public class Livehouse_home extends HttpServlet {
         }
     }
 }
+
+
