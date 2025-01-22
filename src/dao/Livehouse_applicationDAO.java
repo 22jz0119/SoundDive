@@ -470,7 +470,7 @@ public class Livehouse_applicationDAO {
         return reservationCounts;
     }
 
-    // リスト表示 承認前
+    // リスト表示 承認前　１の処理
     public List<LivehouseApplicationWithGroup> getReservationsWithTrueFalseZero(int year, int month, int day) {
         // 修正したSQLクエリ：user_idを使ってartist_group_idを取得
         String sql = "SELECT DISTINCT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
@@ -524,10 +524,10 @@ public class Livehouse_applicationDAO {
 
 
     
-    //リスト対バン
+    //リスト対バン　２の処理
     public List<LivehouseApplicationWithGroup> getReservationsByCogigOrSolo(int year, int month, int day) {
         String sql = "SELECT DISTINCT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
-                     "la.livehouse_information_id, la.user_id, la.artist_group_id, la.c, " +
+                     "la.livehouse_information_id, la.user_id, la.artist_group_id, la.cogig_or_solo, " +
                      "ag.account_name, ag.group_genre, ag.band_years, u.us_name " +
                      "FROM livehouse_application_table la " +
                      "LEFT JOIN artist_group ag ON la.artist_group_id = ag.id " +
@@ -584,6 +584,7 @@ public class Livehouse_applicationDAO {
         }
         return reservations;
     }
+
 
     
     //履歴削除ボタン

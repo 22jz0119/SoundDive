@@ -35,20 +35,32 @@
                 <c:choose>
                     <c:when test="${cogigOrSolo eq 2}">
                         <c:forEach var="application" items="${applicationList}">
+                            <div class="application-artist-list-img-containar">
+                                <img src="../assets/img/アーティスト画像.png" alt="" class="application-artist-list-ikon">
+                            </div>
                             <li>
-                                <strong>${application.accountName}</strong>
-                                <ul>
-                                    <li>ジャンル: ${application.groupGenre}</li>
-                                    <li>バンド歴: ${application.bandYears}年</li>
-                                    <li>レーティング: ${application.ratingStar}</li>
-                                    <li>
-                                        音声:
-                                        <audio class="sound-source" controls src="${application.pictureImageMovie != null ? application.pictureImageMovie : '/default.mp3'}" type="audio/mp3">
-                                            音声が再生できません
-                                        </audio>
-                                    </li>
-                                    <li>
-                                        <a href="<c:url value='/Application_confirmation' />?id=${application.id}">詳細を見る</a>
+                                <ul class="application-artist-list-ul0">
+                                    <li><p>${application.accountName}</p></li>
+                                </ul>
+
+                                <ul class="application-artist-list-ul1">
+                                    <li class="application-artist-list-ul1-li1"><p>ジャンル</p></li>
+                                    <li class="application-artist-list-ul1-li2"><p>${application.groupGenre}</p></li>
+                                </ul>
+                                <ul class="application-artist-list-ul2">
+                                    <li class="application-artist-list-ul2-li1"><p>バンド歴</p></li>
+                                    <li class="application-artist-list-ul2-li2"><p>${application.bandYears}年</p></li>
+                                </ul>
+                                <ul class="application-artist-list-ul3">
+                                    <li class="application-artist-list-ul3-li1"><p>レーティング</p></li>
+                                    <li class="application-artist-list-ul3-li2"><p>評価3.5</p></li>
+                                </ul>
+                                <ul class="application-artist-list-ul4">
+                                    <li class="application-artist-list-ul4-li1"><audio class="sound-source" controls src="water.mp3" type="audio/mp3">とまとまん</audio></li>
+                                </ul>
+                                <ul class="application-artist-list-ul5">
+                                    <li class="application-artist-list-ul5-li1">
+                                        <a href="<c:url value='/Application_confirmation' />?id=${application.id}" class="application-artist-list-ul5-li1-a">詳細を見る</a>
                                     </li>
                                 </ul>
                             </li>

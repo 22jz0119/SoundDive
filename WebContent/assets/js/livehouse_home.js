@@ -202,7 +202,4 @@ function openReservationList(element) {
     }
 }
 
-
-
-
 });
