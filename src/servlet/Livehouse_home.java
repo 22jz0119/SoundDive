@@ -89,48 +89,69 @@ public class Livehouse_home extends HttpServlet {
 
 
             log("[DEBUG] DAO method呼び出し直前 - year: " + year + ", month: " + month + ", userId: " + userId);
+         // 予約データを取得
             Map<String, Integer> reservationCounts = dao.getReservationCountsByLivehouse(year, month, userId);
+            
+            if (reservationCounts == null) {
+                log("[DEBUG] DAO returned null for reservationCounts.");
+                reservationCounts = Map.of(); // 空のマップを使用
+            }
+
+            // JSON形式に変換
+            Gson gson = new Gson();
+            String reservationStatusJson = gson.toJson(reservationCounts);
             log("[DEBUG] DAO method実行後 - reservationCounts: " + reservationCounts);
 
             if (reservationCounts == null) {
                 log("[DEBUG] DAO returned null for reservationCounts.");
-            } else if (reservationCounts.isEmpty()) {
-                log("[DEBUG] DAO returned an empty map for reservationCounts.");
-            } else {
-                log("[DEBUG] DAO returned reservationCounts: " + reservationCounts);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write(reservationStatusJson);  // reservationStatusJsonがnullの場合でも、JSONを返しているか
+                log("[DEBUG] Sending JSON response: " + reservationStatusJson);
+                response.getWriter().write("{\"error\": \"エラーが発生しました\"}");
+                return;
             }
 
-            String reservationStatusJson = new Gson().toJson(reservationCounts);
+
+         // 重複定義を避けて再利用する
+            reservationStatusJson = new Gson().toJson(reservationCounts);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(reservationStatusJson);
             request.setAttribute("reservationStatus", reservationStatusJson);
             request.setAttribute("year", year);
             request.setAttribute("month", month);
             request.setAttribute("day", day);
 
-            if (day != -1) {
-                String redirectUrl = String.format("/Application_list?year=%d&month=%d&day=%d", year, month, day);
-                log("[DEBUG] Redirecting to: " + redirectUrl);
-                response.sendRedirect(request.getContextPath() + redirectUrl);
+            if (day == -1) {
+                log("[DEBUG] JSPを表示します。reservationStatus: " + reservationStatusJson);
+                request.setAttribute("reservationStatus", reservationStatusJson);
+                request.setAttribute("year", year);
+                request.setAttribute("month", month);
+                request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
                 return;
             }
 
-            request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
-            log("[DEBUG] Successfully forwarded to JSP.");
 
         } catch (NumberFormatException e) {
             log("[ERROR] Invalid parameter format: year or month is not a valid number.", e);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "日付パラメータが不正です。正しい値を入力してください。");
         } catch (SQLException e) {
             log("[ERROR] SQLエラー: " + e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SQLエラーが発生しました。");
-        } catch (NullPointerException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"error\": \"SQLエラーが発生しました。\"}");
+        }
+        catch (NullPointerException e) {
             log("[ERROR] NullPointerException: " + e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "データ取得中にエラーが発生しました。");
         } catch (IllegalArgumentException e) {
             log("[ERROR] Invalid parameter value: " + e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
-            log("[ERROR] その他のエラー: " + e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "システムエラーが発生しました。");
+            log("[ERROR] Internal Server Error: " + e.getMessage(), e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"error\": \"Internal Server Error\", \"message\": \"" + e.getMessage() + "\"}");
         }
+
     }
 }

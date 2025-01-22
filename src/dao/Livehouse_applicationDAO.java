@@ -667,44 +667,66 @@ public class Livehouse_applicationDAO {
  // カレンダー申請件数表示（ライブハウスごとに日別集計）
  // カレンダー申請件数表示（ログイン中のライブハウスIDに基づく件数取得）
     public Map<String, Integer> getReservationCountsByLivehouse(int year, int month, int userId) throws SQLException {
-    	String query = "SELECT la.livehouse_information_id, DAY(la.date_time) AS day, COUNT(*) AS count " +
-                "FROM livehouse_application_table la " +
-                "JOIN livehouse_information li ON la.livehouse_information_id = li.id " +
-                "WHERE YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND li.user_id = ? " +
-                "AND la.true_false = 0 " +  // ← 承認待ちの予約データのみ取得
-                "GROUP BY la.livehouse_information_id, day " +
-                "ORDER BY day";
-
+        String query = "SELECT la.livehouse_information_id, DAY(la.date_time) AS day, COUNT(*) AS count " +
+                       "FROM livehouse_application_table la " +
+                       "JOIN livehouse_information li ON la.livehouse_information_id = li.id " +
+                       "WHERE YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND li.user_id = ? " +
+                       "AND la.true_false = 0 " + // ← 承認待ちの予約データのみ取得
+                       "GROUP BY la.livehouse_information_id, day " +
+                       "ORDER BY day";
 
         System.out.println("[DEBUG] Executing query: " + query);
         System.out.println("[DEBUG] Parameters - year: " + year + ", month: " + month + ", userId: " + userId);
 
-        Map<String, Integer> result = new LinkedHashMap<>();  // 日別件数保持
+        Map<String, Integer> result = new LinkedHashMap<>(); // 日別件数保持
 
-        try (Connection conn = dbManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = dbManager.getConnection()) {
+            if (conn == null || conn.isClosed()) {
+                System.err.println("[ERROR] Database connection could not be established.");
+                throw new SQLException("Database connection failed.");
+            }
+            System.out.println("[DEBUG] Database connection established successfully.");
 
-            stmt.setInt(1, year);
-            stmt.setInt(2, month);
-            stmt.setInt(3, userId);
-            System.out.println("[DEBUG] PreparedStatement parameters set successfully.");
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, year);
+                stmt.setInt(2, month);
+                stmt.setInt(3, userId);
+                System.out.println("[DEBUG] PreparedStatement parameters set successfully.");
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                System.out.println("[DEBUG] Query executed successfully. Processing ResultSet...");
+                try (ResultSet rs = stmt.executeQuery()) {
+                    System.out.println("[DEBUG] Query executed successfully. Processing ResultSet...");
 
-                while (rs.next()) {
-                    String day = Integer.toString(rs.getInt("day"));   // 日付 (1～31)
-                    int count = rs.getInt("count"); // 予約件数
+                    boolean hasResults = false;
+                    while (rs.next()) {
+                        hasResults = true;
+                        String day = Integer.toString(rs.getInt("day"));   // 日付 (1～31)
+                        int count = rs.getInt("count"); // 予約件数
 
-                    result.put(day, count);
+                        result.put(day, count);
 
-                    System.out.println("[DEBUG] Retrieved - day: " + day + ", count: " + count);
+                        System.out.println("[DEBUG] Retrieved - day: " + day + ", count: " + count);
+                    }
+
+                    if (!hasResults) {
+                        System.out.println("[DEBUG] Query returned no results.");
+                    }
                 }
+
+                System.out.println("[DEBUG] Total days with reservations: " + result.size());
+                if (!result.isEmpty()) {
+                    System.out.println("[DEBUG] First entry: " + result.entrySet().iterator().next());
+                }
+
+            } catch (SQLException e) {
+                System.err.println("[ERROR] SQLException occurred while executing query: " + e.getMessage());
+                System.err.println("[ERROR] SQL State: " + e.getSQLState());
+                System.err.println("[ERROR] Error Code: " + e.getErrorCode());
+                e.printStackTrace();
+                throw e;
             }
 
         } catch (SQLException e) {
-            System.err.println("[ERROR] SQLException occurred while executing query: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("[ERROR] Database operation failed: " + e.getMessage());
             throw e;
         } catch (Exception e) {
             System.err.println("[ERROR] Unexpected exception occurred: " + e.getMessage());
@@ -715,6 +737,7 @@ public class Livehouse_applicationDAO {
         System.out.println("[DEBUG] Returning result: " + result);
         return result;
     }
+
 
  // user_idからlivehouse_information_idを取得
  public int getLivehouseIdByUserId(int userId) {
