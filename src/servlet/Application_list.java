@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -32,15 +33,46 @@ public class Application_list extends HttpServlet {
         int month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam) : -1;
         int day = (dayParam != null && !dayParam.isEmpty()) ? Integer.parseInt(dayParam) : -1;
 
-        // パラメータが正しい場合のみ、データを取得
-        if (year != -1 && month != -1 && day != -1) {
-            List<LivehouseApplicationWithGroup> applicationList = livehouseApplicationDAO.getReservationsWithTrueFalseZero(year, month, day);
+        System.out.println("[DEBUG] Received parameters - year: " + year + ", month: " + month + ", day: " + day);
 
-            // リクエストスコープに設定
-            request.setAttribute("applicationList", applicationList);
+        // 初期化
+        List<LivehouseApplicationWithGroup> applicationList1 = new ArrayList<>();
+        List<LivehouseApplicationWithGroup> applicationList2 = new ArrayList<>();
+
+        if (year != -1 && month != -1 && day != -1) {
+            // cogig_or_solo パラメータを取得し、デフォルト値を設定
+            String cogigOrSoloParam = request.getParameter("cogig_or_solo");
+            System.out.println("[DEBUG] cogig_or_solo parameter received: " + cogigOrSoloParam);  // 追加したデバッグログ
+            int cogigOrSolo = (cogigOrSoloParam == null || cogigOrSoloParam.isEmpty()) ? 1 : Integer.parseInt(cogigOrSoloParam);
+
+            System.out.println("[DEBUG] Parsed cogig_or_solo: " + cogigOrSolo);
+
+            // 1の処理（基本情報の取得）
+            System.out.println("[DEBUG] Fetching reservations with cogig_or_solo = 1");
+            applicationList1 = livehouseApplicationDAO.getReservationsWithTrueFalseZero(year, month, day);
+
+            // 2の処理（追加でグループ情報を取得）
+            if (cogigOrSolo == 2) {
+                System.out.println("[DEBUG] Fetching reservations with cogig_or_solo = 2");
+                applicationList2 = livehouseApplicationDAO.getReservationsByCogigOrSolo(year, month, day);
+            }
+
+            // 取得データをマージしてリクエストスコープに設定
+            List<LivehouseApplicationWithGroup> mergedApplicationList = new ArrayList<>(applicationList1);
+            mergedApplicationList.addAll(applicationList2);
+
+            System.out.println("[DEBUG] Final mergedApplicationList size: " + mergedApplicationList.size());
+            for (LivehouseApplicationWithGroup app : mergedApplicationList) {
+                System.out.println("[DEBUG] Application: " + app.getAccountName() + ", Genre: " + app.getGroupGenre());
+            }
+
+            request.setAttribute("applicationList", mergedApplicationList);
+            request.setAttribute("cogigOrSolo", cogigOrSolo);
+
         } else {
-            // パラメータが無効または不足している場合、エラーメッセージを表示
+            System.out.println("[DEBUG] Invalid or missing date parameters");
             request.setAttribute("errorMessage", "無効な日付が指定されています。");
+            request.setAttribute("cogigOrSolo", 1); // デフォルト値を設定
         }
 
         // JSPページにフォワード
