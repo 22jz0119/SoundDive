@@ -815,6 +815,7 @@ input[type="submit"]:active, .info-check:active {
 
 .keep-btn {
     padding: 12px 24px;
+    margin:850px 0 0 0px;
     font-size: 18px;
     font-weight: bold;
     color: white;
@@ -824,8 +825,6 @@ input[type="submit"]:active, .info-check:active {
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
-    display: flex;
-    justify-content: center;
   }
 
 
@@ -1079,7 +1078,7 @@ input[type="submit"]:active, .info-check:active {
 
 .application-artist-list-frame p,
 .application-artist-list-frame li {
-    margin: 2px 0; /* 上下のマージンを狭くする */
+    margin: 2px 0 0 200px; /* 上下のマージンを狭くする */
     padding: 0; /* 必要ならパディングも調整 */
     line-height: 1.2; /* 行間を詰める */
 }
@@ -1451,16 +1450,17 @@ th.b {
     margin-top: 10px;
 }
 
-.profile-card {
-    width: 30%;
-    padding: 10px 0 10px 0;
+.plus-name{
+	display: flex;
+	justify-content: center;
 }
 
-.member-details {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+.plus-jobs{
+	display: flex;
+	justify-content: center;
 }
+
+
 
 .member {
     padding: 10px;
@@ -1650,7 +1650,7 @@ th.b {
 }
 
 .profile-card {
-    width: 100%;
+   	width: 300px;
     padding: 20px 0 20px 0;
     text-align: center;
 }
@@ -1658,7 +1658,6 @@ th.b {
 .member-details {
     display: flex;
     justify-content: center;
-    gap: 250px;
     margin-top: 100px;
 }
 

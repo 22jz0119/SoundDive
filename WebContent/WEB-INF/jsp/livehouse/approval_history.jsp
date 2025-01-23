@@ -86,12 +86,11 @@
 							    </li>
 							</ul>
                             
-                        </div>
                     </div>
                 </c:forEach>
             </c:when>
             <c:otherwise>
-                <p>申請データはありません。</p>
+                <p>承認したデータはありません。</p>
             </c:otherwise>
         </c:choose>
 

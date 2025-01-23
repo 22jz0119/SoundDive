@@ -31,12 +31,9 @@ public class At_details extends HttpServlet {
             handleReservationData(request, response);
             return;
         }
-        
-
         // それ以外の場合は詳細画面の処理
         handleDetails(request, response);
     }
-
 
     /**
      * 予約データを取得する処理

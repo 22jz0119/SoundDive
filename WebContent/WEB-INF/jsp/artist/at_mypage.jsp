@@ -71,18 +71,26 @@
                     <input type="hidden" name="existing_member_ids[]" value="${member.id}">
                     
                     <!-- 氏名 -->
-                    <input type="text" class="profile-card" name="member_name[]" placeholder="氏名" 
-                           value="${member.member_name}" required><br>
+                    <div>
+                    	<input type="text" class="profile-card" name="member_name[]" placeholder="氏名" 
+                           value="${member.member_name}" required>
+                    </div>
+                    
                     
                     <!-- 役割 -->
-                    <input type="text" class="profile-card p-c-sub" name="member_role[]" placeholder="役割 例: ボーカル" 
-                           value="${member.member_position}" required><br>
+                    <div>
+                    	<input type="text" class="profile-card p-c-sub" name="member_role[]" placeholder="役割 例: ボーカル" 
+                           value="${member.member_position}" required>
+                    </div>
+                    
+                    
                     
                     <!-- 削除チェックボックス -->
-                    <label>
-                        <input type="checkbox" name="deleted_member_ids[]" value="${member.id}">
-                        削除
-                    </label>
+                    <div>
+                    	
+                    
+                    </div>
+                   
                 </div>
             </c:forEach>
         </div>
