@@ -33,22 +33,22 @@
         <div class="application-lists">
             <ul>
                 <c:choose>
-                    <c:when test="${cogigOrSolo eq 2}">
+                    <!-- cogigOrSoloが1（個人）の場合 -->
+                    <c:when test="${cogigOrSolo eq 1}">
                         <c:forEach var="application" items="${applicationList}">
                             <div class="application-artist-list-img-containar">
                                 <img src="../assets/img/アーティスト画像.png" alt="" class="application-artist-list-ikon">
                             </div>
                             <li>
                                 <ul class="application-artist-list-ul0">
-                                    <li><p>${application.accountName}</p></li>
+                                    <li><p>${application.accountName} (個人)</p></li>
                                 </ul>
-
                                 <ul class="application-artist-list-ul1">
                                     <li class="application-artist-list-ul1-li1"><p>ジャンル</p></li>
                                     <li class="application-artist-list-ul1-li2"><p>${application.groupGenre}</p></li>
                                 </ul>
                                 <ul class="application-artist-list-ul2">
-                                    <li class="application-artist-list-ul2-li1"><p>バンド歴</p></li>
+                                    <li class="application-artist-list-ul2-li1"><p>活動歴</p></li>
                                     <li class="application-artist-list-ul2-li2"><p>${application.bandYears}年</p></li>
                                 </ul>
                                 <ul class="application-artist-list-ul3">
@@ -56,7 +56,7 @@
                                     <li class="application-artist-list-ul3-li2"><p>評価3.5</p></li>
                                 </ul>
                                 <ul class="application-artist-list-ul4">
-                                    <li class="application-artist-list-ul4-li1"><audio class="sound-source" controls src="water.mp3" type="audio/mp3">とまとまん</audio></li>
+                                    <li class="application-artist-list-ul4-li1"><audio class="sound-source" controls src="water.mp3" type="audio/mp3">音源</audio></li>
                                 </ul>
                                 <ul class="application-artist-list-ul5">
                                     <li class="application-artist-list-ul5-li1">
@@ -66,16 +66,17 @@
                             </li>
                         </c:forEach>
                     </c:when>
-                    <c:otherwise>
+
+                    <!-- cogigOrSoloが2（バンド）の場合 -->
+                    <c:when test="${cogigOrSolo eq 2}">
                         <c:forEach var="application" items="${applicationList}">
                             <div class="application-artist-list-img-containar">
                                 <img src="../assets/img/アーティスト画像.png" alt="" class="application-artist-list-ikon">
                             </div>
                             <li>
                                 <ul class="application-artist-list-ul0">
-                                    <li><p>${application.accountName}</p></li>
+                                    <li><p>${application.accountName} (バンド)</p></li>
                                 </ul>
-
                                 <ul class="application-artist-list-ul1">
                                     <li class="application-artist-list-ul1-li1"><p>ジャンル</p></li>
                                     <li class="application-artist-list-ul1-li2"><p>${application.groupGenre}</p></li>
@@ -89,7 +90,7 @@
                                     <li class="application-artist-list-ul3-li2"><p>評価3.5</p></li>
                                 </ul>
                                 <ul class="application-artist-list-ul4">
-                                    <li class="application-artist-list-ul4-li1"><audio class="sound-source" controls src="water.mp3" type="audio/mp3">とまとまん</audio></li>
+                                    <li class="application-artist-list-ul4-li1"><audio class="sound-source" controls src="water.mp3" type="audio/mp3">音源</audio></li>
                                 </ul>
                                 <ul class="application-artist-list-ul5">
                                     <li class="application-artist-list-ul5-li1">
@@ -98,13 +99,14 @@
                                 </ul>
                             </li>
                         </c:forEach>
+                    </c:when>
+
+                    <!-- デフォルト: 申請データがない場合 -->
+                    <c:otherwise>
+                        <p>申請データはありません。</p>
                     </c:otherwise>
                 </c:choose>
             </ul>
-
-            <c:if test="${empty applicationList}">
-                <p>申請データはありません。</p>
-            </c:if>
         </div>
     </main>
 </body>
