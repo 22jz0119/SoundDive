@@ -96,7 +96,7 @@ public class At_livehouse_reservation_completed extends HttpServlet {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なユーザーIDが指定されています。");
                     return;
                 }
-
+                
                 boolean saveResult = applicationDAO.saveSoloReservation(livehouseIdInt, userIdInt, startTime, startTime);
                 if (!saveResult) {
                     System.err.println("[ERROR] doPost: Failed to save solo reservation.");
