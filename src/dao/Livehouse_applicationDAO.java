@@ -83,7 +83,7 @@ public class Livehouse_applicationDAO {
                      "VALUES (?, ?, ?, ?, 1, false, NOW(), NOW())";
 
         try (Connection conn = dbManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             // パラメータを設定
             stmt.setInt(1, livehouseId); // livehouse_information_id
@@ -95,6 +95,18 @@ public class Livehouse_applicationDAO {
             int rowsAffected = stmt.executeUpdate();
             System.out.println("[DEBUG] Rows affected by saveSoloReservation: " + rowsAffected);
 
+            // 挿入されたIDを取得
+            if (rowsAffected > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int applicationId = generatedKeys.getInt(1);
+
+                        // 通知を送信
+                        sendNotification(applicationId, userId, livehouseId, dateTime);
+                    }
+                }
+            }
+
             // 成功した場合 true を返す
             return rowsAffected > 0;
         } catch (SQLException e) {
@@ -104,6 +116,32 @@ public class Livehouse_applicationDAO {
             return false;
         }
     }
+
+    /**
+     * 通知を送信するヘルパーメソッド
+     *
+     * @param applicationId 挿入されたライブハウス申請ID
+     * @param userId ユーザーID
+     * @param livehouseId ライブハウスID
+     * @param dateTime 予約日時
+     */
+    private void sendNotification(int applicationId, int userId, int livehouseId, LocalDateTime dateTime) {
+        NoticeDAO noticeDAO = NoticeDAO.getInstance(dbManager);
+
+        // 通知メッセージを作成
+        String message = "新しいSOLO予約が作成されました: ライブハウスID " + livehouseId +
+                         ", 予約日時: " + dateTime;
+
+        try {
+            // 通知を挿入
+            noticeDAO.insertNotice(applicationId, userId, message);
+            System.out.println("[DEBUG] Notification sent successfully.");
+        } catch (SQLException e) {
+            System.err.println("[ERROR] Failed to send notification: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     
     // Livehouse_applicationを挿入するメソッド
     public boolean insertLivehouse_application(Livehouse_application livehouse_application) {
@@ -470,16 +508,16 @@ public class Livehouse_applicationDAO {
         return reservationCounts;
     }
 
-    // リスト表示 承認前
+    // リスト表示 承認前　１の処理
     public List<LivehouseApplicationWithGroup> getReservationsWithTrueFalseZero(int year, int month, int day) {
-        // 修正したSQLクエリ：指定された日付に合わせてフィルタリング
+        // 修正したSQLクエリ：user_idを使ってartist_group_idを取得
         String sql = "SELECT DISTINCT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
-                     "la.livehouse_information_id, la.user_id, la.artist_group_id, la.cogig_or_solo, " +
-                     "ag.account_name, ag.group_genre, ag.band_years, u.us_name " +
+                     "la.livehouse_information_id, la.user_id, ag.id AS artist_group_id, la.cogig_or_solo, " + 
+                     "ag.account_name, ag.group_genre, ag.band_years, u.us_name " + 
                      "FROM livehouse_application_table la " +
-                     "LEFT JOIN artist_group ag ON la.artist_group_id = ag.id " +
+                     "LEFT JOIN artist_group ag ON la.user_id = ag.user_id " +  // user_id を使って artist_group を結合
                      "LEFT JOIN user u ON la.user_id = u.id " +
-                     "WHERE la.true_false = 0 AND YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND DAY(la.date_time) = ?";  // ここで日付に絞り込む
+                     "WHERE la.true_false = 0 AND YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND DAY(la.date_time) = ?";  // 日付で絞り込み
 
         List<LivehouseApplicationWithGroup> reservations = new ArrayList<>();
         try (Connection conn = dbManager.getConnection();
@@ -492,7 +530,7 @@ public class Livehouse_applicationDAO {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    // groupId を取得
+                    // groupId を取得 (修正後)
                     int groupId = rs.getInt("artist_group_id");
 
                     // メンバー情報を取得
@@ -521,6 +559,71 @@ public class Livehouse_applicationDAO {
         }
         return reservations;
     }
+
+
+    
+    //リスト対バン　２の処理
+    public List<LivehouseApplicationWithGroup> getReservationsByCogigOrSolo(int year, int month, int day) {
+        String sql = "SELECT DISTINCT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
+                     "la.livehouse_information_id, la.user_id, la.artist_group_id, la.cogig_or_solo, " +
+                     "ag.account_name, ag.group_genre, ag.band_years, u.us_name " +
+                     "FROM livehouse_application_table la " +
+                     "LEFT JOIN artist_group ag ON la.artist_group_id = ag.id " +
+                     "LEFT JOIN user u ON la.user_id = u.id " +
+                     "WHERE la.true_false = 0 AND YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND DAY(la.date_time) = ?";
+
+        List<LivehouseApplicationWithGroup> reservations = new ArrayList<>();
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // パラメータを設定
+            pstmt.setInt(1, year);
+            pstmt.setInt(2, month);
+            pstmt.setInt(3, day);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int cogigOrSolo = rs.getInt("cogig_or_solo");
+                    int groupId = rs.getInt("artist_group_id");
+                    List<Member> members = new ArrayList<>();
+
+                    String accountName = "";
+                    String groupGenre = "";
+                    String bandYears = "";
+
+                    // cogig_or_solo = 2 の場合のみグループ情報を取得
+                    if (cogigOrSolo == 2 && groupId != 0) {
+                        accountName = rs.getString("account_name") != null ? rs.getString("account_name") : "";
+                        groupGenre = rs.getString("group_genre") != null ? rs.getString("group_genre") : "";
+                        bandYears = rs.getString("band_years") != null ? rs.getString("band_years") : "";
+                        members = getMembersByGroupId(groupId); // メンバー情報を取得
+                    }
+
+                    // データを LivehouseApplicationWithGroup に追加
+                    reservations.add(new LivehouseApplicationWithGroup(
+                        rs.getInt("application_id"),
+                        rs.getInt("application_id"),
+                        rs.getTimestamp("date_time") != null ? rs.getTimestamp("date_time").toLocalDateTime() : null,
+                        rs.getBoolean("true_false"),
+                        rs.getTimestamp("start_time") != null ? rs.getTimestamp("start_time").toLocalDateTime() : null,
+                        rs.getTimestamp("finish_time") != null ? rs.getTimestamp("finish_time").toLocalDateTime() : null,
+                        groupId,
+                        accountName, // cogig_or_solo = 2 の場合にのみ設定
+                        groupGenre,  // cogig_or_solo = 2 の場合にのみ設定
+                        bandYears,   // cogig_or_solo = 2 の場合にのみ設定
+                        rs.getInt("user_id"),
+                        rs.getString("us_name") != null ? rs.getString("us_name") : "",
+                        members      // cogig_or_solo = 2 の場合にのみ設定
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reservations;
+    }
+
+
     
     //履歴削除ボタン
     public boolean deleteReservationById(int applicationId) {
@@ -543,17 +646,19 @@ public class Livehouse_applicationDAO {
 
     
  // 承認済み（true_false = 1）のデータのみを取得するメソッド
-    public List<LivehouseApplicationWithGroup> getApprovedReservations(int year, int month, int day) {
-        // SQL: 承認済みのデータ（true_false = 1）を取得
+ // 承認済み（true_false = 1）のデータを取得し、cogig_or_solo に基づいて分類するメソッド
+    public Map<Integer, List<LivehouseApplicationWithGroup>> getAllApprovedReservations(int year, int month, int day) {
         String sql = "SELECT DISTINCT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
                      "la.livehouse_information_id, la.user_id, la.artist_group_id, la.cogig_or_solo, " +
                      "ag.account_name, ag.group_genre, ag.band_years, u.us_name " +
                      "FROM livehouse_application_table la " +
                      "LEFT JOIN artist_group ag ON la.artist_group_id = ag.id " +
                      "LEFT JOIN user u ON la.user_id = u.id " +
-                     "WHERE la.true_false = 1 AND YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND DAY(la.date_time) = ?";  // 承認済み（true_false = 1）
+                     "WHERE la.true_false = 1 AND YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND DAY(la.date_time) = ?";
 
-        List<LivehouseApplicationWithGroup> approvedReservations = new ArrayList<>();
+        Map<Integer, List<LivehouseApplicationWithGroup>> resultMap = new HashMap<>();
+        resultMap.put(1, new ArrayList<>()); // cogig_or_solo = 1 のデータ
+        resultMap.put(2, new ArrayList<>()); // cogig_or_solo = 2 のデータ
 
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -569,8 +674,8 @@ public class Livehouse_applicationDAO {
                     int groupId = rs.getInt("artist_group_id");
                     List<Member> members = getMembersByGroupId(groupId);
 
-                    // 承認済みの予約データをオブジェクトに格納
-                    approvedReservations.add(new LivehouseApplicationWithGroup(
+                    // データをオブジェクトに格納
+                    LivehouseApplicationWithGroup reservation = new LivehouseApplicationWithGroup(
                         rs.getInt("application_id"),
                         rs.getInt("application_id"),
                         rs.getTimestamp("date_time") != null ? rs.getTimestamp("date_time").toLocalDateTime() : null,
@@ -584,18 +689,24 @@ public class Livehouse_applicationDAO {
                         rs.getInt("user_id"),
                         rs.getString("us_name") != null ? rs.getString("us_name") : "",
                         members
-                    ));
-                    
+                    );
+
+                    // cogig_or_solo に基づいてリストに振り分け
+                    int cogigOrSolo = rs.getInt("cogig_or_solo");
+                    resultMap.get(cogigOrSolo).add(reservation);
+
                     // デバッグ出力
-                    System.out.println("[DEBUG] 承認済み予約データ取得: " + rs.getInt("application_id") + " - " + rs.getString("account_name"));
+                    System.out.println("[DEBUG] 承認済み予約データ取得: cogig_or_solo=" + cogigOrSolo + ", application_id=" + reservation.getId());
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return approvedReservations;
+        return resultMap;
     }
+
+
 
 
 
@@ -667,44 +778,66 @@ public class Livehouse_applicationDAO {
  // カレンダー申請件数表示（ライブハウスごとに日別集計）
  // カレンダー申請件数表示（ログイン中のライブハウスIDに基づく件数取得）
     public Map<String, Integer> getReservationCountsByLivehouse(int year, int month, int userId) throws SQLException {
-    	String query = "SELECT la.livehouse_information_id, DAY(la.date_time) AS day, COUNT(*) AS count " +
-                "FROM livehouse_application_table la " +
-                "JOIN livehouse_information li ON la.livehouse_information_id = li.id " +
-                "WHERE YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND li.user_id = ? " +
-                "AND la.true_false = 0 " +  // ← 承認待ちの予約データのみ取得
-                "GROUP BY la.livehouse_information_id, day " +
-                "ORDER BY day";
-
+        String query = "SELECT la.livehouse_information_id, DAY(la.date_time) AS day, COUNT(*) AS count " +
+                       "FROM livehouse_application_table la " +
+                       "JOIN livehouse_information li ON la.livehouse_information_id = li.id " +
+                       "WHERE YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? AND li.user_id = ? " +
+                       "AND la.true_false = 0 " + // ← 承認待ちの予約データのみ取得
+                       "GROUP BY la.livehouse_information_id, day " +
+                       "ORDER BY day";
 
         System.out.println("[DEBUG] Executing query: " + query);
         System.out.println("[DEBUG] Parameters - year: " + year + ", month: " + month + ", userId: " + userId);
 
-        Map<String, Integer> result = new LinkedHashMap<>();  // 日別件数保持
+        Map<String, Integer> result = new LinkedHashMap<>(); // 日別件数保持
 
-        try (Connection conn = dbManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = dbManager.getConnection()) {
+            if (conn == null || conn.isClosed()) {
+                System.err.println("[ERROR] Database connection could not be established.");
+                throw new SQLException("Database connection failed.");
+            }
+            System.out.println("[DEBUG] Database connection established successfully.");
 
-            stmt.setInt(1, year);
-            stmt.setInt(2, month);
-            stmt.setInt(3, userId);
-            System.out.println("[DEBUG] PreparedStatement parameters set successfully.");
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, year);
+                stmt.setInt(2, month);
+                stmt.setInt(3, userId);
+                System.out.println("[DEBUG] PreparedStatement parameters set successfully.");
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                System.out.println("[DEBUG] Query executed successfully. Processing ResultSet...");
+                try (ResultSet rs = stmt.executeQuery()) {
+                    System.out.println("[DEBUG] Query executed successfully. Processing ResultSet...");
 
-                while (rs.next()) {
-                    String day = Integer.toString(rs.getInt("day"));   // 日付 (1～31)
-                    int count = rs.getInt("count"); // 予約件数
+                    boolean hasResults = false;
+                    while (rs.next()) {
+                        hasResults = true;
+                        String day = Integer.toString(rs.getInt("day"));   // 日付 (1～31)
+                        int count = rs.getInt("count"); // 予約件数
 
-                    result.put(day, count);
+                        result.put(day, count);
 
-                    System.out.println("[DEBUG] Retrieved - day: " + day + ", count: " + count);
+                        System.out.println("[DEBUG] Retrieved - day: " + day + ", count: " + count);
+                    }
+
+                    if (!hasResults) {
+                        System.out.println("[DEBUG] Query returned no results.");
+                    }
                 }
+
+                System.out.println("[DEBUG] Total days with reservations: " + result.size());
+                if (!result.isEmpty()) {
+                    System.out.println("[DEBUG] First entry: " + result.entrySet().iterator().next());
+                }
+
+            } catch (SQLException e) {
+                System.err.println("[ERROR] SQLException occurred while executing query: " + e.getMessage());
+                System.err.println("[ERROR] SQL State: " + e.getSQLState());
+                System.err.println("[ERROR] Error Code: " + e.getErrorCode());
+                e.printStackTrace();
+                throw e;
             }
 
         } catch (SQLException e) {
-            System.err.println("[ERROR] SQLException occurred while executing query: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("[ERROR] Database operation failed: " + e.getMessage());
             throw e;
         } catch (Exception e) {
             System.err.println("[ERROR] Unexpected exception occurred: " + e.getMessage());
@@ -715,6 +848,7 @@ public class Livehouse_applicationDAO {
         System.out.println("[DEBUG] Returning result: " + result);
         return result;
     }
+
 
  // user_idからlivehouse_information_idを取得
  public int getLivehouseIdByUserId(int userId) {

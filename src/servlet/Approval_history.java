@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,39 +21,42 @@ import model.LivehouseApplicationWithGroup;
 public class Approval_history extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
- // Approval_history.java
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         DBManager dbManager = DBManager.getInstance();
         Livehouse_applicationDAO livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
 
+        // 年月を取得（パラメータがない場合は現在の年月）
         String yearParam = request.getParameter("year");
         String monthParam = request.getParameter("month");
-
         int year = (yearParam != null) ? Integer.parseInt(yearParam) : java.time.LocalDate.now().getYear();
         int month = (monthParam != null) ? Integer.parseInt(monthParam) : java.time.LocalDate.now().getMonthValue();
 
+        // ユーザーIDをセッションから取得
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         if (userId == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 
-        // List<LivehouseApplicationWithGroup>型に変更
-        List<LivehouseApplicationWithGroup> approvedReservations = livehouseApplicationDAO.getApprovedReservations(year, month, userId);
+        // cogig_or_solo を考慮した承認済みデータを取得
+        Map<Integer, List<LivehouseApplicationWithGroup>> approvedReservations = livehouseApplicationDAO.getAllApprovedReservations(year, month, userId);
 
-        if (approvedReservations != null && !approvedReservations.isEmpty()) {
-            System.out.println("[DEBUG] 承認済みの予約データ件数: " + approvedReservations.size());
+        // cogig_or_solo = 1（個人）のリスト
+        List<LivehouseApplicationWithGroup> approvedReservations1 = approvedReservations.get(1);
 
-            for (LivehouseApplicationWithGroup app : approvedReservations) {
-                System.out.println("[DEBUG] 予約: " + app.getAccountName() + " | ジャンル: " + app.getGroupGenre());
-            }
-        } else {
-            System.out.println("[DEBUG] 承認済みの予約データが存在しません。");
-        }
+        // cogig_or_solo = 2（バンド）のリスト
+        List<LivehouseApplicationWithGroup> approvedReservations2 = approvedReservations.get(2);
 
-        request.setAttribute("approvedReservations", approvedReservations);
+        // デバッグ用出力
+        System.out.println("[DEBUG] cogig_or_solo=1 のデータ件数: " + (approvedReservations1 != null ? approvedReservations1.size() : 0));
+        System.out.println("[DEBUG] cogig_or_solo=2 のデータ件数: " + (approvedReservations2 != null ? approvedReservations2.size() : 0));
+
+        // リクエストスコープに設定
+        request.setAttribute("approvedReservations1", approvedReservations1);
+        request.setAttribute("approvedReservations2", approvedReservations2);
+
+        // JSP にフォワード
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/approval_history.jsp").forward(request, response);
     }
 

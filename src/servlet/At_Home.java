@@ -18,8 +18,10 @@ import javax.servlet.http.HttpSession;
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
 import dao.Livehouse_informationDAO;
+import dao.NoticeDAO;
 import model.Livehouse_application;
 import model.Livehouse_information;
+import model.Notice;
 
 @WebServlet("/At_Home")
 public class At_Home extends HttpServlet {
@@ -43,12 +45,25 @@ public class At_Home extends HttpServlet {
         try {
             // DAOインスタンスを取得
             DBManager dbManager = DBManager.getInstance();
+            NoticeDAO noticeDAO = new NoticeDAO(dbManager);
             Livehouse_applicationDAO applicationDAO = new Livehouse_applicationDAO(dbManager);
             Livehouse_informationDAO informationDAO = new Livehouse_informationDAO(dbManager);
 
             // true/false に基づく申請情報を一括取得
             List<Livehouse_application> applicationsTrue = applicationDAO.getApplicationsByUserId(userId, true);
             List<Livehouse_application> applicationsFalse = applicationDAO.getApplicationsByUserId(userId, false);
+            
+            List<Notice> notifications = noticeDAO.getNotificationsByUserId(userId);
+            
+            // 通知の取得状況をログ出力
+            System.out.println("[DEBUG] Retrieved " + notifications.size() + " notifications for user ID: " + userId);
+            for (Notice notice : notifications) {
+                System.out.println("[DEBUG] Notification ID: " + notice.getId());
+                System.out.println("[DEBUG] Message: " + notice.getMessage());
+                System.out.println("[DEBUG] Create Date: " + notice.getCreateDate());
+                System.out.println("[DEBUG] Update Date: " + notice.getUpdateDate());
+                System.out.println("[DEBUG] Is Read: " + notice.isRead());
+            }
 
             // 必要なライブハウス情報IDを抽出
             Set<Integer> livehouseIds = new HashSet<>();
@@ -65,6 +80,8 @@ public class At_Home extends HttpServlet {
             // リクエスト属性にセット
             request.setAttribute("applicationsTrue", applicationsTrue);
             request.setAttribute("applicationsFalse", applicationsFalse);
+            
+            request.setAttribute("notifications", notifications);
 
             // JSPに転送
             request.getRequestDispatcher("WEB-INF/jsp/artist/at_home.jsp").forward(request, response);

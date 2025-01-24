@@ -315,10 +315,6 @@ td.is-disabled {
     margin: 0 0 2px 20px; 
 }
 
-.artist-search-decision{
-       
-}
-
 .artist-search-decision-button{
     text-decoration: none;
 }
@@ -360,28 +356,6 @@ td.is-disabled {
     color: #fff;
 }
 
-.artist-livehouse-detail-section{
-
-}
-
-
-.artist-livehouse-detail-oner{
-    
-
-}
-
-
-
-
-.artist_livehouse_details-Discription{
-
-}
-
-
-.A-t-discription-ul{
-
-}
-
 .a-t-livehouse-detail-img-div{
     display: flex;
     justify-content: center;
@@ -393,10 +367,6 @@ td.is-disabled {
     height: 500px;
 }
 
-.A-t-l-detail-img-div{
-
-
-}
 .A-t-detail-livehousename{
     display: flex;
     justify-content: center;
@@ -410,8 +380,6 @@ td.is-disabled {
 .A-t-discription-ul3{
     list-style: none;
 }
-
-
 
 /*空き状況・予約見出し*/
 .OpenSpots-Reserve{
@@ -815,6 +783,7 @@ input[type="submit"]:active, .info-check:active {
 
 .keep-btn {
     padding: 12px 24px;
+    margin:850px 0 0 0px;
     font-size: 18px;
     font-weight: bold;
     color: white;
@@ -824,8 +793,6 @@ input[type="submit"]:active, .info-check:active {
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
-    display: flex;
-    justify-content: center;
   }
 
 
@@ -914,9 +881,6 @@ input[type="submit"]:active, .info-check:active {
 
 .confirmation-info{
     list-style: none;
-}
-.band-confirmation-container{
-
 }
 
 .reservation-details-container h2{
@@ -1126,8 +1090,6 @@ input[type="submit"]:active, .info-check:active {
   
 
   /* ライブハウスホームページ */
-
-
 .livehouse-home-main{
     background: url(../img/key-visual.jpg);
     background-size: cover; /* 画像をコンテナ全体に拡大縮小して表示 */
@@ -1547,13 +1509,6 @@ th.b {
 
 }
 
-.a-t-reservation-info-list{
-    
-}
-
-
-
-
 /* アーティストセクションを中央に配置 */
 .a-t-artist-section {
    /* セクションの幅を調整 */
@@ -1887,7 +1842,6 @@ th.b {
 	margin-left: 30px;
 }
 /*ライブハウスホームページ*/
-
 .live-home-calendar-div{
     display: flex;
     justify-content: center;
@@ -2042,10 +1996,6 @@ th.b {
     font-size: 1.8rem;
 }
 
-.top-login-id-txt{
-    
-}
-
 #top-loginId-txtbox{
     width: 400px;
     height: 20px;
@@ -2053,10 +2003,6 @@ th.b {
 
 .top-login-pass{
     font-size: 1.8rem;
-}
-
-.top-login-pass-txt{
-    
 }
 
 .top-login-btn{
