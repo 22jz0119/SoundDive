@@ -1461,10 +1461,78 @@ th.b {
 	justify-content: center;
 }
 
+.profile-card{
+	width: 200px;
+	height: 30px;
+	margin: 30px 0 0 850px;
+	
+}
+
 
 
 .member {
     padding: 10px;
+}
+
+.plus-member-details-div1{
+	margin-top: 30px;
+	display: flex;
+	justify-content: center;
+}
+
+.plus-member-detail-title1{
+	text-align: center;
+}
+
+
+.plus-member-details-div2{
+	margin-top: 30px;
+	display: flex;
+	justify-content: center;
+}
+
+.plus-member-detail-title2{
+	text-align: center;
+}
+
+.plus-member-detail-btn{
+	display: flex;
+	justify-content: center;
+	margin-top: 30px;
+	margin-left: 150px;
+	
+}
+
+.plus-member-detail-button{
+	background-color: #4CAF50; /* 緑色の背景 */
+    color: white; /* 文字色は白 */
+    border: none; /* ボーダーなし */
+    padding: 10px 20px; /* ボタンの内側に余白 */
+    font-size: 16px; /* 文字のサイズ */
+    font-weight: bold; /* 太字 */
+    border-radius: 5px; /* 角を丸くする */
+    cursor: pointer; /* クリックできることを示すカーソル */
+    transition: background-color 0.3s ease; /* 背景色変更のアニメーション */
+}
+
+.remove-member-button{
+	margin-top: 20px;
+	margin-left: 1000px;
+	background-color: #4CAF50; /* 緑色の背景 */
+    color: white; /* 文字色は白 */
+    border: none; /* ボーダーなし */
+    padding: 10px 20px; /* ボタンの内側に余白 */
+    font-size: 16px; /* 文字のサイズ */
+    font-weight: bold; /* 太字 */
+    border-radius: 5px; /* 角を丸くする */
+    cursor: pointer; /* クリックできることを示すカーソル */
+    transition: background-color 0.3s ease;
+}
+
+.form-group-genre{
+	margin-top: 50px;
+	display: flex;
+	justify-content: center;
 }
 
 
@@ -1639,7 +1707,7 @@ th.b {
 
 .form-groupp {
     width: 20%;
-    margin-top: 150px;
+    margin-top: 30px;
     padding: 10px 0 10px 0;
     font-size: large;
     text-align: center;
@@ -1650,16 +1718,12 @@ th.b {
     margin-top: 10px;
 }
 
-.profile-card {
-   	width: 300px;
-    padding: 20px 0 20px 0;
-    text-align: center;
-}
+
 
 .member-details {
     display: flex;
     justify-content: center;
-    margin-top: 100px;
+    margin-top: 20px;
 }
 
 .member {
