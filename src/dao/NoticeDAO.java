@@ -73,5 +73,4 @@ public class NoticeDAO {
         }
         return notifications;
     }
-
 }
