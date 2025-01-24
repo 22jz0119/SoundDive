@@ -23,6 +23,45 @@ public class NoticeDAO {
         }
         return instance;
     }
+    
+    public void sendNotification(int applicationId, int userId, String message) {
+        try {
+            NoticeDAO noticeDAO = NoticeDAO.getInstance(dbManager);
+            noticeDAO.insertNotice(applicationId, userId, message);
+            System.out.println("通知が送信されました！");
+        } catch (SQLException e) {
+            System.err.println("通知の送信に失敗しました: " + e.getMessage());
+        }
+    }
+    
+    public void displayNotifications(int userId) {
+        try {
+            NoticeDAO noticeDAO = NoticeDAO.getInstance(dbManager);
+            List<Notice> notifications = noticeDAO.getNotificationsByUserId(userId);
+            if (notifications.isEmpty()) {
+                System.out.println("現在通知はありません。");
+            } else {
+                for (Notice notice : notifications) {
+                    System.out.println("通知 ID: " + notice.getId());
+                    System.out.println("メッセージ: " + notice.getMessage());
+                    System.out.println("作成日: " + notice.getCreateDate());
+                    System.out.println("既読: " + (notice.isRead() ? "はい" : "いいえ"));
+                    System.out.println("--------------------");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("通知の取得に失敗しました: " + e.getMessage());
+        }
+    }
+
+    public void markNotificationAsRead(int noticeId) throws SQLException {
+        String sql = "UPDATE notice_table SET is_read = 1 WHERE id = ?";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, noticeId);
+            stmt.executeUpdate();
+        }
+    }
 
     /**
      * 通知を挿入するメソッド
