@@ -83,7 +83,7 @@ public class Livehouse_applicationDAO {
                      "VALUES (?, ?, ?, ?, 1, false, NOW(), NOW())";
 
         try (Connection conn = dbManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             // パラメータを設定
             stmt.setInt(1, livehouseId); // livehouse_information_id
@@ -95,6 +95,18 @@ public class Livehouse_applicationDAO {
             int rowsAffected = stmt.executeUpdate();
             System.out.println("[DEBUG] Rows affected by saveSoloReservation: " + rowsAffected);
 
+            // 挿入されたIDを取得
+            if (rowsAffected > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int applicationId = generatedKeys.getInt(1);
+
+                        // 通知を送信
+                        sendNotification(applicationId, userId, livehouseId, dateTime);
+                    }
+                }
+            }
+
             // 成功した場合 true を返す
             return rowsAffected > 0;
         } catch (SQLException e) {
@@ -104,6 +116,32 @@ public class Livehouse_applicationDAO {
             return false;
         }
     }
+
+    /**
+     * 通知を送信するヘルパーメソッド
+     *
+     * @param applicationId 挿入されたライブハウス申請ID
+     * @param userId ユーザーID
+     * @param livehouseId ライブハウスID
+     * @param dateTime 予約日時
+     */
+    private void sendNotification(int applicationId, int userId, int livehouseId, LocalDateTime dateTime) {
+        NoticeDAO noticeDAO = NoticeDAO.getInstance(dbManager);
+
+        // 通知メッセージを作成
+        String message = "新しいSOLO予約が作成されました: ライブハウスID " + livehouseId +
+                         ", 予約日時: " + dateTime;
+
+        try {
+            // 通知を挿入
+            noticeDAO.insertNotice(applicationId, userId, message);
+            System.out.println("[DEBUG] Notification sent successfully.");
+        } catch (SQLException e) {
+            System.err.println("[ERROR] Failed to send notification: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     
     // Livehouse_applicationを挿入するメソッド
     public boolean insertLivehouse_application(Livehouse_application livehouse_application) {

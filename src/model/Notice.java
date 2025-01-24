@@ -1,14 +1,29 @@
 package model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Notice {
     private int id;
-    private int livehouse_application_id;
-    private LocalDate create_date;
-    private LocalDate update_date;
+    private int livehouseApplicationId;
+    private LocalDateTime createDate;
+    private LocalDateTime updateDate;
     private String message; // MySQLのTEXT型に対応
-    private boolean is_approved;
+    private boolean isRead; // MySQLのtinyint(1)型に対応
+    private int userId;
+
+    // デフォルトコンストラクタ
+    public Notice() {}
+
+    // コンストラクタ
+    public Notice(int id, int livehouseApplicationId, LocalDateTime createDate, LocalDateTime updateDate, String message, boolean isRead, int userId) {
+        this.id = id;
+        this.livehouseApplicationId = livehouseApplicationId;
+        this.createDate = createDate;
+        this.updateDate = updateDate;
+        this.message = message;
+        this.isRead = isRead;
+        this.userId = userId;
+    }
 
     // ゲッターとセッター
     public int getId() {
@@ -19,53 +34,51 @@ public class Notice {
         this.id = id;
     }
 
-    public int getLivehouse_application_id() {
-        return livehouse_application_id;
+    public int getLivehouseApplicationId() {
+        return livehouseApplicationId;
     }
 
-    public void setLivehouse_application_id(int livehouse_application_id) {
-        this.livehouse_application_id = livehouse_application_id;
+    public void setLivehouseApplicationId(int livehouseApplicationId) {
+        this.livehouseApplicationId = livehouseApplicationId;
     }
 
-    public LocalDate getCreate_date() {
-        return create_date;
+    public LocalDateTime getCreateDate() {
+        return createDate;
     }
 
-    public void setCreate_date(LocalDate create_date) {
-        this.create_date = create_date;
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
     }
 
-    public LocalDate getUpdate_date() {
-        return update_date;
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
     }
 
-    public void setUpdate_date(LocalDate update_date) {
-        this.update_date = update_date;
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
     }
 
-    public String getMessage() { // MySQL TEXT型に対応
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) { // MySQL TEXT型に対応
+    public void setMessage(String message) {
         this.message = message;
     }
 
-    public boolean isApproved() { // メソッド名を一般的な形式に
-        return is_approved;
+    public boolean isRead() {
+        return isRead;
     }
 
-    public void setApproved(boolean is_approved) {
-        this.is_approved = is_approved;
+    public void setRead(boolean isRead) {
+        this.isRead = isRead;
     }
 
-    // コンストラクタ
-    public Notice(int id, int livehouse_application_id, LocalDate create_date, LocalDate update_date, String message, boolean is_approved) {
-        this.id = id;
-        this.livehouse_application_id = livehouse_application_id;
-        this.create_date = create_date;
-        this.update_date = update_date;
-        this.message = message; // MySQL TEXT型に対応
-        this.is_approved = is_approved;
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

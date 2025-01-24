@@ -31,26 +31,28 @@
     
     <form action="<%= request.getContextPath() %>/At_Mypage" method="POST" enctype="multipart/form-data">
         <!-- プロフィール画像 -->
-		<div class="profile-container">
-		    <label class="profile-icon" for="fileInput">
-		        <c:choose>
-		            <c:when test="${not empty userGroup.picture_image_movie}">
-		                <!-- 画像がある場合 -->
-		                <img id="profileImage" src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" alt="Profile Image" width="150px" height="150px" style="border-radius: 50%;">
-		            </c:when>
-		            <c:otherwise>
-		                <!-- 画像がない場合 -->
-		                <span class="placeholder-text">アイコンをアップロード</span>
-		            </c:otherwise>
-		        </c:choose>
-		    </label>
-		
-		    <!-- ファイル選択ボタン -->
-		    <input type="file" id="fileInput" name="picture_image_movie" accept="image/*" style="display: none;" onchange="previewImage()">
-		</div>
+        <div class="profile-container">
+            <label class="profile-icon" for="fileInput">
+                <c:choose>
+                    <c:when test="${not empty userGroup.picture_image_movie}">
+                        <!-- 画像がある場合 -->
+                        <img src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" alt="Profile Image" />
+                    </c:when>
+                    <c:otherwise>
+                        <!-- 画像がない場合 -->
+                        <span class="placeholder-text">アイコンをアップロード</span>
+                        <img id="profileImage" src="" alt="" style="display: none;">
+                    </c:otherwise>
+                </c:choose>
+            </label>
+            <input type="file" id="fileInput" name="picture_image_movie" accept="image/*" style="display: none;" onchange="previewImage()">
+        </div>
 
         <!-- バンド名入力 -->
         <div class="form-group-1">
+        	<div>
+        		<p>アーティスト名</p>
+        	</div>
             <c:choose>
                 <c:when test="${not empty userGroup}">
                     <input type="text" id="band-name" class="form-groupp" name="account_name" 
@@ -71,34 +73,41 @@
                     <input type="hidden" name="existing_member_ids[]" value="${member.id}">
                     
                     <!-- 氏名 -->
-                    <div>
-                    	<input type="text" class="profile-card" name="member_name[]" placeholder="氏名" 
+                    <div class="plus-member-details-div1">
+                    	<p class="plus-member-detail-title1">メンバー名</p>
+                    	<input type="text" class="" name="member_name[]" placeholder="氏名" 
                            value="${member.member_name}" required>
                     </div>
                     
                     
                     <!-- 役割 -->
-                    <div>
-                    	<input type="text" class="profile-card p-c-sub" name="member_role[]" placeholder="役割 例: ボーカル" 
+                    <div class="plus-member-details-div2">
+                    	<p class="plus-member-detail-title2">ポジション</p>
+                    	<input type="text" class="" name="member_role[]" placeholder="役割 例: ボーカル" 
                            value="${member.member_position}" required>
                     </div>
                     
                     
-                    
                     <!-- 削除チェックボックス -->
-                    <div>
-                    	
-                    
+                    <%-- 
+                    <div class="plus-member-details-div3">
+                    	<label>
+                        	<input type="checkbox" name="deleted_member_ids[]" value="${member.id}">
+                    	</label>
                     </div>
+                    --%>
                    
                 </div>
             </c:forEach>
         </div>
-        <button type="button" onclick="addMember()">メンバーを追加</button>
+        <div class="plus-member-detail-btn">
+        	<button type="button" onclick="addMember()" class="plus-member-detail-button">メンバーを追加</button>
+        </div>
+        
         
         <!-- ジャンル入力 -->
 		<div class="form-group-genre">
-		    <label for="group-genre">ジャンル:</label>
+		    <label for="group-genre">ジャンル</label>
 		    <c:choose>
 		        <c:when test="${not empty userGroup}">
 		            <input type="text" id="group-genre" name="group_genre" placeholder="ジャンルを入力" value="${userGroup.group_genre}" required>
@@ -135,33 +144,21 @@
     </form>
 
     <script>
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const fileInput = document.getElementById('fileInput');
-        if (fileInput) {
-            fileInput.addEventListener('change', previewImage);
-        }
-    });
-
-    
-    function previewImage() {
-        const file = document.getElementById('fileInput').files[0];
-        if (file) {
+        function previewImage() {
+            const file = document.getElementById('fileInput').files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
                 const profileImage = document.getElementById('profileImage');
-                if (profileImage) {
-                    profileImage.src = e.target.result;
-                    profileImage.style.display = 'block';
-                    const placeholderText = document.querySelector('.placeholder-text');
-                    if (placeholderText) placeholderText.style.display = 'none';
-                } else {
-                    console.error("⚠️ プロフィール画像が見つかりません。");
-                }
-            };
-            reader.readAsDataURL(file);
+                profileImage.src = e.target.result;
+                profileImage.style.display = 'block';
+
+                const placeholderText = document.querySelector('.placeholder-text');
+                if (placeholderText) placeholderText.style.display = 'none';
+            }
+            if (file) {
+                reader.readAsDataURL(file);
+            }
         }
-    }
 
         function addMember() {
             const container = document.getElementById('member-details-container');
