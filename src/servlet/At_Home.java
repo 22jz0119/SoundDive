@@ -156,6 +156,7 @@ public class At_Home extends HttpServlet {
         }
     }
 
+    
     private void logout(HttpSession session) {
         if (isLoggedIn(session)) {
             Integer userId = (Integer) session.getAttribute("userId");
