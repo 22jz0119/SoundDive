@@ -160,49 +160,40 @@ function generateCalendar(year, month, reservationData) {
         }
 
         calendarBody.appendChild(tr);
-    }
 
     console.log("[DEBUG] カレンダー生成完了");
 }
 
 console.log(`[DEBUG] Generated URL: ${url}`);
 
-
+//サーブレット遷移
 
 function openReservationList(element) {
     const year = element.getAttribute('data-year');  // 年
     const month = element.getAttribute('data-month');  // 月
     const day = element.getAttribute('data-day');  // クリックした日付
 
-    // reservationData からクリックされた日付に対応する cogig_or_solo の値を取得
+    // reservationData からクリックされた日付に対応するデータを取得
     const dateKey = `${year}-${month}-${day}`;
-    const reservation = reservationData[dateKey];
+    const reservations = reservationData[dateKey]; // 該当する日付の全予約データ
 
-    let cogigOrSolo = 2; // デフォルト値を設定（値がない場合は2）
+    if (reservations && Array.isArray(reservations)) {
+        // 該当日付のデータをJSON文字列としてサーバーに送信
+        const queryParams = new URLSearchParams({
+            year: year,
+            month: month,
+            day: day,
+            data: JSON.stringify(reservations) // データ全体を文字列化してクエリパラメータに含める
+        });
 
-    // reservationData から該当する日付の情報を取得し、cogig_or_solo の値を設定
-    if (reservation) {
-        cogigOrSolo = reservation.cogig_or_solo;  // 予約データから cogig_or_solo を取得
-        console.log(`[DEBUG] Reservation found for ${dateKey}: cogig_or_solo = ${cogigOrSolo}`);
-    } else {
-        console.log(`[DEBUG] No reservation found for ${dateKey}, using default cogig_or_solo = ${cogigOrSolo}`);
-    }
-
-    // URL 生成前に cogig_or_solo の値をログに出力
-    console.log(`[DEBUG] Final cogig_or_solo for ${dateKey}: ${cogigOrSolo}`);
-
-    if (day > 0 && day <= 31 && month >= 1 && month <= 12) {
-        // Application_list に遷移するURLを生成（cogig_or_soloを含む）
-        const url = `${contextPath}/Application_list?year=${year}&month=${month}&day=${day}&cogig_or_solo=${cogigOrSolo}`;
+        const url = `${contextPath}/Application_list?${queryParams.toString()}`;
         console.log(`[DEBUG] リダイレクト先: ${url}`);
-        window.location.href = url;  // 遷移するURLにリダイレクト
+        window.location.href = url;  // 生成されたURLにリダイレクト
     } else {
-        console.error("[ERROR] 無効な日付が指定されています");
-        alert("無効な日付です。");
+        console.error("[ERROR] 該当日付のデータが見つかりません");
+        alert("予約データが見つかりません。");
     }
 }
 
 
-
-
-});
+}

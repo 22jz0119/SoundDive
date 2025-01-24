@@ -1,9 +1,8 @@
 package servlet;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
+import model.LivehouseApplicationWithGroup;
 
 /**
  * Servlet implementation class Livehouse_home
@@ -27,8 +27,7 @@ public class Livehouse_home extends HttpServlet {
     @Override
     public void init() throws ServletException {
         log("[DEBUG] Initializing Livehouse_home servlet.");
-        DBManager dbManager = DBManager.getInstance();
-        dao = new Livehouse_applicationDAO(dbManager);
+        dao = new Livehouse_applicationDAO(DBManager.getInstance());
         log("[DEBUG] DAO initialized successfully.");
     }
 
@@ -39,81 +38,55 @@ public class Livehouse_home extends HttpServlet {
         String yearParam = request.getParameter("year");
         String monthParam = request.getParameter("month");
         String dayParam = request.getParameter("day");
-        String cogigOrSoloParam = request.getParameter("cogig_or_solo"); // 追加: cogig_or_solo パラメータの取得
+        String cogigOrSoloParam = request.getParameter("cogig_or_solo");
 
         try {
             int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam) : LocalDate.now().getYear();
             int month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam) : LocalDate.now().getMonthValue();
             int day = (dayParam != null && !dayParam.isEmpty()) ? Integer.parseInt(dayParam) : -1;
-
-            // cogig_or_soloをデータに基づいて設定
             int cogigOrSolo = (cogigOrSoloParam != null && !cogigOrSoloParam.isEmpty()) ? Integer.parseInt(cogigOrSoloParam) : 1;
-            log("[DEBUG] Parsed year: " + year + ", month: " + month + ", day: " + day + ", cogig_or_solo: " + cogigOrSolo);
+
+            log("[DEBUG] Received parameters - year: " + year + ", month: " + month + ", day: " + day + ", cogig_or_solo: " + cogigOrSolo);
 
             if (month < 1 || month > 12) {
                 throw new IllegalArgumentException("月の値が不正です: " + month);
             }
 
-            // セッションからログインユーザー情報を取得
-            HttpSession session = request.getSession(false); // 既存のセッションのみ取得
-
-            if (session == null) {
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("userId") == null) {
+                response.sendRedirect(request.getContextPath() + "/Top");
                 return;
             }
-
-            // セッションからユーザーIDを取得
-            Integer userId = (Integer) session.getAttribute("userId");
-
-            if (userId == null) {
-                return;
-            }
-
-            log("[DEBUG] 取得したユーザーID: " + userId);
-
-            // ライブハウスIDを取得
+            int userId = (int) session.getAttribute("userId");
             int livehouseId = dao.getLivehouseIdByUserId(userId);
-
             if (livehouseId == -1) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "ライブハウス情報が見つかりません。");
                 return;
             }
 
-            log("[DEBUG] 取得したライブハウスID: " + livehouseId);
+            // データ取得
+            List<LivehouseApplicationWithGroup> cogigOrSolo1Reservations = dao.getReservationsWithTrueFalseZero(year, month, day);
+            List<LivehouseApplicationWithGroup> cogigOrSolo2Reservations = dao.getReservationsByCogigOrSolo(year, month, day);
 
-            // 予約データの取得
-            log("[DEBUG] DAO method呼び出し直前 - year: " + year + ", month: " + month + ", userId: " + userId);
-            Map<String, Integer> reservationCounts = dao.getReservationCountsByLivehouse(year, month, userId);
-            log("[DEBUG] DAO method実行後 - reservationCounts: " + reservationCounts);
+            log("[DEBUG] Retrieved reservations - cogig_or_solo=1: " + cogigOrSolo1Reservations.size() +
+                ", cogig_or_solo=2: " + cogigOrSolo2Reservations.size());
 
-            request.setAttribute("year", year);
-            request.setAttribute("month", month);
-            request.setAttribute("day", day);
-            request.setAttribute("cogig_or_solo", cogigOrSolo); // 追加: cogig_or_solo パラメータをリクエスト属性に設定
+            request.setAttribute("cogigOrSolo1Reservations", cogigOrSolo1Reservations);
+            request.setAttribute("cogigOrSolo2Reservations", cogigOrSolo2Reservations);
 
-            if (day != -1) {
-                String redirectUrl = String.format("/Application_list?year=%d&month=%d&day=%d&cogig_or_solo=%d", year, month, day, cogigOrSolo);
-                log("[DEBUG] Redirecting to: " + redirectUrl);
-                response.sendRedirect(request.getContextPath() + redirectUrl);
+            if (day > 0) {
+                response.sendRedirect(String.format("%s/Application_list?year=%d&month=%d&day=%d&cogig_or_solo=%d",
+                    request.getContextPath(), year, month, day, cogigOrSolo));
                 return;
             }
 
             request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
-            log("[DEBUG] Successfully forwarded to JSP.");
-
-        } catch (NumberFormatException e) {
-            log("[ERROR] Invalid parameter format: year or month is not a valid number.", e);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "日付パラメータが不正です。正しい値を入力してください。");
-        } catch (SQLException e) {
-            log("[ERROR] SQLエラー: " + e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SQLエラーが発生しました。");
-        } catch (NullPointerException e) {
-            log("[ERROR] NullPointerException: " + e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "データ取得中にエラーが発生しました。");
-        } catch (IllegalArgumentException e) {
-            log("[ERROR] Invalid parameter value: " + e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
-            log("[ERROR] その他のエラー: " + e.getMessage(), e);
+            log("[ERROR] An error occurred: " + e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "システムエラーが発生しました。");
         }
     }
+
 }
+
+
