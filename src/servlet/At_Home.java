@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,10 +19,8 @@ import javax.servlet.http.HttpSession;
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
 import dao.Livehouse_informationDAO;
-import dao.NoticeDAO;
 import model.Livehouse_application;
 import model.Livehouse_information;
-import model.Notice;
 import service.NotificationService;
 
 @WebServlet("/At_Home")
@@ -30,7 +29,6 @@ public class At_Home extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // ログイン状態確認
         if (!isLoggedIn(request, response)) {
             return;
         }
@@ -46,35 +44,57 @@ public class At_Home extends HttpServlet {
         try {
             // DAOインスタンスを取得
             DBManager dbManager = DBManager.getInstance();
-            NoticeDAO noticeDAO = new NoticeDAO(dbManager);
             Livehouse_applicationDAO applicationDAO = new Livehouse_applicationDAO(dbManager);
             Livehouse_informationDAO informationDAO = new Livehouse_informationDAO(dbManager);
+
+            // DateTimeFormatterを定義
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
             // true/false に基づく申請情報を一括取得
             List<Livehouse_application> applicationsTrue = applicationDAO.getApplicationsByUserId(userId, true);
             List<Livehouse_application> applicationsFalse = applicationDAO.getApplicationsByUserId(userId, false);
 
-            // サービス層で処理
-            NotificationService notificationService = new NotificationService(dbManager);
-            List<Notice> notifications = notificationService.getUserNotifications(userId);
-            request.setAttribute("notifications", notifications);
-
-            // 通知の取得状況をログ出力
-            System.out.println("[DEBUG] Retrieved " + notifications.size() + " notifications for user ID: " + userId);
-
-            // 必要なライブハウス情報IDを抽出
+            // ライブハウス情報IDを収集
             Set<Integer> livehouseIds = new HashSet<>();
             applicationsTrue.forEach(app -> livehouseIds.add(app.getLivehouse_information_id()));
             applicationsFalse.forEach(app -> livehouseIds.add(app.getLivehouse_information_id()));
+
+            // デバッグ: 収集したライブハウスIDを確認
+            System.out.println("[DEBUG] Collected Livehouse IDs: " + livehouseIds);
 
             // ライブハウス情報をバッチで取得
             Map<Integer, Livehouse_information> livehouseInfoMap = informationDAO.findLivehouseInformationByIds(new ArrayList<>(livehouseIds));
 
             // 申請情報に対応するライブハウス情報をセット
-            applicationsTrue.forEach(app -> app.setLivehouse_information(livehouseInfoMap.get(app.getLivehouse_information_id())));
-            applicationsFalse.forEach(app -> app.setLivehouse_information(livehouseInfoMap.get(app.getLivehouse_information_id())));
+            applicationsTrue.forEach(app -> {
+                Livehouse_information livehouseInfo = livehouseInfoMap.get(app.getLivehouse_information_id());
+                if (livehouseInfo != null) {
+                    app.setLivehouse_information(livehouseInfo);
+                    System.out.println("[DEBUG] Application (True): ID=" + app.getId() +
+                            ", LivehouseID=" + app.getLivehouse_information_id() +
+                            ", LivehouseName=" + livehouseInfo.getLivehouse_name());
+                } else {
+                    System.out.println("[DEBUG] Application (True): ID=" + app.getId() +
+                            ", LivehouseID=" + app.getLivehouse_information_id() +
+                            " has no associated Livehouse Information.");
+                }
+            });
 
-            // リクエスト属性にセット
+            applicationsFalse.forEach(app -> {
+                Livehouse_information livehouseInfo = livehouseInfoMap.get(app.getLivehouse_information_id());
+                if (livehouseInfo != null) {
+                    app.setLivehouse_information(livehouseInfo);
+                    System.out.println("[DEBUG] Application (False): ID=" + app.getId() +
+                            ", LivehouseID=" + app.getLivehouse_information_id() +
+                            ", LivehouseName=" + livehouseInfo.getLivehouse_name());
+                } else {
+                    System.out.println("[DEBUG] Application (False): ID=" + app.getId() +
+                            ", LivehouseID=" + app.getLivehouse_information_id() +
+                            " has no associated Livehouse Information.");
+                }
+            });
+
+            // 必要なリクエスト属性にセット
             request.setAttribute("applicationsTrue", applicationsTrue);
             request.setAttribute("applicationsFalse", applicationsFalse);
 

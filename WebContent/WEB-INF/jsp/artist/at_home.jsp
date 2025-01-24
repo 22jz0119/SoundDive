@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="model.Notice" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 
 <!DOCTYPE html>
 <html lang="ja">
@@ -93,6 +95,7 @@
                         </ul>
                         <ul>
                             <li>${app.livehouse_information.live_address}</li>
+                            <li>電話番号</li>
                             <li>${app.livehouse_information.live_tel_number}</li>
                         </ul>
                     </div>
@@ -108,6 +111,7 @@
                         </ul>
                         <ul>
                             <li>${app.livehouse_information.live_address}</li>
+                            <li>電話番号</li>
                             <li>${app.livehouse_information.live_tel_number}</li>
                         </ul>
                     </div>
