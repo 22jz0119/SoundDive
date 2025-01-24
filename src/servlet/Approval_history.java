@@ -61,7 +61,7 @@ public class Approval_history extends HttpServlet {
         System.out.println("[DEBUG] パラメータ: year=" + year + ", month=" + month + ", day=" + day + ", userId=" + userId);
 
         // DAOメソッドでデータ取得
-        List<LivehouseApplicationWithGroup> approvedReservations = livehouseApplicationDAO.getApprovedReservations(year, month, day);
+        List<LivehouseApplicationWithGroup> approvedReservations = livehouseApplicationDAO.getApprovedReservations(userId,year, month, day);
 
         if (approvedReservations != null && !approvedReservations.isEmpty()) {
             System.out.println("[DEBUG] 承認済みの予約データ件数: " + approvedReservations.size());
