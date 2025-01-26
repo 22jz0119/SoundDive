@@ -315,10 +315,6 @@ td.is-disabled {
     margin: 0 0 2px 20px; 
 }
 
-.artist-search-decision{
-       
-}
-
 .artist-search-decision-button{
     text-decoration: none;
 }
@@ -360,28 +356,6 @@ td.is-disabled {
     color: #fff;
 }
 
-.artist-livehouse-detail-section{
-
-}
-
-
-.artist-livehouse-detail-oner{
-    
-
-}
-
-
-
-
-.artist_livehouse_details-Discription{
-
-}
-
-
-.A-t-discription-ul{
-
-}
-
 .a-t-livehouse-detail-img-div{
     display: flex;
     justify-content: center;
@@ -393,10 +367,6 @@ td.is-disabled {
     height: 500px;
 }
 
-.A-t-l-detail-img-div{
-
-
-}
 .A-t-detail-livehousename{
     display: flex;
     justify-content: center;
@@ -410,8 +380,6 @@ td.is-disabled {
 .A-t-discription-ul3{
     list-style: none;
 }
-
-
 
 /*空き状況・予約見出し*/
 .OpenSpots-Reserve{
@@ -914,9 +882,6 @@ input[type="submit"]:active, .info-check:active {
 .confirmation-info{
     list-style: none;
 }
-.band-confirmation-container{
-
-}
 
 .reservation-details-container h2{
     font-size: 2rem;
@@ -1125,8 +1090,6 @@ input[type="submit"]:active, .info-check:active {
   
 
   /* ライブハウスホームページ */
-
-
 .livehouse-home-main{
     background: url(../img/key-visual.jpg);
     background-size: cover; /* 画像をコンテナ全体に拡大縮小して表示 */
@@ -1460,11 +1423,80 @@ th.b {
 	justify-content: center;
 }
 
+.profile-card{
+	width: 200px;
+	height: 30px;
+	margin: 30px 0 0 850px;
+	
+}
+
 
 
 .member {
     padding: 10px;
 }
+
+.plus-member-details-div1{
+	margin-top: 30px;
+	display: flex;
+	justify-content: center;
+}
+
+.plus-member-detail-title1{
+	text-align: center;
+}
+
+
+.plus-member-details-div2{
+	margin-top: 30px;
+	display: flex;
+	justify-content: center;
+}
+
+.plus-member-detail-title2{
+	text-align: center;
+}
+
+.plus-member-detail-btn{
+	display: flex;
+	justify-content: center;
+	margin-top: 30px;
+	margin-left: 150px;
+	
+}
+
+.plus-member-detail-button{
+	background-color: #4CAF50; /* 緑色の背景 */
+    color: white; /* 文字色は白 */
+    border: none; /* ボーダーなし */
+    padding: 10px 20px; /* ボタンの内側に余白 */
+    font-size: 16px; /* 文字のサイズ */
+    font-weight: bold; /* 太字 */
+    border-radius: 5px; /* 角を丸くする */
+    cursor: pointer; /* クリックできることを示すカーソル */
+    transition: background-color 0.3s ease; /* 背景色変更のアニメーション */
+}
+
+.remove-member-button{
+	margin-top: 20px;
+	margin-left: 1000px;
+	background-color: #4CAF50; /* 緑色の背景 */
+    color: white; /* 文字色は白 */
+    border: none; /* ボーダーなし */
+    padding: 10px 20px; /* ボタンの内側に余白 */
+    font-size: 16px; /* 文字のサイズ */
+    font-weight: bold; /* 太字 */
+    border-radius: 5px; /* 角を丸くする */
+    cursor: pointer; /* クリックできることを示すカーソル */
+    transition: background-color 0.3s ease;
+}
+
+.form-group-genre{
+	margin-top: 50px;
+	display: flex;
+	justify-content: center;
+}
+
 
 
 /* ライブハウス予約確認ページ*/
@@ -1477,13 +1509,6 @@ th.b {
     letter-spacing: 0.1rem;
 
 }
-
-.a-t-reservation-info-list{
-    
-}
-
-
-
 
 /* アーティストセクションを中央に配置 */
 .a-t-artist-section {
@@ -1638,7 +1663,7 @@ th.b {
 
 .form-groupp {
     width: 20%;
-    margin-top: 150px;
+    margin-top: 30px;
     padding: 10px 0 10px 0;
     font-size: large;
     text-align: center;
@@ -1649,16 +1674,12 @@ th.b {
     margin-top: 10px;
 }
 
-.profile-card {
-   	width: 300px;
-    padding: 20px 0 20px 0;
-    text-align: center;
-}
+
 
 .member-details {
     display: flex;
     justify-content: center;
-    margin-top: 100px;
+    margin-top: 20px;
 }
 
 .member {
@@ -1822,7 +1843,6 @@ th.b {
 	margin-left: 30px;
 }
 /*ライブハウスホームページ*/
-
 .live-home-calendar-div{
     display: flex;
     justify-content: center;
@@ -1977,10 +1997,6 @@ th.b {
     font-size: 1.8rem;
 }
 
-.top-login-id-txt{
-    
-}
-
 #top-loginId-txtbox{
     width: 400px;
     height: 20px;
@@ -1988,10 +2004,6 @@ th.b {
 
 .top-login-pass{
     font-size: 1.8rem;
-}
-
-.top-login-pass-txt{
-    
 }
 
 .top-login-btn{

@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +21,7 @@ import dao.Livehouse_applicationDAO;
 import dao.Livehouse_informationDAO;
 import model.Livehouse_application;
 import model.Livehouse_information;
+import service.NotificationService;
 
 @WebServlet("/At_Home")
 public class At_Home extends HttpServlet {
@@ -27,7 +29,6 @@ public class At_Home extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // ログイン状態確認
         if (!isLoggedIn(request, response)) {
             return;
         }
@@ -46,23 +47,54 @@ public class At_Home extends HttpServlet {
             Livehouse_applicationDAO applicationDAO = new Livehouse_applicationDAO(dbManager);
             Livehouse_informationDAO informationDAO = new Livehouse_informationDAO(dbManager);
 
+            // DateTimeFormatterを定義
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
             // true/false に基づく申請情報を一括取得
             List<Livehouse_application> applicationsTrue = applicationDAO.getApplicationsByUserId(userId, true);
             List<Livehouse_application> applicationsFalse = applicationDAO.getApplicationsByUserId(userId, false);
 
-            // 必要なライブハウス情報IDを抽出
+            // ライブハウス情報IDを収集
             Set<Integer> livehouseIds = new HashSet<>();
             applicationsTrue.forEach(app -> livehouseIds.add(app.getLivehouse_information_id()));
             applicationsFalse.forEach(app -> livehouseIds.add(app.getLivehouse_information_id()));
+
+            // デバッグ: 収集したライブハウスIDを確認
+            System.out.println("[DEBUG] Collected Livehouse IDs: " + livehouseIds);
 
             // ライブハウス情報をバッチで取得
             Map<Integer, Livehouse_information> livehouseInfoMap = informationDAO.findLivehouseInformationByIds(new ArrayList<>(livehouseIds));
 
             // 申請情報に対応するライブハウス情報をセット
-            applicationsTrue.forEach(app -> app.setLivehouse_information(livehouseInfoMap.get(app.getLivehouse_information_id())));
-            applicationsFalse.forEach(app -> app.setLivehouse_information(livehouseInfoMap.get(app.getLivehouse_information_id())));
+            applicationsTrue.forEach(app -> {
+                Livehouse_information livehouseInfo = livehouseInfoMap.get(app.getLivehouse_information_id());
+                if (livehouseInfo != null) {
+                    app.setLivehouse_information(livehouseInfo);
+                    System.out.println("[DEBUG] Application (True): ID=" + app.getId() +
+                            ", LivehouseID=" + app.getLivehouse_information_id() +
+                            ", LivehouseName=" + livehouseInfo.getLivehouse_name());
+                } else {
+                    System.out.println("[DEBUG] Application (True): ID=" + app.getId() +
+                            ", LivehouseID=" + app.getLivehouse_information_id() +
+                            " has no associated Livehouse Information.");
+                }
+            });
 
-            // リクエスト属性にセット
+            applicationsFalse.forEach(app -> {
+                Livehouse_information livehouseInfo = livehouseInfoMap.get(app.getLivehouse_information_id());
+                if (livehouseInfo != null) {
+                    app.setLivehouse_information(livehouseInfo);
+                    System.out.println("[DEBUG] Application (False): ID=" + app.getId() +
+                            ", LivehouseID=" + app.getLivehouse_information_id() +
+                            ", LivehouseName=" + livehouseInfo.getLivehouse_name());
+                } else {
+                    System.out.println("[DEBUG] Application (False): ID=" + app.getId() +
+                            ", LivehouseID=" + app.getLivehouse_information_id() +
+                            " has no associated Livehouse Information.");
+                }
+            });
+
+            // 必要なリクエスト属性にセット
             request.setAttribute("applicationsTrue", applicationsTrue);
             request.setAttribute("applicationsFalse", applicationsFalse);
 
@@ -83,40 +115,81 @@ public class At_Home extends HttpServlet {
 
         String action = request.getParameter("action");
 
-        // ログアウト処理の追加
-        if ("logout".equals(action)) {
-            logout(request.getSession());  // ログアウト実行
-            response.sendRedirect(request.getContextPath() + "/Top");  // ログアウト後にトップページへリダイレクト
-            return;
+        try {
+            DBManager dbManager = DBManager.getInstance();
+            NotificationService notificationService = new NotificationService(dbManager);
+
+            // 各アクションに対応する処理
+            switch (action) {
+                case "markAsRead": // 通知を既読にする処理
+                    handleMarkAsRead(request, response, notificationService);
+                    break;
+
+                case "logout": // ログアウト処理
+                    logout(request.getSession());
+                    response.sendRedirect(request.getContextPath() + "/Top");
+                    break;
+
+                case "solo": // SOLO LIVE への遷移
+                    response.sendRedirect(request.getContextPath() + "/At_livehouse_search?livehouse_type=solo");
+                    break;
+
+                case "multi": // MULTI LIVE への遷移
+                    response.sendRedirect(request.getContextPath() + "/At_Cogig?livehouse_type=multi");
+                    break;
+
+                default: // デフォルトのリダイレクト
+                    response.sendRedirect(request.getContextPath() + "/At_Home");
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "サーバーエラーが発生しました。");
         }
-
-        String redirectPath = switch (action) {
-            case "solo" -> "/At_livehouse_search?livehouse_type=solo";
-            case "multi" -> "/At_Cogig?livehouse_type=multi";
-            default -> "/At_Home";
-        };
-
-        response.sendRedirect(request.getContextPath() + redirectPath);
     }
 
+    private void handleMarkAsRead(HttpServletRequest request, HttpServletResponse response, NotificationService notificationService) throws IOException {
+        String noticeIdParam = request.getParameter("noticeId");
+        System.out.println("[DEBUG] Received noticeId: " + noticeIdParam); // デバッグ出力
+
+        if (noticeIdParam != null) {
+            try {
+                int noticeId = Integer.parseInt(noticeIdParam);
+
+                // 通知を既読にする
+                notificationService.markAsRead(noticeId);
+
+                System.out.println("[DEBUG] Notification ID " + noticeId + " marked as read.");
+                response.setContentType("application/json");
+                response.getWriter().write("{\"status\":\"success\"}");
+                response.setStatus(HttpServletResponse.SC_OK); // 成功レスポンス
+            } catch (NumberFormatException e) {
+                System.err.println("[ERROR] Invalid notice ID: " + noticeIdParam);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な通知IDです。");
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "通知の更新に失敗しました。");
+            }
+        } else {
+            System.err.println("[ERROR] No noticeId parameter provided");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "通知IDが指定されていません。");
+        }
+    }
+
+    
     private void logout(HttpSession session) {
         if (isLoggedIn(session)) {
-            // ログアウト前のログ
             Integer userId = (Integer) session.getAttribute("userId");
             System.out.println("Logging out user with ID: " + userId + ". Session ID: " + session.getId());
 
-            // ユーザーIDをセッションから削除し、セッション無効化
             session.removeAttribute("userId");
             session.invalidate();
 
-            // ログアウト後のログ
             System.out.println("User with ID: " + userId + " logged out successfully. Session invalidated.");
         } else {
-            // ログインしていない場合のログ
             System.out.println("No user is currently logged in.");
         }
     }
-
 
     private boolean isLoggedIn(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);

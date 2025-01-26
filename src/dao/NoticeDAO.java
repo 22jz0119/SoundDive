@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import model.Notice;
 
@@ -11,7 +13,7 @@ public class NoticeDAO {
     private static NoticeDAO instance;
     private DBManager dbManager;
 
-    private NoticeDAO(DBManager dbManager) {
+    public NoticeDAO(DBManager dbManager) {
         this.dbManager = dbManager;
     }
 
@@ -21,90 +23,93 @@ public class NoticeDAO {
         }
         return instance;
     }
-
-    // 通知を挿入するメソッド
-    public boolean addNotice(Notice notice) {
-        String sql = "INSERT INTO notice_table (livehouse_application_id, create_date, update_date, message, is_approved) VALUES (?, NOW(), NOW(), ?, ?)";
-        try (Connection conn = dbManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, notice.getLivehouse_application_id());
-            pstmt.setString(2, notice.getMessage());
-            pstmt.setBoolean(3, notice.isApproved());
-
-            // デバッグ用ログ
-            System.out.println("[DEBUG] Executing SQL: " + sql);
-            System.out.println("[DEBUG] Params: livehouse_application_id=" + notice.getLivehouse_application_id() +
-                               ", message=" + notice.getMessage() +
-                               ", is_approved=" + notice.isApproved());
-
-            int rowsAffected = pstmt.executeUpdate();
-            System.out.println("[DEBUG] Rows affected: " + rowsAffected);
-
-            return rowsAffected > 0;
+    
+    public void sendNotification(int applicationId, int userId, String message) {
+        try {
+            NoticeDAO noticeDAO = NoticeDAO.getInstance(dbManager);
+            noticeDAO.insertNotice(applicationId, userId, message);
+            System.out.println("通知が送信されました！");
         } catch (SQLException e) {
-            System.err.println("[ERROR] SQL Exception in addNotice");
-            e.printStackTrace();
-            return false;
+            System.err.println("通知の送信に失敗しました: " + e.getMessage());
         }
     }
-
-    // 通知を更新するメソッド
-    public boolean updateNoticeWithApplicationId(int noticeId, int livehouseApplicationId) {
-        String sql = "UPDATE notice_table SET livehouse_application_id = ?, is_approved = true WHERE id = ?";
-        try (Connection conn = dbManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, livehouseApplicationId);
-            pstmt.setInt(2, noticeId);
-
-            // デバッグ用ログ
-            System.out.println("[DEBUG] Executing SQL: " + sql);
-            System.out.println("[DEBUG] Params: livehouse_application_id=" + livehouseApplicationId + ", noticeId=" + noticeId);
-
-            int rowsAffected = pstmt.executeUpdate();
-            System.out.println("[DEBUG] Rows affected: " + rowsAffected);
-
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            System.err.println("[ERROR] Failed to update notice.");
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    // 通知を取得するメソッド (IDベース)
-    public Notice getNoticeById(int noticeId) {
-        String sql = "SELECT * FROM notice_table WHERE id = ?";
-        try (Connection conn = dbManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, noticeId);
-
-            // デバッグ用ログ
-            System.out.println("[DEBUG] Executing SQL: " + sql);
-            System.out.println("[DEBUG] Params: noticeId=" + noticeId);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    Notice notice = new Notice(
-                        rs.getInt("id"),
-                        rs.getInt("livehouse_application_id"),
-                        rs.getDate("create_date").toLocalDate(),
-                        rs.getDate("update_date").toLocalDate(),
-                        rs.getString("message"),
-                        rs.getBoolean("is_approved")
-                    );
-
-                    System.out.println("[DEBUG] Notice found: " + notice);
-                    return notice;
+    
+    public void displayNotifications(int userId) {
+        try {
+            NoticeDAO noticeDAO = NoticeDAO.getInstance(dbManager);
+            List<Notice> notifications = noticeDAO.getNotificationsByUserId(userId);
+            if (notifications.isEmpty()) {
+                System.out.println("現在通知はありません。");
+            } else {
+                for (Notice notice : notifications) {
+                    System.out.println("通知 ID: " + notice.getId());
+                    System.out.println("メッセージ: " + notice.getMessage());
+                    System.out.println("作成日: " + notice.getCreateDate());
+                    System.out.println("既読: " + (notice.isRead() ? "はい" : "いいえ"));
+                    System.out.println("--------------------");
                 }
             }
         } catch (SQLException e) {
-            System.err.println("[ERROR] Failed to fetch notice.");
-            e.printStackTrace();
+            System.err.println("通知の取得に失敗しました: " + e.getMessage());
         }
-        System.out.println("[DEBUG] No notice found with id=" + noticeId);
-        return null;
+    }
+
+    public void markNotificationAsRead(int noticeId) throws SQLException {
+        String sql = "UPDATE notice_table SET is_read = 1 WHERE id = ?";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, noticeId);
+            stmt.executeUpdate();
+        }
+    }
+
+    /**
+     * 通知を挿入するメソッド
+     */
+    public void insertNotice(int livehouseApplicationId, int userId, String message) throws SQLException {
+        String sql = "INSERT INTO notice_table (livehouse_application_id, create_date, message, is_read, user_id) " +
+                     "VALUES (?, NOW(), ?, 0, ?)";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, livehouseApplicationId);
+            stmt.setString(2, message);
+            stmt.setInt(3, userId);
+            stmt.executeUpdate();
+        }
+    }
+    
+    /**
+     * ユーザーIDに基づいて通知を取得
+     * @param userId ユーザーID
+     * @return 通知リスト
+     * @throws SQLException データベースエラー
+     */
+    public List<Notice> getNotificationsByUserId(int userId) throws SQLException {
+        String sql = "SELECT id, livehouse_application_id, create_date, update_date, message, is_read, user_id " +
+                     "FROM notice_table WHERE user_id = ? ORDER BY create_date DESC";
+        List<Notice> notifications = new ArrayList<>();
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Noticeオブジェクトを新しいコンストラクタで生成
+                    Notice notification = new Notice(
+                        rs.getInt("id"),
+                        rs.getInt("livehouse_application_id"),
+                        rs.getTimestamp("create_date") != null ? rs.getTimestamp("create_date").toLocalDateTime() : null,
+                        rs.getTimestamp("update_date") != null ? rs.getTimestamp("update_date").toLocalDateTime() : null,
+                        rs.getString("message"),
+                        rs.getBoolean("is_read"),
+                        rs.getInt("user_id")
+                    );
+                    notifications.add(notification);
+                }
+            }
+        }
+        return notifications;
     }
 }
