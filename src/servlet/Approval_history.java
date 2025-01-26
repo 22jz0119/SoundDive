@@ -25,57 +25,64 @@ public class Approval_history extends HttpServlet {
         DBManager dbManager = DBManager.getInstance();
         Livehouse_applicationDAO livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
 
-        // パラメータの取得
-        String yearParam = request.getParameter("year");
-        String monthParam = request.getParameter("month");
-        String dayParam = request.getParameter("day"); // 日付のパラメータも取得
+        // URLパラメータからdate_timeを取得（例: 2025-01-14 08:00:00）
+        String dateTimeParam = request.getParameter("date_time");
 
-        // デフォルト値は現在の日付
         int year = java.time.LocalDate.now().getYear();
         int month = java.time.LocalDate.now().getMonthValue();
         int day = java.time.LocalDate.now().getDayOfMonth();
 
-        try {
-            if (yearParam != null) {
-                year = Integer.parseInt(yearParam);
+        if (dateTimeParam != null && !dateTimeParam.isEmpty()) {
+            try {
+                // date_time パラメータを LocalDateTime に変換
+                java.time.LocalDateTime dateTime = java.time.LocalDateTime.parse(dateTimeParam);
+
+                // year, month, day を date_time から取得
+                year = dateTime.getYear();
+                month = dateTime.getMonthValue();
+                day = dateTime.getDayOfMonth();
+
+                // デバッグログ
+                System.out.println("[DEBUG] Extracted parameters from date_time: year=" + year + ", month=" + month + ", day=" + day);
+            } catch (Exception e) {
+                System.out.println("[ERROR] 無効な date_time パラメータ: " + e.getMessage());
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な日付形式です。");
+                return;
             }
-            if (monthParam != null) {
-                month = Integer.parseInt(monthParam);
-            }
-            if (dayParam != null) {
-                day = Integer.parseInt(dayParam);
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("[ERROR] パラメータが不正です: " + e.getMessage());
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "不正なパラメータが指定されました。");
-            return;
+        } else {
+            System.out.println("[DEBUG] date_time パラメータが指定されていません。デフォルトの日付が使用されます。");
         }
 
+        // ログインしたユーザーIDを取得
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         if (userId == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 
-        // デバッグログ: パラメータ確認
-        System.out.println("[DEBUG] パラメータ: year=" + year + ", month=" + month + ", day=" + day + ", userId=" + userId);
+        // ユーザーIDに基づいて livehouse_information_id を取得
+        int livehouseInformationId = livehouseApplicationDAO.getLivehouseInformationIdForUser(userId);
+        System.out.println("[DEBUG] Retrieved livehouse_information_id: " + livehouseInformationId);
 
-        // DAOメソッドでデータ取得
-        List<LivehouseApplicationWithGroup> approvedReservations = livehouseApplicationDAO.getApprovedReservations(userId,year, month, day);
+        if (livehouseInformationId == -1) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "関連するライブハウス情報が見つかりませんでした。");
+            return;
+        }
+
+        // 予約データを取得（livehouse_information_id を追加）
+        List<LivehouseApplicationWithGroup> approvedReservations = livehouseApplicationDAO.getApprovedReservationsForUser(year, month, day, livehouseInformationId);
 
         if (approvedReservations != null && !approvedReservations.isEmpty()) {
             System.out.println("[DEBUG] 承認済みの予約データ件数: " + approvedReservations.size());
-            for (LivehouseApplicationWithGroup app : approvedReservations) {
-                System.out.println("[DEBUG] 予約: " + app.getAccountName() + " | ジャンル: " + app.getGroupGenre());
-            }
         } else {
-            System.out.println("[DEBUG] 指定された条件で承認済みの予約データはありません。");
+            System.out.println("[DEBUG] 承認済みの予約データが存在しません。");
         }
 
         // JSPにデータを渡す
         request.setAttribute("approvedReservations", approvedReservations);
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/approval_history.jsp").forward(request, response);
     }
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
