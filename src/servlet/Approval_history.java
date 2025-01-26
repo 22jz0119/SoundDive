@@ -38,6 +38,7 @@ public class Approval_history extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
+        
 
         // cogig_or_solo を考慮した承認済みデータを取得
         Map<Integer, List<LivehouseApplicationWithGroup>> approvedReservations = livehouseApplicationDAO.getAllApprovedReservations(year, month, userId);
