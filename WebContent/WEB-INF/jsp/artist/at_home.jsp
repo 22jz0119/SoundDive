@@ -17,50 +17,48 @@
 
 <body class="artist_home">
     <header class="main-header">
-        <div class="header-container">
-            <div class="main-title">
-                <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="" class="main-logo">
+        <div class="header-container2">
+            <div class="main-title2">
+                <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="" class="main-logo2">
             </div>
-            <ul class="header-nav-ul">
-                <li><a href="<%= request.getContextPath() %>/At_Mypage">MY PAGE</a></li>
-                <li class="notification-container">
-                    <a href="#" class="notification-icon" onclick="toggleNotificationWindow(event)">
+
+            
+
+            <ul class="header-nav-ul2">
+                <li class="header-box-li2"><a href="<%= request.getContextPath() %>/At_Mypage" class="top-mypage-btn">MY PAGE</a></li>
+                <li class="notification-container header-box-li2">
+                    <a href=" #" class="notification-icon" onclick="toggleNotificationWindow(event)">
                         <% 
-                            List<Notice> notifications = (List<Notice>) request.getAttribute("notifications");
-                            long unreadCount = 0;
-                            if (notifications != null) {
-                                for (Notice notice : notifications) {
-                                    if (!notice.isRead()) {
-                                        unreadCount++;
-                                    }
-                                }
-                            }
-                        %>
+						    List<Notice> notifications = (List<Notice>) request.getAttribute("notifications");
+						    long unreadCount = 0;
+						    if (notifications != null) {
+						        for (Notice notice : notifications) {
+						            if (!notice.isRead()) {
+						                unreadCount++;
+						            }
+						        }
+						    }
+						%>
                         <span id="notificationCount"><%= unreadCount %></span>
                     </a>
                     <div class="notification-window" id="notificationWindow" style="display: none;">
                         <ul id="notificationList">
-                            <% 
-                                if (notifications != null) {
-                                    for (Notice notice : notifications) { 
-                            %>
-                                <li class="<%= notice.isRead() ? "read" : "unread" %>">
-                                    <span><%= notice.getMessage() != null ? notice.getMessage() : "メッセージがありません" %></span>
-                                    <button onclick="markAsRead(<%= notice.getId() %>)">既読</button>
-                                </li>
-                                <br>
-                            <% 
-                                    }
-                                } else {
-                            %>
-                                <li>通知はありません。</li>
-                            <% } %>
-                        </ul>
+						    <% if (notifications != null) {
+						        for (Notice notice : notifications) { %>
+						            <li class="<%= notice.isRead() ? "read" : "unread" %>">
+						                <span><%= notice.getMessage() != null ? notice.getMessage() : "メッセージがありません" %></span>
+						                <button class="notification-button" onclick="markAsRead(<%= notice.getId() %>)">既読</button>
+						            </li>
+						    <%  } 
+						    } else { %>
+						        <li>通知はありません。</li>
+						    <% } %>
+						</ul>
                     </div>
                 </li>
-                <li><a href="#">000</a></li>
-                <li><a href="#" onclick="logoutAndRedirect();">ログアウト</a></li>
+                <li class="header-box-li2"><a href="#" onclick="logoutAndRedirect();" class="top-logout-btn">ログアウト</a></li>
             </ul>
+
         </div>
     </header>
     <main>

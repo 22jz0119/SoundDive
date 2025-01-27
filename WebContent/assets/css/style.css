@@ -29,12 +29,40 @@ header {
 }
 
 
+
 header>.header-container {
     padding-top: 20px;
     height: 60px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    
 }
+
+.top-mypage-btn{
+	text-decoration: none;
+	color: white;
+	border-bottom: 1px solid #FFFFFF;
+}
+
+
+.notification-icon{
+	color: white;
+	text-decoration: none;
+	border-bottom: 1px solid #FFFFFF;
+	
+}
+.top-logout-btn{
+	color: white;
+	text-decoration: none;
+	border-bottom: 1px solid #FFFFFF;
+}
+
+
+.header-box-li{
+	margin: 20px;
+}
+
 
 main{
     margin: 0 300px;
@@ -67,6 +95,7 @@ main{
 }
 
 .header-nav-ul{
+	margin-right: 200px;
     list-style: none;
     display: flex;
 }
@@ -86,6 +115,30 @@ main{
     width: 1200px;
 
 }
+
+/* at-home ヘッダー */
+.header-container2{
+	display: flex;
+	justify-content: space-around;
+}
+
+.main-title2{
+	margin-top: 20px;
+}
+
+.header-nav-ul2{
+	margin-right: 150px;
+	display: flex;
+	align-items: center;
+	list-style: none;
+	
+}
+
+.header-box-li2{
+	margin-right: 70px;
+}
+
+
 
 /* h1 {
     color: red;
@@ -1491,6 +1544,7 @@ th.b {
     transition: background-color 0.3s ease;
 }
 
+
 .form-group-genre{
 	margin-top: 50px;
 	display: flex;
@@ -2550,3 +2604,35 @@ th.b {
 	margin-left: 50px;
 }
 
+/* アーティストホーム */
+.notification-window {
+    position: absolute; /* 通知ウィンドウを親要素内で絶対位置指定 */
+    top: 50px; /* ボタンから少し下にずらす */
+    left: 0; /* 必要に応じて調整 */
+    background-color: white; /* 背景色を指定 */
+    border: 1px solid #ccc; /* 枠線を指定 */
+    border-radius: 5px; /* 角を丸くする */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 影を追加 */
+    z-index: 1000; /* 他の要素の上に表示されるようにする */
+    max-height: 300px; /* 最大高さを設定してスクロールを可能にする */
+    overflow-y: auto; /* 縦スクロールを許可 */
+    padding: 10px; /* 内側の余白 */
+    display: none; /* 初期状態で非表示 */
+}
+
+.notification-window li {
+    margin-bottom: 10px; /* 各通知アイテムの間に余白 */
+    padding: 5px; /* 通知アイテム内の余白 */
+    border-bottom: 1px solid #ccc; /* 通知の下に境界線 */
+}
+
+.notification-window ul {
+    padding: 0; /* 通知ウィンドウ内のリスト全体の余白を削除 */
+    margin: 0;
+    list-style: none; /* 通知リストのマーカーを削除 */
+}
+
+.notification-window li:last-child {
+    margin-bottom: 0; /* 最後のアイテムに余白を追加しない */
+    border-bottom: none; /* 最後のアイテムには境界線を付けない */
+}
