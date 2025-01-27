@@ -18,6 +18,8 @@
 				<ul class="header-nav-ul">
 					<li><a href="<%= request.getContextPath() %>/Livehouse_mypage">MY PAGE</a></li>
 					<li><a href="<%= request.getContextPath() %>/Approval_history">承認履歴</a></li>
+					<li><a href="${pageContext.request.contextPath}/Approval_history?year=${year}&month=${month}&day=${day}">承認履歴?</a></li>
+					
 					<li><a href="#">リンク2</a></li>
 				</ul>
 			</nav>
@@ -72,6 +74,7 @@
 	<!-- 必要なデータをスクリプト内に渡す -->
      <script>
     const contextPath = '<%= request.getContextPath() %>';
+    
 
     // ✅ livehouseId と livehouseType を埋め込む
     const livehouseInformationId = '<%= request.getAttribute("livehouseInformationId") %>';
@@ -79,7 +82,7 @@
 
     const reservationDataRaw = '<%= request.getAttribute("reservationStatus") != null ? request.getAttribute("reservationStatus") : "{}" %>';
     const currentYear = <%= request.getAttribute("year") != null ? request.getAttribute("year") : "2025" %>;
-    const currentMonth = <%= request.getAttribute("month") != null ? request.getAttribute("month") : "1" %>;
+    const currentMonth = <%= request.getAttribute("month") != null ? request.getAttribute("month") : "2" %>;
 
     console.log("[DEBUG] contextPath:", contextPath);
     console.log("[DEBUG] livehouseInformationId:", livehouseInformationId);

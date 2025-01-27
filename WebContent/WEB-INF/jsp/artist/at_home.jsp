@@ -21,9 +21,6 @@
             <div class="main-title2">
                 <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="" class="main-logo2">
             </div>
-
-            
-
             <ul class="header-nav-ul2">
                 <li class="header-box-li2"><a href="<%= request.getContextPath() %>/At_Mypage" class="top-mypage-btn">MY PAGE</a></li>
                 <li class="notification-container header-box-li2">
@@ -39,19 +36,19 @@
 						        }
 						    }
 						%>
-                        <span id="notificationCount"><%= unreadCount %></span>
+                        <span id="notificationCount">通知<%= unreadCount %>件</span>
                     </a>
                     <div class="notification-window" id="notificationWindow" style="display: none;">
                         <ul id="notificationList">
 						    <% if (notifications != null) {
 						        for (Notice notice : notifications) { %>
 						            <li class="<%= notice.isRead() ? "read" : "unread" %>">
-						                <span><%= notice.getMessage() != null ? notice.getMessage() : "メッセージがありません" %></span>
+						                <span class="tuuti"><%= notice.getMessage() != null ? notice.getMessage() : "メッセージがありません" %></span>
 						                <button class="notification-button" onclick="markAsRead(<%= notice.getId() %>)">既読</button>
 						            </li>
 						    <%  } 
 						    } else { %>
-						        <li>通知はありません。</li>
+						        <li class="tuuti">通知はありません。</li>
 						    <% } %>
 						</ul>
                     </div>

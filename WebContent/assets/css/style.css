@@ -2627,6 +2627,10 @@ th.b {
     display: none; /* 初期状態で非表示 */
 }
 
+.tuuti {
+	color: #000;
+}
+
 .notification-window li {
     margin-bottom: 10px; /* 各通知アイテムの間に余白 */
     padding: 5px; /* 通知アイテム内の余白 */
