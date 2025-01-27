@@ -21,9 +21,7 @@ public class Top extends HttpServlet {
         // ログイン画面を表示
         request.getRequestDispatcher("WEB-INF/jsp/top/top.jsp").forward(request, response);
     }
-    
-    
-    
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -64,6 +62,8 @@ public class Top extends HttpServlet {
         }
     }
 
+    
+    
     // ログアウト処理
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

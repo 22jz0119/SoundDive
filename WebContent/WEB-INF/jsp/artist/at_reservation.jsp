@@ -50,7 +50,7 @@
         <!-- ライブハウス詳細と説明 -->
         <div class="artist_livehouse_details-Discription">
             <div>
-                <img src="${pageContext.request.contextPath}${artist.picture_image_movie}" class="artist_livehouse_details-img" alt="">
+                <img src="${pageContext.request.contextPath}${livehouse.picture_image_naigaikan}" class="artist_livehouse_details-img" alt="">
             </div>
             <div>
                 <ul class="A-t-discription-ul">

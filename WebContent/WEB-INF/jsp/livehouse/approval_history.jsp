@@ -39,9 +39,7 @@
 
     <div class="application-lists">
         <c:choose>
-            <!-- cogig_or_solo = 1 の場合 -->
-            <c:when test="${cogigOrSolo == 1}">
-                <h3>個人（cogig_or_solo = 1）の承認履歴</h3>
+            <c:when test="${not empty approvedReservations}">
                 <c:forEach var="application" items="${approvedReservations}">
                     <div class="application-artist-list-main">
                         <div class="application-artist-list-img-containar">
@@ -50,6 +48,7 @@
                         <div class="application-artist-list-frame">
                             <ul class="application-artist-list-ul0">
                                 <li><p>
+
                                     <c:out value="${empty application.accountName ? 'アカウント名未設定' : application.accountName}" />
                                 </p></li>
                             </ul>
@@ -72,80 +71,37 @@
                             </ul>
                             <ul class="application-artist-list-ul5">
                                 <li>
+                                    <a href="<c:url value='/Application_confirmation' />?id=${application.id}" class="application-artist-list-ul5-li1-a">
                                     <a href="<c:url value='/Application_approval' />?id=${application.id}" class="application-artist-list-ul5-li1-a">
                                         詳細を見る
                                     </a>
+                                </li>
                                 </li>                              
                             </ul>
-                            <ul class="application-artist-list-ul5">
-                                <li>
-                                    <form action="${pageContext.request.contextPath}/Approval_history" method="post" onsubmit="return confirm('本当に削除しますか？');">
-                                        <input type="hidden" name="applicationId" value="${application.id}">
-                                        <button type="submit" class="delete-button">削除する</button>
-                                    </form>
-                                </li>
-                            </ul>
+                            <!-- 削除ボタン追加 -->
+							<ul class="application-artist-list-ul5">
+							    <li>
+							        <form action="${pageContext.request.contextPath}/Approval_history" method="post" onsubmit="return confirm('本当に削除しますか？');">
+							            <input type="hidden" name="applicationId" value="${application.id}">
+							            <button type="submit" class="delete-button">削除する</button>
+							        </form>
+							    </li>
+							</ul>
+                            
                         </div>
                     </div>
                 </c:forEach>
             </c:when>
-
-            <!-- cogig_or_solo = 2 の場合 -->
-            <c:when test="${cogigOrSolo == 2}">
-                <h3>バンド（cogig_or_solo = 2）の承認履歴</h3>
-                <c:forEach var="application" items="${approvedReservations}">
-                    <div class="application-artist-list-main">
-                        <div class="application-artist-list-img-containar">
-                            <img src="${pageContext.request.contextPath}/assets/img/アーティスト画像.png" alt="アーティスト画像" class="application-artist-list-ikon">
-                        </div>
-                        <div class="application-artist-list-frame">
-                            <ul class="application-artist-list-ul0">
-                                <li><p>
-                                    <c:out value="${empty application.accountName ? 'アカウント名未設定' : application.accountName}" />
-                                </p></li>
-                            </ul>
-                            <ul class="application-artist-list-ul1">
-                                <li><p>ジャンル: 
-                                    <c:out value="${empty application.groupGenre ? 'ジャンル未設定' : application.groupGenre}" />
-                                </p></li>
-                            </ul>
-                            <ul class="application-artist-list-ul2">
-                                <li><p>バンド歴: 
-                                    <c:out value="${empty application.bandYears ? '不明' : application.bandYears}年" />
-                                </p></li>
-                            </ul>
-                            <ul class="application-artist-list-ul3">
-                                <li><p>レーティング: 3.5</p></li>
-                            </ul>
-                            <ul class="application-artist-list-ul4">
-                                <li><audio class="sound-source" controls 
-                                    src="${pageContext.request.contextPath}/assets/audio/water.mp3" type="audio/mp3">音声が再生できません</audio></li>
-                            </ul>
-                            <ul class="application-artist-list-ul5">
-                                <li>
-                                    <a href="<c:url value='/Application_approval' />?id=${application.id}" class="application-artist-list-ul5-li1-a">
-                                        詳細を見る
-                                    </a>
-                                </li>                              
-                            </ul>
-                            <ul class="application-artist-list-ul5">
-                                <li>
-                                    <form action="${pageContext.request.contextPath}/Approval_history" method="post" onsubmit="return confirm('本当に削除しますか？');">
-                                        <input type="hidden" name="applicationId" value="${application.id}">
-                                        <button type="submit" class="delete-button">削除する</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </c:forEach>
-            </c:when>
-
-            <!-- データがない場合 -->
             <c:otherwise>
-                <p>承認したデータはありません。</p>
+                <p>申請データはありません。</p>
             </c:otherwise>
         </c:choose>
+
+        <c:if test="${not empty approvedReservations}">
+            <c:forEach var="application" items="${approvedReservations}">
+                <p>DEBUG: ID=${application.id}, アカウント名=${application.accountName}, ジャンル=${application.groupGenre}</p>
+            </c:forEach>
+        </c:if>
     </div>
 </main>
 
