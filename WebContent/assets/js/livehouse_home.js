@@ -102,6 +102,7 @@ nextButton.addEventListener("click", () => {
 }
 
 
+
     // カレンダーを生成する関数
     function generateCalendar(year, month, reservationData) {
         console.log("[DEBUG] カレンダー生成開始");
