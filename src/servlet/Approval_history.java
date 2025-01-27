@@ -83,7 +83,6 @@ public class Approval_history extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/approval_history.jsp").forward(request, response);
     }
 
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String applicationIdStr = request.getParameter("applicationId");
