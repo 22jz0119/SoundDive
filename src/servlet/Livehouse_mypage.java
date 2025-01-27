@@ -88,6 +88,7 @@ public class Livehouse_mypage extends HttpServlet {
         // セッションからuserIdを取得
         HttpSession session = request.getSession();
         Integer userId = (Integer) session.getAttribute("userId");
+        System.out.println("[DEBUG] Logged-in userId: " + userId);
 
         if (userId == null) {
             request.setAttribute("errorMessage", "ログインが必要です。");
@@ -102,6 +103,14 @@ public class Livehouse_mypage extends HttpServlet {
         String livehouseExplanation = request.getParameter("livehouseExplanation");
         String livehouseDetailed = request.getParameter("livehouseDetailed");
         String equipmentInformation = request.getParameter("equipmentInformation");
+        
+        System.out.println("[DEBUG] Input data:");
+        System.out.println("livehouseName: " + request.getParameter("livehouseName"));
+        System.out.println("ownerName: " + request.getParameter("ownerName"));
+        System.out.println("liveTelNumber: " + request.getParameter("liveTelNumber"));
+        System.out.println("livehouseExplanation: " + request.getParameter("livehouseExplanation"));
+        System.out.println("livehouseDetailed: " + request.getParameter("livehouseDetailed"));
+        System.out.println("equipmentInformation: " + request.getParameter("equipmentInformation"));
 
         // 画像アップロード処理 (共通フィールドを使用)
         Part imagePart = request.getPart("picture_image_naigaikan");
@@ -139,6 +148,7 @@ public class Livehouse_mypage extends HttpServlet {
                 existingLivehouse.setLivehouse_name(livehouseName);
                 existingLivehouse.setLive_tel_number(liveTelNumber);
                 existingLivehouse.setUpdateDate(new Date());
+                System.out.println("[DEBUG] No existing data found for userId: " + userId);
 
                 // 新しい画像がアップロードされた場合のみ更新
                 if (pictureImagePath != null) {

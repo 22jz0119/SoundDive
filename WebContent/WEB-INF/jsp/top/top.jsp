@@ -58,7 +58,7 @@
                 </ul>
             </form>
 
-            <ul>
+            <ul class="top-newaccount">
                 <li class="top-newaccount-btnframe"><button type="button" id="top-newaccount-btn" onclick="location.href='<%= request.getContextPath() %>/New_Acount'">NewAccount</button></li>
             </ul>
         </div>

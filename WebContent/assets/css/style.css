@@ -1970,12 +1970,16 @@ th.b {
 
 
 .top-catchphrase{
-    margin-top: 600px;
+	margin-top: 700px;
+    display: flex;
+    justify-content: center;
     
 }
 
 .top-explain{
-    margin: 700px 300px 0 300px;
+	margin-top: 700px;
+   display: flex;
+   justify-content: center;
 }   
 
 .top-explain-txt{
@@ -2086,6 +2090,9 @@ th.b {
     margin-top: 130px;
     text-align: center;
 }
+.top-newaccount{
+	list-style: none;
+}
 
 #top-newaccount-btn{
     font-family: "Shippori Mincho B1", serif;
@@ -2102,6 +2109,7 @@ th.b {
     font-size: 1.5rem;
     letter-spacing: 2.5px;
 }
+
 
 /*ライブハウスマイページ*/
 
