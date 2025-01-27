@@ -21,6 +21,22 @@
             <div class="main-title">
                 <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="" class="main-logo">
             </div>
+
+            <nav class="header-nav">
+                <ul class="header-nav-ul">
+				    <li><a href="<%= request.getContextPath() %>/At_Mypage">MY PAGE</a></li>
+				    <li class="notification-container">
+				        <a href="#" class="notification-icon" onclick="toggleNotificationWindow(event)">000</a>
+				        <div class="notification-window" id="notificationWindow">
+				            <ul id="notificationList">
+				                <!-- 通知リストがここに追加されます -->
+				            </ul>
+				        </div>
+				    </li>
+				    <li><a href="#" onclick="logoutAndRedirect();">ログアウト</a></li>
+				</ul>
+            </nav>
+
             <ul class="header-nav-ul">
                 <li class="header-box-li"><a href="<%= request.getContextPath() %>/At_Mypage" class="top-mypage-btn">MY PAGE</a></li>
                 <li class="notification-container header-box-li">
@@ -55,6 +71,7 @@
                 </li>
                 <li class="header-box-li"><a href="#" onclick="logoutAndRedirect();" class="top-logout-btn">ログアウト</a></li>
             </ul>
+
         </div>
     </header>
     <main>
