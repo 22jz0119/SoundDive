@@ -46,6 +46,25 @@ public class At_Home extends HttpServlet {
             DBManager dbManager = DBManager.getInstance();
             Livehouse_applicationDAO applicationDAO = new Livehouse_applicationDAO(dbManager);
             Livehouse_informationDAO informationDAO = new Livehouse_informationDAO(dbManager);
+            NotificationService notificationService = new NotificationService(dbManager);
+            
+            List<model.Notice> notifications = notificationService.getUserNotifications(userId);
+
+            // 通知をログに出力
+            if (notifications.isEmpty()) {
+                System.out.println("[DEBUG] User ID " + userId + " has no notifications.");
+            } else {
+                System.out.println("[DEBUG] Notifications for User ID " + userId + ":");
+                for (model.Notice notice : notifications) {
+                    System.out.println("  - ID: " + notice.getId());
+                    System.out.println("    Message: " + notice.getMessage());
+                    System.out.println("    Create Date: " + notice.getCreateDate());
+                    System.out.println("    Is Read: " + notice.isRead());
+                }
+            }
+
+            // リクエスト属性に通知をセット
+            request.setAttribute("notifications", notifications);
 
             // DateTimeFormatterを定義
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -70,13 +89,6 @@ public class At_Home extends HttpServlet {
                 Livehouse_information livehouseInfo = livehouseInfoMap.get(app.getLivehouse_information_id());
                 if (livehouseInfo != null) {
                     app.setLivehouse_information(livehouseInfo);
-                    System.out.println("[DEBUG] Application (True): ID=" + app.getId() +
-                            ", LivehouseID=" + app.getLivehouse_information_id() +
-                            ", LivehouseName=" + livehouseInfo.getLivehouse_name());
-                } else {
-                    System.out.println("[DEBUG] Application (True): ID=" + app.getId() +
-                            ", LivehouseID=" + app.getLivehouse_information_id() +
-                            " has no associated Livehouse Information.");
                 }
             });
 
@@ -84,13 +96,6 @@ public class At_Home extends HttpServlet {
                 Livehouse_information livehouseInfo = livehouseInfoMap.get(app.getLivehouse_information_id());
                 if (livehouseInfo != null) {
                     app.setLivehouse_information(livehouseInfo);
-                    System.out.println("[DEBUG] Application (False): ID=" + app.getId() +
-                            ", LivehouseID=" + app.getLivehouse_information_id() +
-                            ", LivehouseName=" + livehouseInfo.getLivehouse_name());
-                } else {
-                    System.out.println("[DEBUG] Application (False): ID=" + app.getId() +
-                            ", LivehouseID=" + app.getLivehouse_information_id() +
-                            " has no associated Livehouse Information.");
                 }
             });
 
@@ -103,7 +108,9 @@ public class At_Home extends HttpServlet {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "データベースエラー");
+            request.setAttribute("error", "データベースエラーが発生しました。管理者にお問い合わせください。");
+            request.getRequestDispatcher("WEB-INF/jsp/artist/at_home.jsp").forward(request, response);
+            return;
         }
     }
 

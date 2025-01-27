@@ -57,12 +57,11 @@ public class Top extends HttpServlet {
             }
         } else {
             System.out.println("[DEBUG] Login failed for tel_number: " + tel_number);
-            request.setAttribute("msg", "ログインに失敗しました。ユーザー名またはパスワードを確認してください。");
+            request.setAttribute("msg", "ログインに失敗しました。電話番号またはパスワードを確認してください。");
+            System.out.println("[DEBUG] Error message: " + request.getAttribute("msg"));
             request.getRequestDispatcher("WEB-INF/jsp/top/top.jsp").forward(request, response);
         }
     }
-
-    
     
     // ログアウト処理
     @Override
