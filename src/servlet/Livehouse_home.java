@@ -3,8 +3,6 @@ package servlet;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -18,7 +16,6 @@ import com.google.gson.Gson;
 
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
-import model.LivehouseApplicationWithGroup;
 
 /**
  * Servlet implementation class Livehouse_home
@@ -31,16 +28,12 @@ public class Livehouse_home extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        log("[DEBUG] Initializing Livehouse_home servlet.");
         DBManager dbManager = DBManager.getInstance();
         dao = new Livehouse_applicationDAO(dbManager);
-        log("[DEBUG] DAO initialized successfully.");
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log("[DEBUG] doGet method called.");
-
         String yearParam = request.getParameter("year");
         String monthParam = request.getParameter("month");
         String dayParam = request.getParameter("day");
@@ -49,6 +42,11 @@ public class Livehouse_home extends HttpServlet {
         log("[DEBUG] Received parameters - year: " + yearParam + ", month: " + monthParam + ", day: " + dayParam + ", cogig_or_solo: " + cogigOrSoloParam);
 
         try {
+            // ログイン状態を確認
+            if (!isLoggedIn(request, response)) {
+                return; // 未ログインの場合は処理終了
+            }
+
             // パラメータの解析
             int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam) : LocalDate.now().getYear();
             int month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam) : LocalDate.now().getMonthValue();
@@ -61,17 +59,10 @@ public class Livehouse_home extends HttpServlet {
                 throw new IllegalArgumentException("月の値が不正です: " + month);
             }
 
-            // セッションの確認
-            HttpSession session = request.getSession(false);
-            if (session == null) {
-                log("[ERROR] セッションが存在しません。");
-                response.setContentType("application/json; charset=UTF-8");
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write(new Gson().toJson(Map.of("error", "セッションが存在しません。ログインしてください。")));
-                return;
-            }
-
+            // セッションからユーザーIDを取得
+            HttpSession session = request.getSession();
             Integer userId = (Integer) session.getAttribute("userId");
+
             if (userId == null) {
                 log("[ERROR] ログインユーザーIDが取得できませんでした。");
                 response.sendRedirect(request.getContextPath() + "/Top");
@@ -81,35 +72,30 @@ public class Livehouse_home extends HttpServlet {
             log("[DEBUG] 取得したユーザーID: " + userId);
 
             // ライブハウスIDの取得
-         // ライブハウスIDの取得
             int livehouseId = dao.getLivehouseIdByUserId(userId);
             if (livehouseId == -1) {
                 log("[WARN] 該当するライブハウス情報が見つかりません。userId: " + userId);
 
-                // もしJSONレスポンスを求める場合
                 if ("json".equals(request.getParameter("format"))) {
                     response.setContentType("application/json; charset=UTF-8");
-                    response.setStatus(HttpServletResponse.SC_OK); // 200 OKで返す
+                    response.setStatus(HttpServletResponse.SC_OK);
                     response.getWriter().write(new Gson().toJson(Map.of("message", "ライブハウス情報が見つかりません", "data", null)));
                     return;
                 }
 
-                // JSPにフォワードする場合（情報がない場合の画面表示を続行）
                 request.setAttribute("errorMessage", "ライブハウス情報が見つかりません");
-                request.setAttribute("reservationStatus", "{}"); // 空のデータを設定
+                request.setAttribute("reservationStatus", "{}");
                 request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
                 return;
             }
 
             log("[DEBUG] 取得したライブハウスID: " + livehouseId);
-            
-            // リクエストがJSONを求めている場合
+
             if ("json".equals(request.getParameter("format"))) {
                 try {
                     Map<String, Integer> reservationCounts = dao.getReservationCountsByLivehouse(year, month, userId);
                     log("[DEBUG] DAO method実行後 - reservationCounts: " + reservationCounts);
 
-                    // JSONに変換してレスポンスを返却
                     String reservationStatusJson = new Gson().toJson(reservationCounts);
                     response.setContentType("application/json; charset=UTF-8");
                     response.getWriter().write(reservationStatusJson);
@@ -119,9 +105,8 @@ public class Livehouse_home extends HttpServlet {
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     response.getWriter().write(new Gson().toJson(Map.of("error", "システムエラーが発生しました。", "details", e.getMessage())));
                 }
-                return; // JSONレスポンスを返したら処理終了
+                return;
             }
-
 
             // JSPへのフォワード
             Map<String, Integer> reservationCounts = dao.getReservationCountsByLivehouse(year, month, userId);
@@ -133,31 +118,6 @@ public class Livehouse_home extends HttpServlet {
             request.setAttribute("month", month);
             request.setAttribute("day", day);
             request.setAttribute("cogig_or_solo", cogigOrSolo);
-
-            List<LivehouseApplicationWithGroup> reservations = new ArrayList<>();
-            List<LivehouseApplicationWithGroup> cogigOrSolo1Reservations = new ArrayList<>();
-            List<LivehouseApplicationWithGroup> cogigOrSolo2Reservations = new ArrayList<>();
-
-            if (cogigOrSolo == 1) {
-                log("[DEBUG] cogig_or_solo = 1 での処理");
-                cogigOrSolo1Reservations = dao.getReservationsWithTrueFalseZero(year, month, day);
-                log("[DEBUG] Retrieved cogig_or_solo = 1 reservations: " + cogigOrSolo1Reservations);
-            } else if (cogigOrSolo == 2) {
-                log("[DEBUG] cogig_or_solo = 2 での処理");
-                cogigOrSolo2Reservations = dao.getReservationsByCogigOrSolo(year, month, day);
-                log("[DEBUG] Retrieved cogig_or_solo = 2 reservations: " + cogigOrSolo2Reservations);
-            }
-
-            request.setAttribute("reservations", reservations);
-            request.setAttribute("cogigOrSolo1Reservations", cogigOrSolo1Reservations);
-            request.setAttribute("cogigOrSolo2Reservations", cogigOrSolo2Reservations);
-
-            if (day != -1) {
-                String redirectUrl = String.format("/Application_list?year=%d&month=%d&day=%d&cogig_or_solo=%d", year, month, day, cogigOrSolo);
-                log("[DEBUG] Redirecting to: " + redirectUrl);
-                response.sendRedirect(request.getContextPath() + redirectUrl);
-                return;
-            }
 
             request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
             log("[DEBUG] Successfully forwarded to JSP.");
@@ -173,6 +133,31 @@ public class Livehouse_home extends HttpServlet {
             response.setContentType("application/json; charset=UTF-8");
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write(new Gson().toJson(Map.of("error", "システムエラーが発生しました。", "details", e.getMessage())));
+        }
+    }
+
+    // ログイン状態を確認
+    private boolean isLoggedIn(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false); // 既存のセッションを取得
+        if (session == null || session.getAttribute("userId") == null) {
+            response.sendRedirect(request.getContextPath() + "/Top");
+            return false;
+        }
+        return true;
+    }
+
+    // ログアウト処理
+    private void logout(HttpSession session) {
+        if (session != null && session.getAttribute("userId") != null) { // ログイン済みか確認
+            Integer userId = (Integer) session.getAttribute("userId");
+            log("[DEBUG] Logging out user with ID: " + userId + ". Session ID: " + session.getId());
+
+            session.removeAttribute("userId"); // userId 属性を削除
+            session.invalidate(); // セッションを無効化
+
+            log("[DEBUG] User with ID: " + userId + " logged out successfully. Session invalidated.");
+        } else {
+            log("[DEBUG] No user is currently logged in.");
         }
     }
 }

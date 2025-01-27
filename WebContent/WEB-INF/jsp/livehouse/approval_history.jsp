@@ -43,7 +43,7 @@
                 <c:forEach var="application" items="${approvedReservations}">
                     <div class="application-artist-list-main">
                         <div class="application-artist-list-img-containar">
-                            <img src="${pageContext.request.contextPath}/assets/img/アーティスト画像.png" alt="アーティスト画像" class="application-artist-list-ikon">
+                            <img src="${pageContext.request.contextPath}${userGroup.picture_image_movie}" alt="アーティスト画像" class="application-artist-list-ikon">
                         </div>
                         <div class="application-artist-list-frame">
                             <ul class="application-artist-list-ul0">
