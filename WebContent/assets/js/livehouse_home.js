@@ -67,8 +67,11 @@ nextButton.addEventListener("click", () => {
     }
     updateCurrentMonthDisplay(year, month);
     fetchReservationData(year, month);
-});
 
+    // URLを動的に更新
+    const newUrl = `${contextPath}/Livehouse_home?year=${year}&month=${month}`;
+    window.history.pushState({}, '', newUrl); // アドレスバーを更新
+});
 
     // 月の表示を更新する関数
     function updateCurrentMonthDisplay(year, month) {
@@ -80,28 +83,28 @@ nextButton.addEventListener("click", () => {
     // サーバーから予約データを取得する関数
     function fetchReservationData(year, month) {
     console.log(`[DEBUG] データ取得開始 - year: ${year}, month: ${month}`);
+	console.log(`[DEBUG] Fetch URL: ${contextPath}/Livehouse_home?year=${year}&month=${month}&timestamp=${new Date().getTime()}`);
 
-    fetch(`${contextPath}/Livehouse_home?year=${year}&month=${month}&timestamp=${new Date().getTime()}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("[ERROR] サーバーからのレスポンスが不正です");
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log("[DEBUG] サーバーからのデータ取得成功:", data);
-        generateCalendar(year, month, data);  // 新しいデータでカレンダーを更新
-    })
-    .catch(error => {
-        console.error("[ERROR] データ取得に失敗しました:", error);
-        alert("データの取得に失敗しました。しばらくしてから再度お試しください。");
-    });
+    fetch(`${contextPath}/Livehouse_home?year=${year}&month=${month}&format=json`)
+	    .then(response => {
+	        if (!response.ok) {
+	            throw new Error(`HTTPエラー: ${response.status}`);
+	        }
+	        return response.text(); // 最初はテキストとして取得
+	    })
+	    .then(text => {
+	        if (text.trim().startsWith("<!DOCTYPE html>")) {
+	            throw new Error("サーバーからHTMLレスポンスが返されました。エラーの可能性があります。");
+	        }
+	        const data = JSON.parse(text); // JSONにパース
+	        console.log("[DEBUG] サーバーから取得したデータ:", data);
+	        generateCalendar(year, month, data); // カレンダー生成
+	    })
+	    .catch(error => {
+	        console.error("[ERROR] データ取得中のエラー:", error);
+	        alert("サーバーでエラーが発生しました。管理者にお問い合わせください。");
+	    });
 }
-
-
 
     // カレンダーを生成する関数
     function generateCalendar(year, month, reservationData) {
