@@ -32,7 +32,6 @@ public class Top extends HttpServlet {
 
         System.out.println("[DEBUG] Tel Number: " + tel_number);
         System.out.println("[DEBUG] Entered Password: " + password);
-        
 
         AuthLogic logic = new AuthLogic();
         User user = logic.login(tel_number, password);
