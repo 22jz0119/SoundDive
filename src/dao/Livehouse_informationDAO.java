@@ -136,16 +136,17 @@ public class Livehouse_informationDAO {
     }
 
 
-
-
-
  // IDでライブハウス情報を取得するメソッド
     public Livehouse_information getLivehouse_informationById(int id) {
-        String sql = "SELECT * FROM livehouse_information WHERE id = ?";
+    	String sql = "SELECT * FROM livehouse_information WHERE user_id = ?";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
+
+            // デバッグログ: 実行するクエリとパラメータを出力
+            System.out.println("[DEBUG] Executing SQL: " + pstmt);
+
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
@@ -158,20 +159,40 @@ public class Livehouse_informationDAO {
                 String live_address = rs.getString("live_address");
                 String live_tel_number = rs.getString("live_tel_number");
                 String picture_image_naigaikan = rs.getString("picture_image_naigaikan");
-                Date createDate = rs.getTimestamp("create_date");  // DATETIMEを適切に処理
-                Date updateDate = rs.getTimestamp("update_date");  // DATETIMEを適切に処理
-                int user_id = rs.getInt("user_id");  // user_idを取得
+                Date createDate = rs.getTimestamp("create_date"); // DATETIMEを適切に処理
+                Date updateDate = rs.getTimestamp("update_date"); // DATETIMEを適切に処理
+                int user_id = rs.getInt("user_id"); // user_idを取得
 
-                // 取得したデータをLivehouse_informationオブジェクトにセット
+                // デバッグログ: 取得した値を出力
+                System.out.println("[DEBUG] Retrieved Data:");
+                System.out.println("  owner_name: " + owner_name);
+                System.out.println("  equipment_information: " + equipment_information);
+                System.out.println("  livehouse_explanation_information: " + livehouse_explanation_information);
+                System.out.println("  livehouse_detailed_information: " + livehouse_detailed_information);
+                System.out.println("  livehouse_name: " + livehouse_name);
+                System.out.println("  live_address: " + live_address);
+                System.out.println("  live_tel_number: " + live_tel_number);
+                System.out.println("  picture_image_naigaikan: " + picture_image_naigaikan);
+                System.out.println("  createDate: " + createDate);
+                System.out.println("  updateDate: " + updateDate);
+                System.out.println("  user_id: " + user_id);
+
+                // 取得したデータをLivehouse_informationオブジェクトにセットして返す
                 return new Livehouse_information(id, owner_name, equipment_information,
                         livehouse_explanation_information, livehouse_detailed_information, livehouse_name,
                         live_address, live_tel_number, picture_image_naigaikan, createDate, updateDate, user_id);
+            } else {
+                // デバッグログ: レコードが見つからない場合
+                System.out.println("[DEBUG] No record found for id: " + id);
             }
         } catch (SQLException e) {
+            // デバッグログ: エラー発生時の情報を出力
+            System.err.println("[ERROR] SQL Exception while retrieving Livehouse information for id: " + id);
             e.printStackTrace();
         }
-        return null;
+        return null; // レコードが見つからなかった場合やエラーが発生した場合
     }
+
 
     // ライブハウス情報を表示するメソッド
     public void printLivehouse_information(Livehouse_information livehouse_information) {
@@ -271,8 +292,6 @@ public class Livehouse_informationDAO {
 
         return livehouses;
     }
-
-
     
     // データ削除
     public boolean deleteLivehouse_informationById(int id) {
