@@ -17,29 +17,16 @@
 
 <body class="artist_home">
     <header class="main-header">
-        <div class="header-container">
-            <div class="main-title">
-                <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="" class="main-logo">
+        <div class="header-container2">
+            <div class="main-title2">
+                <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="" class="main-logo2">
             </div>
 
-            <nav class="header-nav">
-                <ul class="header-nav-ul">
-				    <li><a href="<%= request.getContextPath() %>/At_Mypage">MY PAGE</a></li>
-				    <li class="notification-container">
-				        <a href="#" class="notification-icon" onclick="toggleNotificationWindow(event)">000</a>
-				        <div class="notification-window" id="notificationWindow">
-				            <ul id="notificationList">
-				                <!-- 通知リストがここに追加されます -->
-				            </ul>
-				        </div>
-				    </li>
-				    <li><a href="#" onclick="logoutAndRedirect();">ログアウト</a></li>
-				</ul>
-            </nav>
+            
 
-            <ul class="header-nav-ul">
-                <li class="header-box-li"><a href="<%= request.getContextPath() %>/At_Mypage" class="top-mypage-btn">MY PAGE</a></li>
-                <li class="notification-container header-box-li">
+            <ul class="header-nav-ul2">
+                <li class="header-box-li2"><a href="<%= request.getContextPath() %>/At_Mypage" class="top-mypage-btn">MY PAGE</a></li>
+                <li class="notification-container header-box-li2">
                     <a href=" #" class="notification-icon" onclick="toggleNotificationWindow(event)">
                         <% 
 						    List<Notice> notifications = (List<Notice>) request.getAttribute("notifications");
@@ -69,7 +56,7 @@
 						</ul>
                     </div>
                 </li>
-                <li class="header-box-li"><a href="#" onclick="logoutAndRedirect();" class="top-logout-btn">ログアウト</a></li>
+                <li class="header-box-li2"><a href="#" onclick="logoutAndRedirect();" class="top-logout-btn">ログアウト</a></li>
             </ul>
 
         </div>

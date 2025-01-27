@@ -27,9 +27,7 @@ header {
     background-image: linear-gradient(90deg, rgba(248, 134, 57, 1), rgba(97, 48, 48, 1));
     z-index: 10;
 }
-.main-header{
-	
-}
+
 
 
 header>.header-container {
@@ -117,6 +115,30 @@ main{
     width: 1200px;
 
 }
+
+/* at-home ヘッダー */
+.header-container2{
+	display: flex;
+	justify-content: space-around;
+}
+
+.main-title2{
+	margin-top: 20px;
+}
+
+.header-nav-ul2{
+	margin-right: 150px;
+	display: flex;
+	align-items: center;
+	list-style: none;
+	
+}
+
+.header-box-li2{
+	margin-right: 70px;
+}
+
+
 
 /* h1 {
     color: red;
