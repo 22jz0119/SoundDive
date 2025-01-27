@@ -724,61 +724,10 @@ public class Livehouse_applicationDAO {
     	}
     	return -1; 
     }// もし取得できなかった場合は -1 を返す
+    
 
-    public List<LivehouseApplicationWithGroup> getApprovedReservationsForLoggedUser(int userId, int year, int month, int day) {
-        // SQLクエリにcogig_or_soloの条件を含めない
-        String sql = "SELECT DISTINCT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
-                     "la.livehouse_information_id, la.user_id, la.artist_group_id, la.cogig_or_solo, " +
-                     "ag.account_name, ag.group_genre, ag.band_years, u.us_name " +
-                     "FROM livehouse_application_table la " +
-                     "LEFT JOIN artist_group ag ON la.artist_group_id = ag.id " +
-                     "LEFT JOIN user u ON la.user_id = u.id " +
-                     "WHERE la.true_false = 1 " +
-                     "AND YEAR(la.date_time) = ? " +
-                     "AND MONTH(la.date_time) = ? " +
-                     "AND DAY(la.date_time) = ? " +
-                     "AND la.livehouse_information_id = (SELECT livehouse_information_id FROM livehouse_information WHERE user_id = ?)";
 
-        List<LivehouseApplicationWithGroup> approvedReservations = new ArrayList<>();
 
-        try (Connection conn = dbManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            // パラメータの設定
-            pstmt.setInt(1, year);
-            pstmt.setInt(2, month);
-            pstmt.setInt(3, day);
-            pstmt.setInt(4, userId);  // 現在ログイン中のユーザーID
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    // artist_group_id からメンバー情報を取得
-                    int groupId = rs.getInt("artist_group_id");
-                    List<Member> members = getMembersByGroupId(groupId);
-
-                    approvedReservations.add(new LivehouseApplicationWithGroup(
-                        rs.getInt("application_id"),
-                        rs.getInt("application_id"),
-                        rs.getTimestamp("date_time") != null ? rs.getTimestamp("date_time").toLocalDateTime() : null,
-                        rs.getBoolean("true_false"),
-                        rs.getTimestamp("start_time") != null ? rs.getTimestamp("start_time").toLocalDateTime() : null,
-                        rs.getTimestamp("finish_time") != null ? rs.getTimestamp("finish_time").toLocalDateTime() : null,
-                        groupId,
-                        rs.getString("account_name") != null ? rs.getString("account_name") : "",
-                        rs.getString("group_genre") != null ? rs.getString("group_genre") : "",
-                        rs.getString("band_years") != null ? rs.getString("band_years") : "",
-                        rs.getInt("user_id"),
-                        rs.getString("us_name") != null ? rs.getString("us_name") : "",
-                        members
-                    ));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return approvedReservations;
-    }
  // 例: `livehouse_information_id` に基づいて予約データを取得するクエリ
     public List<LivehouseApplicationWithGroup> getApprovedReservationsForUser(int year, int month, int day, int livehouseInformationId) {
         String sql = "SELECT DISTINCT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
@@ -827,8 +776,86 @@ public class Livehouse_applicationDAO {
         }
         return approvedReservations;
     }
+    public List<LivehouseApplicationWithGroup> getApprovedReservationsByLivehouse(int livehouseInformationId) {
+        // livehouse_information_id を使って絞り込み
+        String sql = "SELECT * FROM livehouse_application_table " +
+                     "WHERE livehouse_information_id = ? AND true_false = 1";
 
+        List<LivehouseApplicationWithGroup> approvedReservations = new ArrayList<>();
 
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, livehouseInformationId); // livehouse_information_id をセット
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    // データを LivehouseApplicationWithGroup オブジェクトに格納
+                    approvedReservations.add(new LivehouseApplicationWithGroup(
+                        rs.getInt("id"), // 'id'を使う（application_id の代わり）
+                        rs.getInt("id"), // 同様に 'id' をセット
+                        rs.getTimestamp("date_time") != null ? rs.getTimestamp("date_time").toLocalDateTime() : null,
+                        rs.getBoolean("true_false"),
+                        rs.getTimestamp("start_time") != null ? rs.getTimestamp("start_time").toLocalDateTime() : null,
+                        rs.getTimestamp("finish_time") != null ? rs.getTimestamp("finish_time").toLocalDateTime() : null,
+                        rs.getInt("artist_group_id"),
+                        rs.getString("account_name") != null ? rs.getString("account_name") : "",
+                        rs.getString("group_genre") != null ? rs.getString("group_genre") : "",
+                        rs.getString("band_years") != null ? rs.getString("band_years") : "",
+                        rs.getInt("user_id"),
+                        rs.getString("us_name") != null ? rs.getString("us_name") : "",
+                        null // members の取得を追加する場合は、ここに追加
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return approvedReservations;
+    }
+
+ // true_false = 1の予約データを取得するメソッド
+    public List<LivehouseApplicationWithGroup> getReservationsWithTrueFalseOne(int year, int month, int day) {
+        String sql = "SELECT * FROM livehouse_application_table " +
+                     "WHERE YEAR(date_time) = ? AND MONTH(date_time) = ? AND DAY(date_time) = ? AND true_false = 1";
+        List<LivehouseApplicationWithGroup> reservations = new ArrayList<>();
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, year);
+            pstmt.setInt(2, month);
+            pstmt.setInt(3, day);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int applicationId = rs.getInt("id");
+                    LocalDateTime dateTime = rs.getTimestamp("date_time").toLocalDateTime();
+                    boolean trueFalse = rs.getBoolean("true_false");
+                    LocalDateTime startTime = rs.getTimestamp("start_time").toLocalDateTime();
+                    LocalDateTime finishTime = rs.getTimestamp("finish_time").toLocalDateTime();
+                    int groupId = rs.getInt("artist_group_id");
+                    String accountName = rs.getString("account_name");
+                    String groupGenre = rs.getString("group_genre");
+                    String bandYears = rs.getString("band_years");
+                    int userId = rs.getInt("user_id");
+                    String us_name = rs.getString("us_name");
+
+                    // メンバー情報を取得
+                    List<Member> members = getMembersByGroupId(groupId);
+
+                    LivehouseApplicationWithGroup reservation = new LivehouseApplicationWithGroup(
+                            applicationId, applicationId, dateTime, trueFalse, startTime, finishTime,
+                            groupId, accountName, groupGenre, bandYears, userId, us_name, members);
+
+                    reservations.add(reservation);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reservations;
+    }
 
 
 

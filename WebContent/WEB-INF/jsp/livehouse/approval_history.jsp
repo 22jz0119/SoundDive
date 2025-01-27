@@ -72,7 +72,6 @@
                             <ul class="application-artist-list-ul5">
                                 <li>
                                     <a href="<c:url value='/Application_confirmation' />?id=${application.id}" class="application-artist-list-ul5-li1-a">
-                                    <a href="<c:url value='/Application_approval' />?id=${application.id}" class="application-artist-list-ul5-li1-a">
                                         詳細を見る
                                     </a>
                                 </li>
