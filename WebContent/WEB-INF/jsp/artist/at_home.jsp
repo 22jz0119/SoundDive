@@ -27,7 +27,6 @@
 				            </ul>
 				        </div>
 				    </li>
-				    <li><a href="#">000</a></li>
 				    <li><a href="#" onclick="logoutAndRedirect();">ログアウト</a></li>
 				</ul>
             </nav>
