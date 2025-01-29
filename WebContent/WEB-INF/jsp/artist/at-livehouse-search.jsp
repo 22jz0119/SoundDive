@@ -52,7 +52,7 @@
 	                    </div>
 	                    <div class="artist-result-Div3">
 	                        <div>
-	                            <img src="../assets/img/Studio.jpg" alt="StudioImg" class="artist-result-img">
+	                            <img src="${pageContext.request.contextPath}${livehouse.picture_image_naigaikan}" alt="StudioImg" class="artist-result-img">
 	                        </div>
 	                        <ul class="artist-result-frame">
 	                            <li class="LiveHousemain-img"></li>
