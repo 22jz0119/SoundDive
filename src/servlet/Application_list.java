@@ -33,48 +33,44 @@ public class Application_list extends HttpServlet {
         int month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam) : -1;
         int day = (dayParam != null && !dayParam.isEmpty()) ? Integer.parseInt(dayParam) : -1;
 
-        // パラメータが正しい場合のみ、データを取得
         System.out.println("[DEBUG] Received parameters - year: " + year + ", month: " + month + ", day: " + day);
-        // 初期化
+
         List<LivehouseApplicationWithGroup> applicationList1 = new ArrayList<>();
         List<LivehouseApplicationWithGroup> applicationList2 = new ArrayList<>();
+
         if (year != -1 && month != -1 && day != -1) {
-            List<LivehouseApplicationWithGroup> applicationList = livehouseApplicationDAO.getReservationsWithTrueFalseZero(year, month, day);
-            // cogig_or_solo パラメータを取得し、デフォルト値を設定
-            String cogigOrSoloParam = request.getParameter("cogig_or_solo");
-            System.out.println("[DEBUG] cogig_or_solo parameter received: " + cogigOrSoloParam);  // 追加したデバッグログ
-            int cogigOrSolo = (cogigOrSoloParam == null || cogigOrSoloParam.isEmpty()) ? 1 : Integer.parseInt(cogigOrSoloParam);
-            System.out.println("[DEBUG] Parsed cogig_or_solo: " + cogigOrSolo);
-            // 1の処理（基本情報の取得）
+            // cogig_or_solo = 1 のデータを取得
             System.out.println("[DEBUG] Fetching reservations with cogig_or_solo = 1");
             applicationList1 = livehouseApplicationDAO.getReservationsWithTrueFalseZero(year, month, day);
-            // 2の処理（追加でグループ情報を取得）
-            if (cogigOrSolo == 2) {
-                System.out.println("[DEBUG] Fetching reservations with cogig_or_solo = 2");
-                applicationList2 = livehouseApplicationDAO.getReservationsByCogigOrSolo(year, month, day);
-            }
-            // 取得データをマージしてリクエストスコープに設定
-            List<LivehouseApplicationWithGroup> mergedApplicationList = new ArrayList<>(applicationList1);
+
+            // cogig_or_solo = 2 のデータを取得
+            System.out.println("[DEBUG] Fetching reservations with cogig_or_solo = 2");
+            applicationList2 = livehouseApplicationDAO.getReservationsByCogigOrSolo(year, month, day);
+
+            // データをマージ
+            List<LivehouseApplicationWithGroup> mergedApplicationList = new ArrayList<>();
+            System.out.println("[DEBUG] Adding cogig_or_solo = 1 data, size: " + applicationList1.size());
+            mergedApplicationList.addAll(applicationList1);
+
+            System.out.println("[DEBUG] Adding cogig_or_solo = 2 data, size: " + applicationList2.size());
             mergedApplicationList.addAll(applicationList2);
-            System.out.println("[DEBUG] Final mergedApplicationList size: " + mergedApplicationList.size());
-            for (LivehouseApplicationWithGroup app : mergedApplicationList) {
-                System.out.println("[DEBUG] Application: " + app.getAccountName() + ", Genre: " + app.getGroupGenre());
-            }
-            request.setAttribute("applicationList", mergedApplicationList);
-            request.setAttribute("cogigOrSolo", cogigOrSolo);
 
             // リクエストスコープに設定
-            request.setAttribute("applicationList", applicationList);
+            request.setAttribute("applicationList", mergedApplicationList);
         } else {
-            // パラメータが無効または不足している場合、エラーメッセージを表示
+            // パラメータが無効または不足している場合、エラーメッセージを設定
+            if (year == -1) System.out.println("[DEBUG] Missing or invalid parameter: year");
+            if (month == -1) System.out.println("[DEBUG] Missing or invalid parameter: month");
+            if (day == -1) System.out.println("[DEBUG] Missing or invalid parameter: day");
+
             System.out.println("[DEBUG] Invalid or missing date parameters");
-            request.setAttribute("errorMessage", "無効な日付が指定されています。");
-            request.setAttribute("cogigOrSolo", 1); // デフォルト値を設定
+            request.setAttribute("errorMessage", "年、月、日を正しく入力してください。");
         }
 
         // JSPページにフォワード
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_list.jsp").forward(request, response);
     }
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
