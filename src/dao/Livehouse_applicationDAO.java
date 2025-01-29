@@ -128,10 +128,13 @@ public class Livehouse_applicationDAO {
     private void sendNotificationToArtistGroup(int applicationId) {
         NoticeDAO noticeDAO = NoticeDAO.getInstance(dbManager);
 
-        String sql = "SELECT la.user_id AS applicant_user_id, ag.account_name AS applicant_name, " +
-                     "ag.user_id AS recipient_user_id, la.livehouse_information_id, la.date_time " +
+        String sql = "SELECT sender_ag.account_name AS applicant_name, sender_ag.user_id AS applicant_user_id, " +
+                     "receiver_ag.user_id AS recipient_user_id, la.livehouse_information_id, la.date_time, " +
+                     "li.livehouse_name " +
                      "FROM livehouse_application_table la " +
-                     "JOIN artist_group ag ON la.user_id = ag.user_id " +  // 申請者のアーティストグループ情報を取得
+                     "JOIN artist_group sender_ag ON la.user_id = sender_ag.user_id " +  // 申請者のアーティスト情報を取得
+                     "JOIN artist_group receiver_ag ON la.artist_group_id = receiver_ag.id " + // 申請を受け取る側のアーティスト情報
+                     "JOIN livehouse_information li ON la.livehouse_information_id = li.id " + // ライブハウス情報を取得
                      "WHERE la.id = ?";
 
         try (Connection conn = dbManager.getConnection();
@@ -141,22 +144,27 @@ public class Livehouse_applicationDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    // 必要な情報を取得
+                    // 正しい申請者と受取人の情報を取得
                     int applicantUserId = rs.getInt("applicant_user_id");  // 申請者のユーザーID
-                    int recipientUserId = rs.getInt("recipient_user_id");  // 通知を送るユーザーID
+                    int recipientUserId = rs.getInt("recipient_user_id");  // 申請を受け取るユーザーID
                     int livehouseId = rs.getInt("livehouse_information_id");  // ライブハウスID
                     LocalDateTime dateTime = rs.getTimestamp("date_time").toLocalDateTime();  // 予約日時
                     String applicantName = rs.getString("applicant_name");  // 申請者のアーティストグループ名
+                    String livehouse_name = rs.getString("livehouse_name"); // ライブハウス名
+                    
+                    System.out.println("[DEBUG] Retrieved livehouse name: " + livehouse_name);
 
                     // 通知メッセージを作成
-                    String message = "新しい対バン申請が届きました: 申請者 " + applicantName + ", 予約日時: " + dateTime;
+                    String message = "新しい対バン申請が届きました: 申請者 " + applicantName + 
+                                     ", 予約日時: " + dateTime + ", 予約ライブハウス: " + livehouse_name;
 
-                    // 通知を挿入（recipientUserId に通知を送る）
+                    // 通知を受け取る **recipientUserId** に送信
                     noticeDAO.insertNotice(applicationId, recipientUserId, message);
 
                     // デバッグログ
-                    System.out.println("[DEBUG] Notification sent to artist group user ID: " + recipientUserId + 
-                                       " (Applicant: " + applicantName + ", Applicant User ID: " + applicantUserId + ")");
+                    System.out.println("[DEBUG] Notification sent to user ID: " + recipientUserId + 
+                                       " (Applicant: " + applicantName + ", Livehouse: " + livehouse_name + 
+                                       ", Applicant User ID: " + applicantUserId + ")");
                 } else {
                     // レコードが見つからない場合
                     System.out.println("[DEBUG] No artist group found for application ID: " + applicationId);
@@ -167,7 +175,6 @@ public class Livehouse_applicationDAO {
             e.printStackTrace();
         }
     }
-
 
     /**
      * ソロ通知を送信
@@ -180,20 +187,41 @@ public class Livehouse_applicationDAO {
     private void sendNotification(int applicationId, int userId, int livehouseId, LocalDateTime dateTime) {
         NoticeDAO noticeDAO = NoticeDAO.getInstance(dbManager);
 
+        // `livehouse_information_table` から `livehouse_name` を取得するSQL
+        String sql = "SELECT livehouse_name FROM livehouse_information WHERE id = ?";
+
+        String livehouseName = "不明なライブハウス"; // 初期値
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, livehouseId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    livehouseName = rs.getString("livehouse_name");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[ERROR] Failed to retrieve livehouse name: " + e.getMessage());
+            e.printStackTrace();
+        }
+
         // 通知メッセージを作成
-        String message = "新しいSOLO予約が作成されました: ライブハウスID " + livehouseId +
-                         ", 予約日時: " + dateTime;
+        String message = "新しいSOLO予約が作成されました: " +
+                         "予約日時: " + dateTime +
+                         ", 予約ライブハウス: " + livehouseName;
 
         try {
             // 通知を挿入
             noticeDAO.insertNotice(applicationId, userId, message);
-            System.out.println("[DEBUG] Notification sent successfully.");
+            System.out.println("[DEBUG] Notification sent successfully. " +
+                               "Livehouse Name: " + livehouseName);
         } catch (SQLException e) {
             System.err.println("[ERROR] Failed to send notification: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
     
     // Livehouse_applicationを挿入するメソッド
     
