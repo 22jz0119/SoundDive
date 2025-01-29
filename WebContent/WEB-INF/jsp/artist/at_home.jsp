@@ -17,8 +17,8 @@
 <body class="artist_home">
     <header class="main-header">
         <div class="header-container2">
-            <div class="main-title2">
-                <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="" class="main-logo2">
+            <div class="main-title">
+                <h1 class="main-title-h1">Sound Dive</h1>
             </div>
             <ul class="header-nav-ul2">
                 <li class="header-box-li2"><a href="<%= request.getContextPath() %>/At_Mypage" class="top-mypage-btn">MY PAGE</a></li>

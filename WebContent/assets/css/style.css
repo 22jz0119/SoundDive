@@ -74,14 +74,14 @@ main{
     height: 100%;
 }
 .main-title{
-
     font-size: 1.5rem;
     margin-left: 300px;
 }
 
 .main-title-h1{
-    margin: 0 auto;
+    margin-top: 10px;
 }
+
 
 
 .header-nav {
@@ -95,7 +95,7 @@ main{
 }
 
 .header-nav-ul{
-	margin-right: 200px;
+	margin-right: 100px;
     list-style: none;
     display: flex;
 }
@@ -120,6 +120,7 @@ main{
 .header-container2{
 	display: flex;
 	justify-content: space-around;
+	align-items: center;
 }
 
 .main-title2{
@@ -1477,11 +1478,25 @@ th.b {
 	justify-content: center;
 }
 
+
+.member-detail{
+	display: flex;
+	justify-content: center;
+	margin: 30px;
+}
+
 .profile-card{
-	width: 200px;
-	height: 30px;
-	margin: 30px 0 0 850px;
-	
+	width: 170px;
+	height: 50px;
+	margin-top: 50px;
+	margin-left: 350px;
+	margin-right: 90px;
+}
+
+.p-c-sub{
+	width: 170px;
+	height: 50px;
+	margin-top: 50px;
 }
 
 
@@ -1490,10 +1505,12 @@ th.b {
     padding: 10px;
 }
 
+
 .plus-member-details-div1{
 	margin-top: 30px;
 	display: flex;
 	justify-content: center;
+	
 }
 
 .plus-member-detail-title1{
@@ -1532,8 +1549,10 @@ th.b {
 }
 
 .remove-member-button{
-	margin-top: 20px;
-	margin-left: 1000px;
+	width: 150px;
+	height: 50px;
+	margin-top: 100px;
+	margin-left: 100px;
 	background-color: #4CAF50; /* 緑色の背景 */
     color: white; /* 文字色は白 */
     border: none; /* ボーダーなし */
@@ -1747,13 +1766,22 @@ th.b {
 }
 
 .form-group-2{
+	display: flex;
+	justify-content: center;
+	align-items: center;
     margin-top: 100px;
 }
 
+.form-group-2-p{
+	margin-right: 10px;
+}
+
 #band-history{
-    padding: 50px 400px;
+/*    padding: 5px 50px;*/
+	width: 100px;
+	height: 20px;
     text-align: center;
-    border-radius: 1%;
+    border-radius: 5px;
 }
 
 .form-group-3 {
@@ -2122,6 +2150,29 @@ th.b {
 .livehouse_mypage-inputfield-livehouse-name{
     display: flex;
     justify-content: center;
+    align-items: center;
+}
+
+#livehouseName {
+    width: 300px;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+#livehouseName:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    background-color: #fff;
+}
+
+#livehouseName::placeholder {
+    color: #999;
+    font-style: italic;
 }
 .livehouse_mypage-guide-livehousename{
     font-size: 1.4rem;
@@ -2140,6 +2191,60 @@ th.b {
 .livehouse_mypage-inputfield-onername{
     display: flex;
     justify-content: center;
+    align-items: center;
+}
+
+#ownerName {
+    width: 300px;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+/* フォーカス時のスタイル */
+#ownerName:focus {
+    border-color: #007bff;
+    background-color: #fff;
+}
+
+/* プレースホルダーの透明化 */
+#ownerName::placeholder {
+    color: transparent;
+}
+
+/* フォーカス時や入力時のプレースホルダーテキスト */
+#ownerName:focus::placeholder {
+    color: transparent;
+}
+
+/* ラベルのスタイル */
+#ownerName + label {
+    position: absolute;
+    top: 0;
+    left: 15px;
+    font-size: 14px;
+    color: #888;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+/* フォーカス時や入力時にラベルの位置変更 */
+#ownerName:focus + label,
+#ownerName:not(:placeholder-shown) + label {
+    top: -18px;
+    left: 15px;
+    font-size: 12px;
+    color: #007bff;
+}
+
+/* 入力ボックスのホバー時 */
+#ownerName:hover {
+    border-color: #3498db;
+    cursor: pointer;
 }
 
 #livehouse-mypage-onername{
@@ -2150,6 +2255,59 @@ th.b {
 .livehouse_mypage-inputfield-tel{
     display: flex;
     justify-content: center;
+    align-items: center;
+}
+#liveTelNumber {
+    width: 300px;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+/* フォーカス時のスタイル */
+#liveTelNumber:focus {
+    border-color: #007bff;
+    background-color: #fff;
+}
+
+/* プレースホルダーの透明化 */
+#liveTelNumber::placeholder {
+    color: transparent;
+}
+
+/* フォーカス時や入力時のプレースホルダーテキスト */
+#liveTelNumber:focus::placeholder {
+    color: transparent;
+}
+
+/* ラベルのスタイル */
+#liveTelNumber + label {
+    position: absolute;
+    top: 0;
+    left: 15px;
+    font-size: 14px;
+    color: #888;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+/* フォーカス時や入力時にラベルの位置変更 */
+#liveTelNumber:focus + label,
+#liveTelNumber:not(:placeholder-shown) + label {
+    top: -18px;
+    left: 15px;
+    font-size: 12px;
+    color: #007bff;
+}
+
+/* 入力ボックスのホバー時 */
+#liveTelNumber:hover {
+    border-color: #3498db;
+    cursor: pointer;
 }
 
 .livehouse_mypage-guide-tel{

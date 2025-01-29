@@ -96,6 +96,7 @@
                     	</label>
                     </div>
                     --%>
+                    
                    
                 </div>
             </c:forEach>
@@ -119,7 +120,9 @@
 		</div>
 
         <!-- バンド歴入力 -->
+        
         <div class="form-group-2">
+        	<p class="form-group-2-p">バンド歴</p>
             <c:choose>
                 <c:when test="${not empty userGroup}">
                     <textarea id="band-history" name="band_years" placeholder="バンド歴" rows="4" required>${userGroup.band_years}</textarea>
@@ -167,7 +170,7 @@
 
             memberDetail.innerHTML = `
                 <input type="text" class="profile-card" name="member_name[]" placeholder="氏名" required><br>
-                <input type="text" class="profile-card p-c-sub" name="member_role[]" placeholder="役割 例: ボーカル" required><br>
+                <input type="text" class="p-c-sub" name="member_role[]" placeholder="役割 例: ボーカル" required><br>
                 <button type="button" class="remove-member-button" onclick="removeMember(this)">閉じる</button>
             `;
 
