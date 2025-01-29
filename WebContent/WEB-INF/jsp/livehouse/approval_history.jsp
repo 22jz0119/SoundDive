@@ -38,6 +38,7 @@
         </div>
     </section>
 
+
     <div class="application-lists">
         <ul>
             <!-- ソロ のデータ表示 -->
