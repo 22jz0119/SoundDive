@@ -3,7 +3,6 @@
 <%@ page import="model.Notice" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -24,40 +23,54 @@
             <ul class="header-nav-ul2">
                 <li class="header-box-li2"><a href="<%= request.getContextPath() %>/At_Mypage" class="top-mypage-btn">MY PAGE</a></li>
                 <li class="notification-container header-box-li2">
-                    <a href=" #" class="notification-icon" onclick="toggleNotificationWindow(event)">
+                    <a href="#" class="notification-icon" onclick="toggleNotificationWindow(event)">
                         <% 
-						    List<Notice> notifications = (List<Notice>) request.getAttribute("notifications");
-						    long unreadCount = 0;
-						    if (notifications != null) {
-						        for (Notice notice : notifications) {
-						            if (!notice.isRead()) {
-						                unreadCount++;
-						            }
-						        }
-						    }
-						%>
+                            List<Notice> notifications = (List<Notice>) request.getAttribute("notifications");
+                            long unreadCount = 0;
+                            if (notifications != null) {
+                                for (Notice notice : notifications) {
+                                    if (!notice.isRead()) {
+                                        unreadCount++;
+                                    }
+                                }
+                            }
+                        %>
                         <span id="notificationCount">通知<%= unreadCount %>件</span>
                     </a>
                     <div class="notification-window" id="notificationWindow" style="display: none;">
                         <ul id="notificationList">
-						    <% if (notifications != null) {
-						        for (Notice notice : notifications) { %>
-						            <li class="<%= notice.isRead() ? "read" : "unread" %>">
-						                <span class="tuuti"><%= notice.getMessage() != null ? notice.getMessage() : "メッセージがありません" %></span>
-						                <button class="notification-button" onclick="markAsRead(<%= notice.getId() %>)">既読</button>
-						            </li>
-						    <%  } 
-						    } else { %>
-						        <li class="tuuti">通知はありません。</li>
-						    <% } %>
-						</ul>
+                            <% if (notifications != null && !notifications.isEmpty()) { 
+                                for (Notice notice : notifications) { %>
+                                    <li class="<%= notice.isRead() ? "read" : "unread" %>">
+                                        <span class="tuuti">
+                                            <!-- 通知メッセージを表示 -->
+                                            <% if (notice.getMessage() != null) { %>
+                                                <%= notice.getMessage() %>
+                                            <% } else { %>
+                                                メッセージがありません
+                                            <% } %>
+                                        </span>
+                                        <!-- cogig_or_solo に応じた通知 -->
+                                        <% 
+										    Integer applicationId = notice.getLivehouseApplicationId();
+										    if (applicationId != null && applicationId > 0) { 
+										%>
+										    <span class="notification-type"></span>
+										<% } %>
+                                        <button class="notification-button" onclick="markAsRead(<%= notice.getId() %>)">既読</button>
+                                    </li>
+                            <%  } 
+                            } else { %>
+                                <li class="tuuti">通知はありません。</li>
+                            <% } %>
+                        </ul>
                     </div>
                 </li>
                 <li class="header-box-li2"><a href="#" onclick="logoutAndRedirect();" class="top-logout-btn">ログアウト</a></li>
             </ul>
-
         </div>
     </header>
+
     <main>
         <div class="a-t-home-keyvisual-div"><img src="<%= request.getContextPath() %>/assets/img/key-visual.jpg" alt="" class="a-t-home-key-visual"></div>
         <div class="booking-title">

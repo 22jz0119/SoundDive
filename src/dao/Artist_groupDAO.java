@@ -242,6 +242,34 @@ public class Artist_groupDAO {
         return groups;
     }
     
+    public List<Artist_group> getAllGroupsNotMyUserId(int loggedInUserId) {
+        String sql = "SELECT * FROM artist_group WHERE user_id != ?";
+        List<Artist_group> groups = new ArrayList<>();
+        System.out.println("[DEBUG] getAllGroups: クエリ実行開始: " + sql + " (除外ユーザーID: " + loggedInUserId + ")");
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, loggedInUserId); // ログインユーザーを除外
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Artist_group group = rs2model(rs);
+                groups.add(group);
+                // 各取得したグループの情報をログに表示
+                System.out.println("[DEBUG] Retrieved Group: ID=" + group.getId() + ", Name=" + group.getAccount_name());
+            }
+            System.out.println("[DEBUG] getAllGroups: 取得したグループ数: " + groups.size());
+
+        } catch (SQLException e) {
+            System.err.println("[ERROR] getAllGroups: データ取得中にエラーが発生しました: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return groups;
+    }
+
+    
     public boolean updateApprovalStatus(int groupId, boolean status) {
         String sql = "UPDATE アーティストグループ SET 承認 = ? WHERE ID = ?";
         try (Connection conn = dbManager.getConnection();

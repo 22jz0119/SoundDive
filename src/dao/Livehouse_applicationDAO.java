@@ -28,6 +28,8 @@ public class Livehouse_applicationDAO {
         this.dbManager = dbManager;
     }
     
+
+    
     public Integer getArtistGroupIdByApplicationId(int applicationId) {
         String sql = "SELECT artist_group_id FROM livehouse_application_table WHERE id = ?";
         
@@ -53,8 +55,6 @@ public class Livehouse_applicationDAO {
         
         return null; // 見つからない場合は null を返す
     }
-
-
     
     public String getArtistNameByApplicationId(int applicationId) {
         String sql = "SELECT ag.account_name FROM livehouse_application_table la " +
@@ -116,9 +116,61 @@ public class Livehouse_applicationDAO {
             return false;
         }
     }
+    
+    /**
+     * 対バン通知を送信
+     *
+     * @param applicationId 挿入されたライブハウス申請ID
+     * @param userId ユーザーID
+     * @param livehouseId ライブハウスID
+     * @param dateTime 予約日時
+     */
+    private void sendNotificationToArtistGroup(int applicationId) {
+        NoticeDAO noticeDAO = NoticeDAO.getInstance(dbManager);
+
+        String sql = "SELECT la.user_id AS applicant_user_id, ag.account_name AS applicant_name, " +
+                     "ag.user_id AS recipient_user_id, la.livehouse_information_id, la.date_time " +
+                     "FROM livehouse_application_table la " +
+                     "JOIN artist_group ag ON la.user_id = ag.user_id " +  // 申請者のアーティストグループ情報を取得
+                     "WHERE la.id = ?";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, applicationId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // 必要な情報を取得
+                    int applicantUserId = rs.getInt("applicant_user_id");  // 申請者のユーザーID
+                    int recipientUserId = rs.getInt("recipient_user_id");  // 通知を送るユーザーID
+                    int livehouseId = rs.getInt("livehouse_information_id");  // ライブハウスID
+                    LocalDateTime dateTime = rs.getTimestamp("date_time").toLocalDateTime();  // 予約日時
+                    String applicantName = rs.getString("applicant_name");  // 申請者のアーティストグループ名
+
+                    // 通知メッセージを作成
+                    String message = "新しい対バン申請が届きました: 申請者 " + applicantName + ", 予約日時: " + dateTime;
+
+                    // 通知を挿入（recipientUserId に通知を送る）
+                    noticeDAO.insertNotice(applicationId, recipientUserId, message);
+
+                    // デバッグログ
+                    System.out.println("[DEBUG] Notification sent to artist group user ID: " + recipientUserId + 
+                                       " (Applicant: " + applicantName + ", Applicant User ID: " + applicantUserId + ")");
+                } else {
+                    // レコードが見つからない場合
+                    System.out.println("[DEBUG] No artist group found for application ID: " + applicationId);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[ERROR] Failed to send notification to artist group: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
     /**
-     * 通知を送信するヘルパーメソッド
+     * ソロ通知を送信
      *
      * @param applicationId 挿入されたライブハウス申請ID
      * @param userId ユーザーID
@@ -144,36 +196,7 @@ public class Livehouse_applicationDAO {
 
     
     // Livehouse_applicationを挿入するメソッド
-    public boolean insertLivehouse_application(Livehouse_application livehouse_application) {
-        // AUTO_INCREMENTの場合、idを除外
-        String sql = "INSERT INTO livehouse_application_table (livehouse_information_id, user_id, date_time, true_false, start_time, finish_time, create_date, update_date) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try (Connection conn = dbManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            // 各パラメータを設定
-            pstmt.setInt(1, livehouse_application.getLivehouse_information_id());
-            pstmt.setInt(2, livehouse_application.getUser_id());
-            pstmt.setDate(3, Date.valueOf(livehouse_application.getDate_time()));  // LocalDate -> Date
-            pstmt.setBoolean(4, livehouse_application.isTrue_False());
-            pstmt.setDate(5, Date.valueOf(livehouse_application.getStart_time()));  // LocalDate -> Date
-            pstmt.setDate(6, Date.valueOf(livehouse_application.getFinish_time()));  // LocalDate -> Date
-            pstmt.setDate(7, Date.valueOf(livehouse_application.getCreate_date()));  // LocalDate -> Date
-            pstmt.setDate(8, Date.valueOf(livehouse_application.getUpdate_date()));  // LocalDate -> Date
-            pstmt.setInt(9, livehouse_application.getId());
-
-            int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected > 0;  // 挿入が成功した場合、1以上の行が影響を受ける
-
-        } catch (SQLException e) {
-            // エラーメッセージをログに出力し、再スローして呼び出し元に伝える
-            System.err.println("Error while inserting livehouse application: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return false;
-    }
+    
     
     public boolean updateLivehouseApplication(int applicationId, int livehouseInformationId, LocalDateTime dateTime, LocalDateTime startTime) {
         String sql = "UPDATE livehouse_application_table " +
@@ -188,12 +211,22 @@ public class Livehouse_applicationDAO {
             pstmt.setInt(4, applicationId); // 更新対象のid
 
             int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0; // 更新成功ならtrue
+
+            if (affectedRows > 0) {
+                // 更新成功時に通知を送信
+                sendNotificationToArtistGroup(applicationId);
+                return true; // 更新成功
+            } else {
+                System.out.println("[DEBUG] No rows updated for application ID: " + applicationId);
+                return false; // 更新失敗
+            }
         } catch (SQLException e) {
+            System.err.println("[ERROR] Failed to update livehouse application: " + e.getMessage());
             e.printStackTrace();
-            return false; // 更新失敗ならfalse
+            return false; // エラー発生時
         }
     }
+
 
     // IDでLivehouse_applicationを取得するメソッド
 	    public Livehouse_application getLivehouse_applicationById(int id) throws SQLException {
