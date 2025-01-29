@@ -1747,13 +1747,22 @@ th.b {
 }
 
 .form-group-2{
+	display: flex;
+	justify-content: center;
+	align-items: center;
     margin-top: 100px;
 }
 
+.form-group-2-p{
+	margin-right: 10px;
+}
+
 #band-history{
-    padding: 50px 400px;
+/*    padding: 5px 50px;*/
+	width: 100px;
+	height: 20px;
     text-align: center;
-    border-radius: 1%;
+    border-radius: 5px;
 }
 
 .form-group-3 {

@@ -119,7 +119,9 @@
 		</div>
 
         <!-- バンド歴入力 -->
+        
         <div class="form-group-2">
+        	<p class="form-group-2-p">バンド歴</p>
             <c:choose>
                 <c:when test="${not empty userGroup}">
                     <textarea id="band-history" name="band_years" placeholder="バンド歴" rows="4" required>${userGroup.band_years}</textarea>
