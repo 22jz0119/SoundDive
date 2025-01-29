@@ -52,7 +52,7 @@ public class Livehouse_mypage extends HttpServlet {
 
         try {
             // ユーザーに紐付くライブハウス情報を取得
-            Livehouse_information livehouse = dao.getLivehouse_informationById(userId);
+            Livehouse_information livehouse = dao.getLivehouse_informationByUserId(userId);
 
             if (livehouse != null) {
                 System.out.println("[DEBUG] Retrieved Livehouse information: " + livehouse);
