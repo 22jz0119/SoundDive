@@ -72,7 +72,7 @@
     					<div class="cogig-prof-box">
     						<div class="cogig-prof-img-box">
     							<c:if test="${not empty artist.picture_image_movie}">
-				                    <img src="${pageContext.request.contextPath}${artist.picture_image_movie}" alt="バンドのイラスト" class="band-image" width="100px" height="100px">
+				                    <img src="${pageContext.request.contextPath}${artist.picture_image_movie}" alt="バンドのイラスト" class="band-image" >
 				                </c:if>
     						</div>
     						<div>

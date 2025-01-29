@@ -329,13 +329,14 @@ td.is-disabled {
 	flex-wrap: wrap;
 	gap: 20px;
 }
+
 .artist-result-box {
 	margin: 20px 30px;
     background: linear-gradient(to right, #FF6500, #1E3E62, #0B192C, #000000) ;
     border: 1px solid #ccc;
     padding: 20px;
     box-sizing: border-box;
-    width: 550px; /* 横幅550pxに固定 */
+    width: 800px; /* 横幅550pxに固定 */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1283,8 +1284,8 @@ th.b {
 }
 
 .band-image {
-    width: 100px; /* 画像のサイズを調整 */
-    height: auto; /* アスペクト比を維持 */
+    width: 300px; /* 画像のサイズを調整 */
+    height: 400px; /* アスペクト比を維持 */
 }
 
 .artist-search-box{
@@ -2302,24 +2303,107 @@ th.b {
 }
 
 .at-home-bs-done-frame{
-	margin: 60px 20px;
+	width: 1000px;
+	height: 200px;
+	margin: 0 20px;
     padding: 10px 100px;
     justify-content: space-around;
+    align-items: center;
     display: flex;
     font-size: 0.9rem;
-    background: rgba(188, 33, 16, 0.62);
+    background-image: linear-gradient( 135deg, #FF9D6C 10%, #BB4E75 100%);
     border-radius: 10px;
 }
 
+.booking-complete-info-ul1{
+	list-style: none;
+}
+
+.booking-complete-info-li1{
+	font-size: 1.8rem;
+	border-bottom: 1px solid #FFFFFF;
+	margin-bottom: 10px;
+}
+
+.booking-complete-info-li2{
+	font-size: 1.5rem;
+}
+
+.booking-complete-info-li3{
+	font-size: 1.6rem;
+	
+}
+
+.booking-complete-info-ul2{
+	list-style: none;
+	
+}
+
+.booking-complete-info-li2-1{
+	margin-top: 30px;
+	font-size: 1.3rem;
+}
+
+.booking-complete-info-li2-2{
+	font-size: 1.3rem;
+}
+
+.booking-complete-info-li2-3{
+	font-size: 1.3rem;
+}
+
+
 .at-home-bs-request-frame{
-	margin: 60px 20px;
-    padding: 10px 100px;
+	width: 1000px;
+	height: 200px;
+	margin: 50px 20px;
+    padding: 20px 100px;
     justify-content:space-around;
+    align-items: center;
     display: flex;
     font-size: 0.9rem;
-    background: rgba(65, 194, 45, 0.403);
+    background-image: linear-gradient( 135deg, #79F1A4 10%, #0E5CAD 100%);
     border-radius: 10px;
 }
+
+.booking-request-info-ul1{
+	list-style: none;
+}
+
+.booking-request-info-li1{
+	font-size: 1.8rem;
+	border-bottom: 1px solid #FFFFFF;
+	margin-bottom: 10px;
+}
+
+.booking-request-info-li2{
+	font-size: 1.5rem;
+}
+
+.booking-request-info-li3{
+	font-size: 1.6rem;
+	
+}
+
+.booking-request-info-ul2{
+	list-style: none;
+	
+}
+
+.booking-request-info-li2-1{
+	margin-top: 30px;
+	font-size: 1.3rem;
+}
+
+.booking-request-info-li2-2{
+	font-size: 1.3rem;
+}
+
+.booking-request-info-li2-3{
+	font-size: 1.3rem;
+}
+
+
 
 .cogig-containar {
     display: flex;
