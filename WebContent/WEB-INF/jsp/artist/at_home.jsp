@@ -83,15 +83,15 @@
                 <c:forEach var="app" items="${applicationsTrue}">
                     <div class="at-home-bs-done-frame">
                         <img src="${app.livehouse_information.picture_image_naigaikan}" alt="Livehouse Image" width="100px" height="100px"/>
-                        <ul>
-                            <li>${app.livehouse_information.livehouse_name}</li>
-                            <li>予約日</li>
-                            <li>${app.date_time}</li>
+                        <ul class="booking-complete-info-ul1">
+                            <li class="booking-complete-info-li1">${app.livehouse_information.livehouse_name}</li>
+                            <li class="booking-complete-info-li2">予約日</li>
+                            <li class="booking-complete-info-li3">${app.date_time}</li>
                         </ul>
-                        <ul>
-                            <li>${app.livehouse_information.live_address}</li>
-                            <li>電話番号</li>
-                            <li>${app.livehouse_information.live_tel_number}</li>
+                        <ul class="booking-complete-info-ul2">
+                            <li class="booking-complete-info-li2-1">${app.livehouse_information.live_address}</li>
+                            <li class="booking-complete-info-li2-2">電話番号</li>
+                            <li class="booking-complete-info-li2-3">${app.livehouse_information.live_tel_number}</li>
                         </ul>
                     </div>
                 </c:forEach>
@@ -99,15 +99,15 @@
                 <c:forEach var="app" items="${applicationsFalse}">
                     <div class="at-home-bs-request-frame">
                         <img src="${app.livehouse_information.picture_image_naigaikan}" alt="Livehouse Image" width="100px" height="100px"/>
-                        <ul>
-                            <li>${app.livehouse_information.livehouse_name}</li>
-                            <li>予約日</li>
-                            <li>${app.date_time}</li>
+                        <ul class="booking-request-info-ul1">
+                            <li class="booking-request-info-li1">${app.livehouse_information.livehouse_name}</li>
+                            <li class="booking-request-info-li2">予約日</li>
+                            <li class="booking-request-info-li3">${app.date_time}</li>
                         </ul>
-                        <ul>
-                            <li>${app.livehouse_information.live_address}</li>
-                            <li>電話番号</li>
-                            <li>${app.livehouse_information.live_tel_number}</li>
+                        <ul class="booking-request-info-ul2">
+                            <li class="booking-request-info-li2-1">${app.livehouse_information.live_address}</li>
+                            <li class="booking-request-info-li2-2">電話番号</li>
+                            <li class="booking-request-info-li2-3">${app.livehouse_information.live_tel_number}</li>
                         </ul>
                     </div>
                 </c:forEach>
