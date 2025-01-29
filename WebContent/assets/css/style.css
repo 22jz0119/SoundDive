@@ -329,6 +329,7 @@ td.is-disabled {
 	flex-wrap: wrap;
 	gap: 20px;
 }
+
 .artist-result-box {
 	margin: 20px 30px;
     background: linear-gradient(to right, #FF6500, #1E3E62, #0B192C, #000000) ;
