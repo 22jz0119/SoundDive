@@ -12,16 +12,19 @@
 </head>
 <body>
     <header class="main-header">
-        <div class="header-container">
-            <h1 class="main-title">Sound Dive</h1>
-            <nav class="header-nav">
-                <ul class="header-nav-ul">
-                    <li><a href="<%= request.getContextPath() %>/Livehouse_home">HOME</a></li>
-                    <li><a href="<%= request.getContextPath() %>/Livehouse_mypage">MY PAGE</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+		<div class="header-container">
+			<div class="main-title">
+				<h1 class="main-title-h1">Sound Dive</h1>
+			</div>
+			<nav class="header-nav">
+				<ul class="header-nav-ul">
+					<li><a href="<%= request.getContextPath() %>/Livehouse_mypage">MY PAGE</a></li>
+					<li><a href="<%= request.getContextPath() %>/Approval_history">承認履歴</a></li>
+					<li class="header-box-li2"><a href="#" onclick="logoutAndRedirect();" class="top-logout-btn">ログアウト</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
     <main>
         <section class="application-list-count">
             <h2>アーティスト申請一覧画面</h2>
@@ -76,7 +79,7 @@
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
-                        <li>データがありません</li>
+                        <li>ソロデータがありません</li>
                     </c:otherwise>
                 </c:choose>
 			 </div>
@@ -135,7 +138,7 @@
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
-                        <li>データがありません</li>
+                        <li>対バンデータがありません</li>
                     </c:otherwise>
                 </c:choose>
 				

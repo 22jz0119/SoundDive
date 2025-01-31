@@ -8,10 +8,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
 import model.LivehouseApplicationWithGroup;
+import model.User;
 
 /**
  * 承認履歴を管理するサーブレット
@@ -24,37 +26,36 @@ public class Approval_history extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         DBManager dbManager = DBManager.getInstance();
         Livehouse_applicationDAO livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
+        HttpSession session = request.getSession();
 
-        // パラメータ取得（livehouse_information_id を取得）
-        String livehouseIdParam = request.getParameter("livehouseInformationId");
-        Integer livehouseInformationId = null;
-        
-        if (livehouseIdParam != null && !livehouseIdParam.isEmpty()) {
-            try {
-                livehouseInformationId = Integer.parseInt(livehouseIdParam);
-            } catch (NumberFormatException e) {
-                System.out.println("[ERROR] 無効な livehouseInformationId: " + livehouseIdParam);
-                request.setAttribute("errorMessage", "無効なライブハウスIDです。");
-                request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_history.jsp").forward(request, response);
-                return;
-            }
+        // ログインユーザーの取得
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        Integer loggedInLivehouseId = null;
+
+        if (loggedInUser != null) {
+            loggedInLivehouseId = livehouseApplicationDAO.getSingleLivehouseInformationIdByUserId(loggedInUser.getId());
         }
 
-        System.out.println("[DEBUG] Fetching reservations for livehouseInformationId: " + (livehouseInformationId != null ? livehouseInformationId : "ALL"));
+        if (loggedInLivehouseId == null) {
+            System.out.println("[ERROR] ログインユーザーに紐づく livehouseInformationId が取得できませんでした。");
+            request.setAttribute("errorMessage", "ライブハウス情報が見つかりません。");
+            request.getRequestDispatcher("/WEB-INF/jsp/livehouse/approval_history.jsp").forward(request, response);
+            return;
+        }
 
-        // 承認済みのソロ & 対バンデータ取得（ライブハウスIDがない場合は全件取得）
-        List<LivehouseApplicationWithGroup> soloApplications = livehouseApplicationDAO.getReservationsWithTrueFalseOne(livehouseInformationId);
-        List<LivehouseApplicationWithGroup> cogigApplications = livehouseApplicationDAO.getReservationsByCogigOrSoloTrueFalseOne(livehouseInformationId);
+        System.out.println("[DEBUG] Fetched livehouseInformationId: " + loggedInLivehouseId);
+
+        // 承認済みの予約を取得（ログインユーザーのライブハウスIDに紐づくもののみ）
+        List<LivehouseApplicationWithGroup> soloApplications = livehouseApplicationDAO.getReservationsWithTrueFalseOne(loggedInLivehouseId);
+        List<LivehouseApplicationWithGroup> cogigApplications = livehouseApplicationDAO.getReservationsByCogigOrSoloTrueFalseOne(loggedInLivehouseId);
 
         System.out.println("[DEBUG] soloApplications size: " + soloApplications.size());
         System.out.println("[DEBUG] cogigApplications size: " + cogigApplications.size());
 
-        // データを JSP に渡す
+        // JSP にデータを渡す
         request.setAttribute("soloApplications", soloApplications);
         request.setAttribute("cogigApplications", cogigApplications);
-
-        // JSP へフォワード
-        request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_list.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/jsp/livehouse/approval_history.jsp").forward(request, response);
     }
 
     @Override
@@ -79,7 +80,6 @@ public class Approval_history extends HttpServlet {
             System.out.println("[ERROR] 予約IDが送信されていません。");
         }
 
-        // 削除後に承認履歴ページへリダイレクト
         response.sendRedirect(request.getContextPath() + "/Approval_history");
     }
 }

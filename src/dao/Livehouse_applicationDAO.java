@@ -740,7 +740,8 @@ public class Livehouse_applicationDAO {
                          "LEFT JOIN user u ON la.user_id = u.id " +
                          "LEFT JOIN artist_group ag1 ON la.artist_group_id = ag1.id " +
                          "LEFT JOIN artist_group ag2 ON u.id = ag2.user_id " +
-                         "WHERE la.true_false = 1 AND la.cogig_or_solo = 2";
+                         "WHERE la.true_false = 1 AND la.cogig_or_solo = 2" +
+                         "AND la.livehouse_information_id = ?";
 
         // livehouseInformationId が null でない場合のみ追加
         if (livehouseInformationId != null && livehouseInformationId > 0) {
@@ -1013,7 +1014,8 @@ public class Livehouse_applicationDAO {
                      "FROM livehouse_application_table la " +
                      "LEFT JOIN artist_group ag ON la.user_id = ag.user_id " +
                      "LEFT JOIN user u ON la.user_id = u.id " +
-                     "WHERE la.true_false = 1 AND la.cogig_or_solo = 1";
+                     "WHERE la.true_false = 1 AND la.cogig_or_solo = 1" +
+                     "AND la.livehouse_information_id = ?";
 
         if (livehouseInformationId != null) {
             sql += " AND la.livehouse_information_id = ?";
@@ -1195,6 +1197,27 @@ public class Livehouse_applicationDAO {
         System.out.println("[DEBUG] Returning result: " + result);
         return result;
     }
+
+    public Integer getSingleLivehouseInformationIdByUserId(int userId) {
+        String sql = "SELECT id FROM livehouse_information WHERE user_id = ? LIMIT 1";
+        Integer livehouseId = null;
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    livehouseId = rs.getInt("id");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("[DEBUG] Retrieved livehouseInformationId for userId " + userId + ": " + livehouseId);
+        return livehouseId;
+    }
+
 
 
  // user_idからlivehouse_information_idを取得

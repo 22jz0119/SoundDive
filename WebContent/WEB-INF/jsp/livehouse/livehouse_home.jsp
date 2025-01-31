@@ -37,7 +37,7 @@
                 <h2 class="OpenSpots-Reserve">アーティストからのライブハウス予約申請カレンダー</h2>
              -->
                 <p class="OpenSpots-Reserve-detile">緑の日にちを選択して、申請情報の可否へ進んでください</p>
-                <p class="Notes-or-Cautions">※申請データなし 青</p>
+                <p class="Notes-or-Cautions">※申請データなし ×</p>
             </div>
             <div id="calendar-container"></div>
         </section>
