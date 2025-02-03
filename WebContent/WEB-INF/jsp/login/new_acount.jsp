@@ -6,6 +6,27 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
         <title>新規登録画面</title>
+        <script>
+            function validatePassword() {
+                var password = document.getElementById("password").value;
+                var confirmPassword = document.getElementById("confirm_password").value;
+                var errorSpan = document.getElementById("password-error");
+
+                if (password !== confirmPassword) {
+                    errorSpan.style.display = "block";
+                    return false;
+                } else {
+                    errorSpan.style.display = "none";
+                    return true;
+                }
+            }
+
+            function handleSubmit(event) {
+                if (!validatePassword()) {
+                    event.preventDefault(); // フォーム送信を防止
+                }
+            }
+        </script>
     </head>
     <body>
         <header class="main-header">
@@ -27,7 +48,7 @@
         <h1 class="new-account">新規登録ページ</h1>
         
         <section class="Create-newacount-form">
-            <form class="Login-info" action="<%= request.getContextPath() %>/New_Acount" method="POST">
+            <form class="Login-info" action="<%= request.getContextPath() %>/New_Acount" method="POST" onsubmit="handleSubmit(event)">
                 <!-- 氏名入力欄 -->
                 <h2 class="new-name">氏名<span class="Form-Item-Label-Required">必須</span></h2>
                 <input class="info-text" type="text" id="name" name="name" placeholder="氏名" required><br>
@@ -36,6 +57,11 @@
                 <h2 class="new-pass">パスワード<span class="Form-Item-Label-Required">必須</span></h2>
                 <input class="info-pass" type="password" id="password" name="password" placeholder="パスワード" required><br>
     
+                <!-- パスワード再入力欄 -->
+                <h2 class="new-pass">パスワード再入力<span class="Form-Item-Label-Required">必須</span></h2>
+                <input class="info-pass" type="password" id="confirm_password" name="confirm_password" placeholder="パスワード再入力" required oninput="validatePassword()"><br>
+                <span id="password-error" class="error-message" style="color: red; display: none;">パスワードが一致しません</span><br>
+
                 <!-- アカウントタイプの選択 -->
                 <h2 class="new-choose">アカウント選択<span class="Form-Item-Label-Required">必須</span></h2>
                 <div class="radio-group">
@@ -47,18 +73,17 @@
                 </div>
     
                 <!--電話番号-->
-				<h2 class="new-tel">電話番号<span class="Form-Item-Label-Required">必須</span></h2>
-				<input class="info-tel" 
-				       type="tel" 
-				       name="tel" 
-				       pattern="\d{10,11}" 
-				       maxlength="11" 
-				       placeholder="例）08011112222" 
-				       required><br>
-				<span class="attention">※電話番号は半角数字で10桁または11桁で入力してください。</span><br>
-				<span class="attention">※ハイフン「-」は不要です。</span><br>
+                <h2 class="new-tel">電話番号<span class="Form-Item-Label-Required">必須</span></h2>
+                <input class="info-tel" 
+                       type="tel" 
+                       name="tel" 
+                       pattern="\d{10,11}" 
+                       maxlength="11" 
+                       placeholder="例）08011112222" 
+                       required><br>
+                <span class="attention">※電話番号は半角数字で10桁または11桁で入力してください。</span><br>
+                <span class="attention">※ハイフン「-」は不要です。</span><br>
 
-    
                 <!--住所 都道府県-->
                 <h2 class="new-address">住所<span class="Form-Item-Label-Required">必須</span></h2>
                 <input class="info-prefectures" type="text" name="prefecture" placeholder="〇〇県〇〇市〇〇" required><br>
