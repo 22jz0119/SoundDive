@@ -78,9 +78,9 @@ public class Livehouse_applicationDAO {
     }
     
     //soloの場合の申請 梅島
-    public boolean saveSoloReservation(int livehouseId, int userId, LocalDateTime dateTime, LocalDateTime startTime) {
-        String sql = "INSERT INTO livehouse_application_table (livehouse_information_id, user_id, date_time, start_time, cogig_or_solo, true_false, create_date, update_date) " +
-                     "VALUES (?, ?, ?, ?, 1, false, NOW(), NOW())";
+    public boolean saveSoloReservation(int livehouseId, int userId, LocalDateTime dateTime, LocalDateTime startTime, LocalDateTime finishTime) {
+        String sql = "INSERT INTO livehouse_application_table (livehouse_information_id, user_id, date_time, start_time, finish_time, cogig_or_solo, true_false, create_date, update_date) " +
+                     "VALUES (?, ?, ?, ?, ?, 1, false, NOW(), NOW())";
 
         try (Connection conn = dbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -90,6 +90,7 @@ public class Livehouse_applicationDAO {
             stmt.setInt(2, userId); // user_id
             stmt.setTimestamp(3, Timestamp.valueOf(dateTime)); // date_time
             stmt.setTimestamp(4, Timestamp.valueOf(startTime)); // start_time
+            stmt.setTimestamp(5, Timestamp.valueOf(finishTime)); // finish_time (追加)
 
             // SQL 実行
             int rowsAffected = stmt.executeUpdate();
@@ -116,6 +117,7 @@ public class Livehouse_applicationDAO {
             return false;
         }
     }
+
     
     /**
      * 対バン通知を送信
@@ -226,35 +228,35 @@ public class Livehouse_applicationDAO {
     // Livehouse_applicationを挿入するメソッド
     
     
-    public boolean updateLivehouseApplication(int applicationId, int livehouseInformationId, LocalDateTime dateTime, LocalDateTime startTime) {
+    public boolean updateLivehouseApplication(int applicationId, int livehouseInformationId, LocalDateTime startTime, LocalDateTime finishTime) {
         String sql = "UPDATE livehouse_application_table " +
-                     "SET livehouse_information_id = ?, date_time = ?, start_time = ? " +
+                     "SET livehouse_information_id = ?, date_time = ?, start_time = ?, finish_time = ? " +
                      "WHERE id = ?";
+
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, livehouseInformationId); // livehouse_information_id を更新
-            pstmt.setTimestamp(2, Timestamp.valueOf(dateTime)); // date_time を更新
-            pstmt.setTimestamp(3, Timestamp.valueOf(startTime)); // start_time を更新
-            pstmt.setInt(4, applicationId); // 更新対象のid
+            // **🚀 `startTime` を `date_time` にセット**
+            pstmt.setInt(1, livehouseInformationId);
+            pstmt.setTimestamp(2, Timestamp.valueOf(startTime)); // `date_time`
+            pstmt.setTimestamp(3, Timestamp.valueOf(startTime)); // `start_time`
+            pstmt.setTimestamp(4, Timestamp.valueOf(finishTime)); // `finish_time`
+            pstmt.setInt(5, applicationId);
 
             int affectedRows = pstmt.executeUpdate();
-
             if (affectedRows > 0) {
-                // 更新成功時に通知を送信
                 sendNotificationToArtistGroup(applicationId);
-                return true; // 更新成功
+                return true;
             } else {
                 System.out.println("[DEBUG] No rows updated for application ID: " + applicationId);
-                return false; // 更新失敗
+                return false;
             }
         } catch (SQLException e) {
             System.err.println("[ERROR] Failed to update livehouse application: " + e.getMessage());
             e.printStackTrace();
-            return false; // エラー発生時
+            return false;
         }
     }
-
 
     // IDでLivehouse_applicationを取得するメソッド
 	    public Livehouse_application getLivehouse_applicationById(int id) throws SQLException {
@@ -625,8 +627,6 @@ public class Livehouse_applicationDAO {
     }
 
     //承認済み１のデータ
-
-    
     //リスト対バン　２の処理
     public List<LivehouseApplicationWithGroup> getReservationsByCogigOrSolo(int year, int month, int day) {
         String sql = "SELECT la.id AS application_id, " +
