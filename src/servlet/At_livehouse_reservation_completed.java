@@ -85,7 +85,7 @@ public class At_livehouse_reservation_completed extends HttpServlet {
 
             // 🔥 ライブハウス情報取得追加
             Livehouse_informationDAO livehouseDAO = new Livehouse_informationDAO(DBManager.getInstance());
-            Livehouse_information livehouse = livehouseDAO.getLivehouse_informationById(livehouseIdInt);
+            Livehouse_information livehouse = livehouseDAO.getLivehouse_informationByUserId(livehouseIdInt);
             if (livehouse == null) {
                 System.err.println("[ERROR] doPost: Livehouse not found for ID: " + livehouseIdInt);
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "ライブハウス情報が見つかりませんでした。");

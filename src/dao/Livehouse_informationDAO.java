@@ -174,12 +174,12 @@ public class Livehouse_informationDAO {
 
 
  // userIdでライブハウス情報を取得するメソッド
-    public Livehouse_information getLivehouse_informationByUserId(int userId) {
-        String sql = "SELECT * FROM livehouse_information WHERE user_id = ?";
+    public Livehouse_information getLivehouse_informationByUserId(int Id) {
+        String sql = "SELECT * FROM livehouse_information WHERE id = ?";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, userId);
+            pstmt.setInt(1, Id);
 
             // デバッグログ: 実行するクエリとパラメータを出力
             System.out.println("[DEBUG] Executing SQL: " + pstmt);
@@ -211,19 +211,19 @@ public class Livehouse_informationDAO {
                 System.out.println("  picture_image_naigaikan: " + picture_image_naigaikan);
                 System.out.println("  createDate: " + createDate);
                 System.out.println("  updateDate: " + updateDate);
-                System.out.println("  user_id: " + userId);
+                System.out.println("  id: " + Id);
 
                 // 取得したデータをLivehouse_informationオブジェクトにセットして返す
                 return new Livehouse_information(rs.getInt("id"), owner_name, equipment_information,
                         livehouse_explanation_information, livehouse_detailed_information, livehouse_name,
-                        live_address, live_tel_number, picture_image_naigaikan, createDate, updateDate, userId);
+                        live_address, live_tel_number, picture_image_naigaikan, createDate, updateDate, Id);
             } else {
                 // デバッグログ: レコードが見つからない場合
-                System.out.println("[DEBUG] No record found for user_id: " + userId);
+                System.out.println("[DEBUG] No record found for id: " + Id);
             }
         } catch (SQLException e) {
             // デバッグログ: エラー発生時の情報を出力
-            System.err.println("[ERROR] SQL Exception while retrieving Livehouse information for user_id: " + userId);
+            System.err.println("[ERROR] SQL Exception while retrieving Livehouse information for id: " + Id);
             e.printStackTrace();
         }
         return null; // レコードが見つからなかった場合やエラーが発生した場合
