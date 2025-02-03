@@ -740,8 +740,7 @@ public class Livehouse_applicationDAO {
                          "LEFT JOIN user u ON la.user_id = u.id " +
                          "LEFT JOIN artist_group ag1 ON la.artist_group_id = ag1.id " +
                          "LEFT JOIN artist_group ag2 ON u.id = ag2.user_id " +
-                         "WHERE la.true_false = 1 AND la.cogig_or_solo = 2" +
-                         "AND la.livehouse_information_id = ?";
+                         "WHERE la.true_false = 1 AND la.cogig_or_solo = 2"; // ← ここでクエリを閉じる
 
         // livehouseInformationId が null でない場合のみ追加
         if (livehouseInformationId != null && livehouseInformationId > 0) {
@@ -786,25 +785,6 @@ public class Livehouse_applicationDAO {
                             groupMembers                                      // members
                         ));
                     }
-
-                    // user_id に基づく artist_group の情報をリストに追加
-                    if (userGroupId > 0) {
-                        reservations.add(new LivehouseApplicationWithGroup(
-                            rs.getInt("application_id"),                      // application_id
-                            rs.getInt("id"),                                  // id
-                            rs.getTimestamp("datetime") != null ? rs.getTimestamp("datetime").toLocalDateTime() : null, // datetime
-                            rs.getBoolean("true_false"),                      // trueFalse
-                            rs.getTimestamp("start_time") != null ? rs.getTimestamp("start_time").toLocalDateTime() : null, // startTime
-                            rs.getTimestamp("finish_time") != null ? rs.getTimestamp("finish_time").toLocalDateTime() : null, // finishTime
-                            userGroupId,                                      // groupId
-                            rs.getString("user_group_account_name"),          // accountName
-                            rs.getString("user_group_genre"),                 // groupGenre
-                            rs.getString("user_group_band_years"),            // bandYears
-                            rs.getInt("user_id"),                             // userId
-                            rs.getString("user_name"),                        // us_name
-                            userGroupMembers                                  // members
-                        ));
-                    }
                 }
             }
         } catch (SQLException e) {
@@ -812,6 +792,7 @@ public class Livehouse_applicationDAO {
         }
         return reservations;
     }
+
 
 
 
@@ -1014,9 +995,9 @@ public class Livehouse_applicationDAO {
                      "FROM livehouse_application_table la " +
                      "LEFT JOIN artist_group ag ON la.user_id = ag.user_id " +
                      "LEFT JOIN user u ON la.user_id = u.id " +
-                     "WHERE la.true_false = 1 AND la.cogig_or_solo = 1" +
-                     "AND la.livehouse_information_id = ?";
+                     "WHERE la.true_false = 1 AND la.cogig_or_solo = 1"; // ← 修正：ここでクエリを閉じる
 
+        // livehouseInformationId が指定されている場合のみ WHERE 句を追加
         if (livehouseInformationId != null) {
             sql += " AND la.livehouse_information_id = ?";
         }
@@ -1027,6 +1008,7 @@ public class Livehouse_applicationDAO {
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+            // パラメータを設定する
             if (livehouseInformationId != null) {
                 pstmt.setInt(1, livehouseInformationId);
             }
@@ -1058,6 +1040,7 @@ public class Livehouse_applicationDAO {
         }
         return reservations;
     }
+
 
  // ユーザーIDからus_nameを取得するメソッド
     public String getUserNameByUserId(int userId) {
