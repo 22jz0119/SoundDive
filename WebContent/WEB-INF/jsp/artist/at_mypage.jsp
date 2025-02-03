@@ -89,13 +89,14 @@
                     
                     
                     <!-- 削除チェックボックス -->
-                    <%-- 
+                     
                     <div class="plus-member-details-div3">
                     	<label>
                         	<input type="checkbox" name="deleted_member_ids[]" value="${member.id}">
+                        	削除
                     	</label>
                     </div>
-                    --%>
+                    
                     
                    
                 </div>

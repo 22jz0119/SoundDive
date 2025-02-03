@@ -143,7 +143,6 @@ public class Member_tableDAO {
                 while (rs.next()) {
                     Member member = rs2model(rs);
                     members.add(member);
-                    System.out.println("[Result] Fetched Member: " + member);
                 }
             }
         } catch (SQLException e) {
@@ -163,14 +162,18 @@ public class Member_tableDAO {
                 if (newMember.getId() > 0 && newMember.getId() == existingMember.getId()) {
                     if (!newMember.getMember_name().equals(existingMember.getMember_name()) || 
                         !newMember.getMember_position().equals(existingMember.getMember_position())) {
+                        System.out.println("[updateExistingMembers] Updating member ID: " + newMember.getId() +
+                                           " from name: " + existingMember.getMember_name() + " to: " + newMember.getMember_name() +
+                                           ", position: " + existingMember.getMember_position() + " to: " + newMember.getMember_position());
                         updateMember(newMember);
+                    } else {
+                        System.out.println("[updateExistingMembers] No changes detected for member ID: " + newMember.getId());
                     }
                 }
             }
         }
         System.out.println("[updateExistingMembers] End");
     }
-    
  // メンバー数をカウントするメソッド
     public int countMembersByGroupId(int groupId) {
         String sql = "SELECT COUNT(*) AS member_count FROM member_table WHERE artist_group_id = ?";
@@ -196,7 +199,6 @@ public class Member_tableDAO {
             rs.getString("member_name"),
             rs.getString("member_position")
         );
-        System.out.println("[rs2model] Created Member: " + member);
         return member;
     }
 }
