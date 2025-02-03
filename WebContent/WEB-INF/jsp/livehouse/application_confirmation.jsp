@@ -12,20 +12,19 @@
     </head>
     <body>
         <header class="main-header">
-            <div class="header-container">
-                <div class="main-title">
-                    <h1 class="main-title-h1">Sound Dive</h1>
-                </div>
-                <nav class="header-nav">
-                    <ul class="header-nav-ul">
-                        <li><a href="<%= request.getContextPath() %>/Livehouse_home">HOME</a></li>
-                    <li><a href="<%= request.getContextPath() %>/Livehouse_mypage">MY PAGE</a></li>
-                        <li><a href="">000</a></li>
-                        <li><a href="">000</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </header>
+		<div class="header-container">
+			<div class="main-title">
+				<h1 class="main-title-h1">Sound Dive</h1>
+			</div>
+			<nav class="header-nav">
+				<ul class="header-nav-ul">
+					<li><a href="<%= request.getContextPath() %>/Livehouse_mypage">MY PAGE</a></li>
+					<li><a href="<%= request.getContextPath() %>/Approval_history">承認履歴</a></li>
+					<li class="header-box-li2"><a href="#" onclick="logoutAndRedirect();" class="top-logout-btn">ログアウト</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
         <main>
             <div class="main-reservation-confirmation">
                 <section class="confirmation-sec">
@@ -60,7 +59,6 @@
                             <li>予約日時: ${application.datetime}</li>
                             <li>開始時間: ${application.startTime}</li>
                             <li>終了時間: ${application.finishTime}</li>
-                            <li>前払い金額: 8000円</li>
                         </ul>
                     </div>
                 </div>

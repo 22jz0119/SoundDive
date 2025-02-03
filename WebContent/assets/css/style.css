@@ -1029,61 +1029,65 @@ input[type="submit"]:active, .info-check:active {
 .application-artist-list-main > div {
     margin-right: 10px; /* 要素間のスペース */
 }
+
 .application-artist-list-ikon{
     width: 300px;
     height: 300px;
 }
+
+.application-list-solo{
+	width: 1400px;
+	margin: 200px auto;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content:center;
+}
+
+
+.apllicationList-MaiinFrame{
+	margin-right: 50px;
+	margin-bottom: 50px;
+	width: 600px;
+	height: 500px;
+	display: flex;
+	align-items: center;
+	background: linear-gradient(to right, #FF6500, #1E3E62, #0B192C, #000000) ;
+	border: 1px solid rgb(192, 192, 192);
+}
+
 .application-artist-list-ul0{
-    display: flex;
-    justify-content: flex-start;
-    list-style: none;
-}
-.application-artist-list-ul0 p{
-    font-size: 1.7rem;
+	list-style: none;
 }
 
-.application-artist-list-ul1{
-    display: flex;
-    justify-content: flex-start;
-    list-style: none;
+.application-artist-list-ul0-li1{
+	font-size: 1.6rem;
+	border-bottom: 1px solid #FFFFFF;
 }
 
-.application-artist-list-ul1 p{
-    font-size: 1.3rem;
+
+
+
+
+.application-list-multi{
+	width: 1400px;
+	margin-top: 100px auto;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
 }
 
-.application-artist-list-ul2{
-    display: flex;
-    justify-content: flex-start;
-    list-style: none;
+.apllicationList-SubFrame{
+	margin-right: 50px;
+	width: 600px;
+	height: 500px;
+	display: flex;
+	align-items: center;
+	background: linear-gradient(to right, #FF6500, #1E3E62, #0B192C, #000000) ;
+	border: 1px solid rgb(192, 192, 192);
 }
 
-.application-artist-list-ul2 p{
-    font-size: 1.3rem;
-}
 
-.application-artist-list-ul3{
-    list-style: none;
-    display: flex;
-    justify-content: flex-start;
-}
 
-.application-artist-list-ul3 p{
-    font-size: 1.3rem;
-}
-
-.application-artist-list-ul4{
-    display: flex;
-    justify-content: flex-start;
-    list-style: none;
-}
-
-.application-artist-list-ul5{
-    margin-top: 30px;
-    list-style: none;
-    display: flex;
-    justify-content: center;
-}
 
 
 
@@ -1103,11 +1107,6 @@ input[type="submit"]:active, .info-check:active {
     line-height: 1.2; /* 行間を詰める */
 }
 
-.application-artist-list-ul1 li,
-.application-artist-list-ul2 li,
-.application-artist-list-ul3 li {
-    margin-right: 20px;
-}
 
 
 
