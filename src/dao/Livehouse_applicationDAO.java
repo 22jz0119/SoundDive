@@ -627,8 +627,6 @@ public class Livehouse_applicationDAO {
     }
 
     //承認済み１のデータ
-
-    
     //リスト対バン　２の処理
     public List<LivehouseApplicationWithGroup> getReservationsByCogigOrSolo(int year, int month, int day) {
         String sql = "SELECT la.id AS application_id, " +
