@@ -68,7 +68,7 @@ public class At_booking_confirmation extends HttpServlet {
 
             // ライブハウス情報の取得
             Livehouse_informationDAO livehouseDAO = new Livehouse_informationDAO(DBManager.getInstance());
-            Livehouse_information livehouse = livehouseDAO.getLivehouse_informationByUserId(livehouseId);
+            Livehouse_information livehouse = livehouseDAO.getLivehouse_informationById(livehouseId);
             if (livehouse == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "ライブハウス情報が見つかりませんでした。");
                 return;

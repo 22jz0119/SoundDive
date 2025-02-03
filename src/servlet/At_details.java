@@ -98,7 +98,7 @@ public class At_details extends HttpServlet {
             Livehouse_applicationDAO livehouseAppDao = new Livehouse_applicationDAO(dbManager);
 
             // ライブハウス情報を取得
-            Livehouse_information livehouseInfo = livehouseInfoDao.getLivehouse_informationByUserId(livehouseId);
+            Livehouse_information livehouseInfo = livehouseInfoDao.getLivehouse_informationById(livehouseId);
             if (livehouseInfo == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "指定されたライブハウスが見つかりません。");
                 return;
