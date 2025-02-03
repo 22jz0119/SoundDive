@@ -135,7 +135,7 @@ public class Livehouse_informationDAO {
         }
     }
     
-    public Livehouse_information getLivehouse_informationById(int userId) {
+    public Livehouse_information getLivehouse_informationByUserId(int userId) {
         String sql = "SELECT * FROM livehouse_information WHERE user_id = ?";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -173,7 +173,7 @@ public class Livehouse_informationDAO {
     }
 
  // userIdでライブハウス情報を取得するメソッド
-    public Livehouse_information getLivehouse_informationByUserId(int Id) {
+    public Livehouse_information getLivehouse_informationById(int Id) {
         String sql = "SELECT * FROM livehouse_information WHERE id = ?";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
