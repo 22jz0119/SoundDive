@@ -17,8 +17,6 @@
 				<h1 class="main-title-h1">Sound Dive</h1>
 			</div>
 			<nav class="header-nav">
-				<ul class="header-nav-ul">
-					<li><a href="<%= request.getContextPath() %>/Livehouse_home">HOME</a></li>
 					<li><a href="<%= request.getContextPath() %>/Livehouse_mypage">MY PAGE</a></li>
 					<li><a href="<%= request.getContextPath() %>/Approval_history">承認履歴</a></li>
 					<li class="header-box-li2"><a href="#" onclick="logoutAndRedirect();" class="top-logout-btn">LOG OUT</a></li>
@@ -69,9 +67,10 @@
         </ul>
 
         <!-- 申請情報を表示 -->
+        <h2>承認予約詳細</h2>
         <ul class="application-details-ul">
             <li>申請ID: ${application.applicationId}</li>
-            <li>予約者名: ${application.us_name}</li>
+            <li>予約者名: ${application.accountName} ${application.us_name}</li>
             <li>予約日時: ${application.datetime}</li>
             <li>開始時間: ${application.startTime}</li>
             <li>終了時間: ${application.finishTime}</li>
@@ -81,13 +80,7 @@
         <p>データがありません。</p>
     </c:otherwise>
 </c:choose>
-        <ul class="application-approval-ul-2">
-            <li class="application-approval-li-1"><p>前払い金額</p></li>
-            <li class="application-approval-li-2"><p>4000円</p></li>
-        </ul>
-    
-
-            </div>
+                    </div>
             <div class="application-approval-div2">
                 <ul class="application-approval-ul-3">
                     <!-- 必要に応じて他のデータを追加 -->

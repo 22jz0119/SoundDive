@@ -28,6 +28,7 @@ public class Livehouse_applicationDAO {
         this.dbManager = dbManager;
     }
     
+    
 
     
     public Integer getArtistGroupIdByApplicationId(int applicationId) {
@@ -432,8 +433,58 @@ public class Livehouse_applicationDAO {
         return applicationList;
 
     }
+    //ライブハウス詳細ページ対バンkon
+    public int getCogigOrSoloByApplicationId(int applicationId) {
+        String sql = "SELECT cogig_or_solo FROM livehouse_application_table WHERE id = ?";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, applicationId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("cogig_or_solo"); // NULL の場合、0 を返す
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // データがない場合
+    }
+    //ライブハウス詳細ページ kon
+    public LivehouseApplicationWithGroup getGroupDetailsById(int groupId) {
+        String sql = "SELECT id, account_name, group_genre, band_years FROM artist_group WHERE id = ?";
+        
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
- // グループIDに関連するメンバーリストを取得
+            pstmt.setInt(1, groupId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return new LivehouseApplicationWithGroup(
+                    rs.getInt("id"),
+                    rs.getInt("id"),
+                    null, // date_time
+                    false, // true_false
+                    null, // start_time
+                    null, // finish_time
+                    rs.getInt("id"),
+                    rs.getString("account_name"),
+                    rs.getString("group_genre"),
+                    rs.getString("band_years"),
+                    0, // user_id
+                    "", // user_name
+                    new ArrayList<>()
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    
+
+ // グループIDに関連するメンバーリストを取得 kon
     public List<Member> getMembersByGroupId(int groupId) {
         String sql = "SELECT id, artist_group_id, member_name, member_position " +
                      "FROM member_table WHERE artist_group_id = ?";
@@ -1221,38 +1272,31 @@ public class Livehouse_applicationDAO {
 
 
 
-        // `true_false`を更新するメソッド.
-    
-    public String updateTrueFalse(int applicationId, int trueFalseValue) {
-        // `true_false`の現在の値を確認するクエリ
-        String selectQuery = "SELECT true_false FROM livehouse_application_table WHERE id = ?";
-        String updateQuery = "UPDATE livehouse_application_table SET true_false = ? WHERE id = ?";
-        
-        try (Connection connection = dbManager.getConnection();
-             PreparedStatement selectStmt = connection.prepareStatement(selectQuery);
-             PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
-            
-            // 現在の値を取得
-            selectStmt.setInt(1, applicationId);
-            ResultSet rs = selectStmt.executeQuery();
-            if (rs.next()) {
-                int currentValue = rs.getInt("true_false");
-                if (currentValue == 1) {
-                    return "already_approved"; // すでに承認済み
-                }
-            }
+ /**
+  * `true_false`を1に更新するメソッド
+  */
+ private void updateTrueFalse(int applicationId) {
+     DBManager dbManager = DBManager.getInstance();
+     String updateQuery = "UPDATE livehouse_application_table SET true_false = 1 WHERE id = ?";
+     
+     try (Connection connection = dbManager.getConnection();
+          PreparedStatement stmt = connection.prepareStatement(updateQuery)) {
+         
+         stmt.setInt(1, applicationId);
+         int rowsUpdated = stmt.executeUpdate();
 
-            // 値を更新
-            updateStmt.setInt(1, trueFalseValue);
-            updateStmt.setInt(2, applicationId);
-            int rowsUpdated = updateStmt.executeUpdate();
-            return rowsUpdated > 0 ? "approval_success" : "update_failed";
+         if (rowsUpdated > 0) {
+             System.out.println("[DEBUG] Application ID " + applicationId + " updated successfully.");
+         } else {
+             System.err.println("[ERROR] Application ID " + applicationId + " update failed.");
+         }
+     } catch (SQLException e) {
+         e.printStackTrace();
+         throw new RuntimeException("Failed to update true_false in the database", e);
+     }
+ }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return "error";
-        }
-    }
+
     
     //梅島
     public int createApplication(int userId, Integer livehouseInformationId, LocalDateTime date_time, 

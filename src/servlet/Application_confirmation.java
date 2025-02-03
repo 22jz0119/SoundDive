@@ -26,7 +26,6 @@ public class Application_confirmation extends HttpServlet {
         DBManager dbManager = DBManager.getInstance();
         Livehouse_applicationDAO livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
 
-        // リクエストパラメータの取得
         String idParam = request.getParameter("id");
         String action = request.getParameter("action");
 
@@ -35,7 +34,15 @@ public class Application_confirmation extends HttpServlet {
                 int applicationId = Integer.parseInt(idParam);
                 LivehouseApplicationWithGroup applicationDetails = livehouseApplicationDAO.getApplicationDetailsById(applicationId);
 
-                // 承認ボタンが押された場合の処理
+                if (applicationDetails == null) {
+                    System.err.println("[ERROR] Application not found for ID: " + applicationId);
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "アプリケーションが見つかりません");
+                    return;
+                }
+
+                request.setAttribute("application", applicationDetails);
+
+             // 承認ボタンが押された場合の処理
                 if ("approval".equals(action)) {
                     // `true_false`を1に更新
                     updateTrueFalse(applicationId, dbManager);
@@ -46,31 +53,48 @@ public class Application_confirmation extends HttpServlet {
                     request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_approval.jsp").forward(request, response);
                     return;
                 }
+                
+                // 申請者のグループ情報
+                int groupId = applicationDetails.getGroupId();
+                List<Member> members = livehouseApplicationDAO.getMembersByGroupId(groupId);
+                request.setAttribute("members", members);
 
-                if (applicationDetails != null) {
-                    request.setAttribute("application", applicationDetails);
-                    int groupId = applicationDetails.getGroupId();
-                    List<Member> members = livehouseApplicationDAO.getMembersByGroupId(groupId);
-                    request.setAttribute("members", members);
-                    request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_confirmation.jsp").forward(request, response);
-                    return;
-                } else {
-                    System.err.println("Application not found for ID: " + applicationId);
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "アプリケーションが見つかりません");
-                    return;
+                // `cogig_or_solo` の取得
+                int cogigOrSolo = livehouseApplicationDAO.getCogigOrSoloByApplicationId(applicationId);
+                request.setAttribute("cogigOrSolo", cogigOrSolo);
+
+                // **対バン（cogig_or_solo = 2）の場合、相手のグループ情報を取得**
+                if (cogigOrSolo == 2) {
+                    int artistGroupId = livehouseApplicationDAO.getArtistGroupIdByApplicationId(applicationId);
+                    if (artistGroupId > 0) {
+                        // 対バングループのメンバー情報を取得
+                        List<Member> artistMembers = livehouseApplicationDAO.getMembersByGroupId(artistGroupId);
+                        request.setAttribute("artistMembers", artistMembers);
+                        
+                        // **対バングループの詳細情報を取得**
+                        LivehouseApplicationWithGroup artistGroup = livehouseApplicationDAO.getGroupDetailsById(artistGroupId);
+                        request.setAttribute("artistGroup", artistGroup);
+
+                        // **デバッグ用ログ**
+                        System.out.println("[DEBUG] artistGroupId: " + artistGroupId);
+                        System.out.println("[DEBUG] artistGroup Name: " + (artistGroup != null ? artistGroup.getAccountName() : "NULL"));
+                    }
                 }
+
+                request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_confirmation.jsp").forward(request, response);
+                return;
+
             } catch (NumberFormatException e) {
-                System.err.println("Invalid application ID format: " + idParam);
+                System.err.println("[ERROR] Invalid application ID format: " + idParam);
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なアプリケーションID形式です");
                 return;
             }
         } else {
-            System.err.println("No application ID provided in the request");
+            System.err.println("[ERROR] No application ID provided in the request");
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "アプリケーションIDがリクエストに含まれていません");
             return;
         }
     }
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
