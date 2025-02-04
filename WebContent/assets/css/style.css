@@ -2906,3 +2906,31 @@ th.b {
     margin-bottom: 0; /* 最後のアイテムに余白を追加しない */
     border-bottom: none; /* 最後のアイテムには境界線を付けない */
 }
+
+.scroll-login-btn {
+	font-family: "Shippori Mincho B1", serif;
+    display: block;
+    margin: 100px auto; /* 上下20pxのマージンで中央配置 */
+    padding: 30px 100px;
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: white;
+    background: #883C45;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(255, 117, 140, 0.3);
+    text-align: center;
+}
+
+.scroll-login-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(255, 117, 140, 0.5);
+}
+
+.scroll-login-btn:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(255, 117, 140, 0.3);
+}
+
