@@ -28,16 +28,17 @@ public class At_booking_confirmation extends HttpServlet {
             String yearParam = request.getParameter("year");
             String monthParam = request.getParameter("month");
             String dayParam = request.getParameter("day");
-            String timeParam = request.getParameter("time");
+            String timeParam = request.getParameter("time"); // 開始時間
+            String finishTimeParam = request.getParameter("finish_time"); // 終了時間
             String livehouseIdParam = request.getParameter("livehouseId");
             String livehouseType = request.getParameter("livehouse_type");
             String userIdParam = request.getParameter("userId");
 
             // デバッグ: 取得したパラメータの出力
-            debugRequestParams(yearParam, monthParam, dayParam, timeParam, livehouseIdParam, livehouseType, userIdParam);
+            debugRequestParams(yearParam, monthParam, dayParam, timeParam, finishTimeParam, livehouseIdParam, livehouseType, userIdParam);
 
             // 入力チェック（applicationIdは除外）
-            if (isNullOrEmpty(yearParam, monthParam, dayParam, timeParam, livehouseIdParam, livehouseType, userIdParam)) {
+            if (isNullOrEmpty(yearParam, monthParam, dayParam, timeParam, finishTimeParam, livehouseIdParam, livehouseType, userIdParam)) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "必要なパラメータが不足しています。");
                 return;
             }
@@ -49,10 +50,19 @@ public class At_booking_confirmation extends HttpServlet {
             int livehouseId = Integer.parseInt(livehouseIdParam);
             int userId = Integer.parseInt(userIdParam);
 
-            // 日時の変換
-            LocalDateTime reservationDateTime = parseDateTime(year, month, day, timeParam);
-            if (reservationDateTime == null) {
+            // 日時の変換（開始時間 & 終了時間）
+            LocalDateTime reservationStartTime = parseDateTime(year, month, day, timeParam);
+            LocalDateTime reservationFinishTime = parseDateTime(year, month, day, finishTimeParam);
+
+            if (reservationStartTime == null || reservationFinishTime == null) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な日時形式です。");
+                return;
+            }
+
+            // **開始時間が終了時間より後になっていないかチェック**
+            if (reservationStartTime.isAfter(reservationFinishTime) || reservationStartTime.equals(reservationFinishTime)) {
+                request.setAttribute("errorMessage", "終了時間は開始時間より後に設定してください。");
+                request.getRequestDispatcher("/WEB-INF/jsp/artist/at-booking-confirmation.jsp").forward(request, response);
                 return;
             }
 
@@ -102,12 +112,14 @@ public class At_booking_confirmation extends HttpServlet {
                 request.setAttribute("applicationId", applicationId);
             }
 
-            // リクエストスコープにパラメータを設定
+            // **JSP に送るデータを設定**
             request.setAttribute("selectedYear", year);
             request.setAttribute("selectedMonth", month);
             request.setAttribute("selectedDay", day);
             request.setAttribute("selectedTime", timeParam);
-            request.setAttribute("reservationDateTime", reservationDateTime);
+            request.setAttribute("selectedFinishTime", finishTimeParam);
+            request.setAttribute("reservationStartTime", reservationStartTime);
+            request.setAttribute("reservationFinishTime", reservationFinishTime);
             request.setAttribute("livehouse", livehouse);
             request.setAttribute("userName", user.getName());
             request.setAttribute("telNumber", user.getTel_number());
@@ -127,11 +139,12 @@ public class At_booking_confirmation extends HttpServlet {
     }
 
     // デバッグ用: リクエストパラメータの出力
-    private void debugRequestParams(String year, String month, String day, String time, String livehouseId, String livehouseType, String userId) {
+    private void debugRequestParams(String year, String month, String day, String time, String finishTime, String livehouseId, String livehouseType, String userId) {
         System.out.println("[DEBUG] year: " + year);
         System.out.println("[DEBUG] month: " + month);
         System.out.println("[DEBUG] day: " + day);
         System.out.println("[DEBUG] time: " + time);
+        System.out.println("[DEBUG] finishTime: " + finishTime);
         System.out.println("[DEBUG] livehouseId: " + livehouseId);
         System.out.println("[DEBUG] livehouseType: " + livehouseType);
         System.out.println("[DEBUG] userId: " + userId);

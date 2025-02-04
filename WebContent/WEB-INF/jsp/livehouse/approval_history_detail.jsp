@@ -1,17 +1,16 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html lang="ja">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
-        <title>アーティスト申請確認ページ</title>
-    </head>
-    <body>
-        <header class="main-header">
+<html>
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
+<title>承認履歴詳細ページ</title>
+</head>
+<body>
+<header class="main-header">
 		<div class="header-container">
 			<div class="main-title">
 				<h1 class="main-title-h1">Sound Dive</h1>
@@ -29,9 +28,9 @@
             <div class="main-reservation-confirmation">
                 <section class="confirmation-sec">
                     <div class="confirmation-div">
-                        <h1 class="confirmation-title">アーティスト申請詳細画面</h1>
+                        <h1 class="confirmation-title">承認予約確認画面</h1>
                     </div>
-                    <p class="question-approval">以下の予約を承認しますか？</p>
+                    <p class="question-approval">承認された予約内容です</p>
                 </section>
                 <div class="band-confirmation-container">
                     <div class="confirmation-profile">
@@ -82,14 +81,12 @@
                         </ul>
                     </div>
                 </div>
-                <div class="application_confirmation-btn">
-				    <!-- 戻るボタン -->
-				    <button class="approve-btn" onclick="location.href='navigate?action=list'">戻る</button>
-				    <!-- 承認ボタン -->
-					<button class="decline-btn" onclick="location.href='Application_confirmation?action=approval&id=${application.applicationId}'">承認</button>
-
-				</div>
+                <div class="application-approval-backhome-btn-div">
+            <a href="<%= request.getContextPath() %>/Livehouse_home" class="application-approval-backhome-btn">ホームへ戻る</a>
+        </div>               
  </div>
         </main>
     </body>
+</body>
+
 </html>

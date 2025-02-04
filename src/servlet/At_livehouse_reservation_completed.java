@@ -26,23 +26,25 @@ public class At_livehouse_reservation_completed extends HttpServlet {
             String year = request.getParameter("year");
             String month = request.getParameter("month");
             String day = request.getParameter("day");
-            String time = request.getParameter("time");
+            String time = request.getParameter("time"); // 開始時間
+            String finishTime = request.getParameter("finish_time"); // 終了時間
             String livehouseId = request.getParameter("livehouseId");
             String livehouseType = request.getParameter("livehouse_type");
             String userId = request.getParameter("userId");
-            
+
             System.out.println("[DEBUG] -----------------------------");
             System.out.println("[DEBUG] --- Request Parameters ---");
             System.out.println("[DEBUG] year: " + year);
             System.out.println("[DEBUG] month: " + month);
             System.out.println("[DEBUG] day: " + day);
             System.out.println("[DEBUG] time: " + time);
+            System.out.println("[DEBUG] finishTime: " + finishTime);
             System.out.println("[DEBUG] livehouseId: " + livehouseId);
             System.out.println("[DEBUG] livehouseType: " + livehouseType);
             System.out.println("[DEBUG] userId: " + userId);
 
             // 必須パラメータの検証
-            if (isNullOrEmpty(year, month, day, time, livehouseId, livehouseType)) {
+            if (isNullOrEmpty(year, month, day, time, finishTime, livehouseId, livehouseType)) {
                 System.err.println("[ERROR] doPost: Missing parameters.");
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "必要なパラメータが指定されていません。");
                 return;
@@ -59,16 +61,27 @@ public class At_livehouse_reservation_completed extends HttpServlet {
             }
 
             LocalDateTime startTime = parseDateTime(year, month, day, time);
-            if (startTime == null) {
+            LocalDateTime endTime = parseDateTime(year, month, day, finishTime);
+
+            if (startTime == null || endTime == null) {
                 System.err.println("[ERROR] doPost: Invalid datetime format.");
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効な日時形式が指定されています。");
                 return;
             }
-            
+
+            // 🔥 `startTime` より `endTime` が後であるかをチェック
+            if (!endTime.isAfter(startTime)) {
+                System.err.println("[ERROR] doPost: finish_time must be later than start_time.");
+                request.setAttribute("errorMessage", "終了時間は開始時間より後に設定してください。");
+                request.getRequestDispatcher("/WEB-INF/jsp/artist/at-livehouse-reservation-completed.jsp").forward(request, response);
+                return;
+            }
+
             request.setAttribute("selectedYear", year);
             request.setAttribute("selectedMonth", month);
             request.setAttribute("selectedDay", day);
             request.setAttribute("selectedTime", time);
+            request.setAttribute("finishTime", finishTime);
 
             // 🔥 ライブハウス情報取得追加
             Livehouse_informationDAO livehouseDAO = new Livehouse_informationDAO(DBManager.getInstance());
@@ -96,8 +109,9 @@ public class At_livehouse_reservation_completed extends HttpServlet {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なユーザーIDが指定されています。");
                     return;
                 }
-                
-                boolean saveResult = applicationDAO.saveSoloReservation(livehouseIdInt, userIdInt, startTime, startTime);
+
+                // **🚀 `startTime` を `date_time` の代わりに使用**
+                boolean saveResult = applicationDAO.saveSoloReservation(livehouseIdInt, userIdInt, startTime, startTime, endTime);
                 if (!saveResult) {
                     System.err.println("[ERROR] doPost: Failed to save solo reservation.");
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ソロライブ予約の保存に失敗しました。");
@@ -122,18 +136,15 @@ public class At_livehouse_reservation_completed extends HttpServlet {
                     return;
                 }
 
+                // **🚀 `startTime` を `date_time` の代わりに使用**
                 boolean updateResult = applicationDAO.updateLivehouseApplication(applicationIdInt, livehouseIdInt, startTime, startTime);
                 if (!updateResult) {
-                    System.err.println("[ERROR] doPost: Failed to save multi reservation.");
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "マルチライブ予約の保存に失敗しました。");
+                    System.err.println("[ERROR] doPost: Failed to update multi reservation.");
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "マルチライブ予約の更新に失敗しました。");
                     return;
                 }
-            } else {
-                System.err.println("[ERROR] doPost: Invalid livehouseType.");
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なライブハウスタイプが指定されました。");
-                return;
             }
-            
+
             request.setAttribute("reservationMessage", "予約が完了しました。");
             request.getRequestDispatcher("/WEB-INF/jsp/artist/at-livehouse-reservation-completed.jsp").forward(request, response);
 
@@ -163,5 +174,4 @@ public class At_livehouse_reservation_completed extends HttpServlet {
         }
         return false;
     }
-
 }

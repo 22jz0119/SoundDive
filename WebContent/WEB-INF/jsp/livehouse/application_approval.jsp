@@ -17,11 +17,10 @@
                 <h1 class="main-title-h1">Sound Dive</h1>
             </div>
             <nav class="header-nav">
-                <ul class="header-nav-ul">
-                    <li><a href="<%= request.getContextPath() %>/Livehouse_home">HOME</a></li>
+                <ul>
                     <li><a href="<%= request.getContextPath() %>/Livehouse_mypage">MY PAGE</a></li>
-                    <li><a href="">000</a></li>
-                    <li><a href="">000</a></li>
+                    <li><a href="<%= request.getContextPath() %>/Approval_history">承認履歴</a></li>
+                    <li class="header-box-li2"><a href="#" onclick="logoutAndRedirect();" class="top-logout-btn">LOG OUT</a></li>
                 </ul>
             </nav>
         </div>
@@ -31,69 +30,67 @@
             <div class="application_approvaled">
                 <h2 class="application_approvaled-h2">アーティストを承認しました</h2>
             </div>
-            <p class="approvaled-application-title">以下の予約が完了されました。</p>
+            <p class="approvaled-application-title">予約が正常に処理されました。</p>
         </section>
-    
-
+        
         <section class="application-approval-section">
             <ul class="application-approval-ul-1">
                 <li class="approved-artist-img-li">
                     <p><img class="approved-artist-img" src="<%= request.getContextPath() %>/assets/img/アーティスト画像.png" alt="アーティスト画像"></p>
                 </li>
             </ul>
-
+            
             <div class="application-approval-div1">
                 <c:choose>
-    <c:when test="${application != null}">
-    	<p>申請日</p>
-        <p>${application.datetime}</p> <!-- datetimeの値を表示 -->
-        <ul class="application-approval-ul-2">
-            <li class="application-approval-li-1"><p>予約者名</p></li>
-            <li class="application-approval-li-2">
-                <p>${application.us_name != null ? application.us_name : '名前なし'}</p>
-            </li>
-        </ul>
-
-        <ul class="application-approval-ul-2">
-            <li class="application-approval-li-1"><p>予約日時</p></li>
-            <li class="application-approval-li-2">
-                <c:choose>
-                    <c:when test="${not empty formattedDateTime}">
-                        <p>${formattedDateTime}</p>
+                    <c:when test="${application != null}">
+                        <p>申請日</p>
+                        <p>${application.datetime}</p> <!-- datetimeの値を表示 -->
+                        
+                        <ul class="application-approval-ul-2">
+                            <li class="application-approval-li-1"><p>予約者名</p></li>
+                            <li class="application-approval-li-2">
+                                <p>${application.us_name != null ? application.us_name : '名前なし'}</p>
+                            </li>
+                        </ul>
+                        
+                        <ul class="application-approval-ul-2">
+                            <li class="application-approval-li-1"><p>予約日時</p></li>
+                            <li class="application-approval-li-2">
+                                <c:choose>
+                                    <c:when test="${not empty formattedDateTime}">
+                                        <p>${formattedDateTime}</p>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <p>未定</p>
+                                    </c:otherwise>
+                                </c:choose>
+                            </li>
+                        </ul>
+                        
+                        <!-- 申請情報を表示 -->
+                        <h2>承認予約詳細</h2>
+                        <ul class="application-details-ul">
+                            <li>申請ID: ${application.applicationId}</li>
+                            <li>予約者名: ${application.accountName} ${application.us_name}</li>
+                            <li>予約日時: ${application.datetime}</li>
+                            <li>開始時間: ${application.startTime}</li>
+                            <li>終了時間: ${application.finishTime}</li>
+                        </ul>
                     </c:when>
                     <c:otherwise>
-                        <p>未定</p>
+                        <p>データがありません。</p>
                     </c:otherwise>
                 </c:choose>
-            </li>
-        </ul>
-
-        <!-- 申請情報を表示 -->
-        <ul class="application-details-ul">
-            <li>申請ID: ${application.applicationId}</li>
-            <li>予約者名: ${application.us_name}</li>
-            <li>予約日時: ${application.datetime}</li>
-            <li>開始時間: ${application.startTime}</li>
-            <li>終了時間: ${application.finishTime}</li>
-        </ul>
-    </c:when>
-    <c:otherwise>
-        <p>データがありません。</p>
-    </c:otherwise>
-</c:choose>
-        <ul class="application-approval-ul-2">
-            <li class="application-approval-li-1"><p>前払い金額</p></li>
-            <li class="application-approval-li-2"><p>4000円</p></li>
-        </ul>
-    
-
             </div>
+            
             <div class="application-approval-div2">
                 <ul class="application-approval-ul-3">
                     <!-- 必要に応じて他のデータを追加 -->
                 </ul>
             </div>
         </section>
+        <h2>承認ページから予約の確認・削除ができます。</h2>
+        
         <div class="application-approval-backhome-btn-div">
             <a href="<%= request.getContextPath() %>/Livehouse_home" class="application-approval-backhome-btn">ホームへ戻る</a>
         </div>

@@ -77,17 +77,43 @@
             <h2 class="booking-title-h2">Booking</h2>
         </div>
         <section class="booking-nav-section">
-            <form action="<%= request.getContextPath() %>/At_Home" method="post">
-                <div class="booking-button">
-                    <div class="booking-solo-button">
-                        <button type="submit" name="action" value="solo" class="solo-button">SOLO LIVE</button>
-                    </div>
-                    <div class="booking-multi-button">
-                        <button type="submit" name="action" value="multi" class="multi-button">MULTI LIVE</button>
-                    </div>
-                </div>
-            </form>
-        </section>
+		    <form id="bookingForm" action="<%= request.getContextPath() %>/At_Home" method="post">
+		        <div class="booking-button">
+		            <div class="booking-solo-button">
+		                <button type="button" onclick="validateMypage('solo')" class="solo-button">SOLO LIVE</button>
+		            </div>
+		            <div class="booking-multi-button">
+		                <button type="button" onclick="validateMypage('multi')" class="multi-button">MULTI LIVE</button>
+		            </div>
+		        </div>
+		    </form>
+		</section>
+		
+		<script>
+    function validateMypage(liveType) {
+        fetch('<%= request.getContextPath() %>/CheckMypageStatus', { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "ok") {
+                    // My Pageの入力がされている場合、フォームを送信
+                    let form = document.getElementById("bookingForm");
+                    let input = document.createElement("input");
+                    input.type = "hidden";
+                    input.name = "action";
+                    input.value = liveType;
+                    form.appendChild(input);
+                    form.submit();
+                } else {
+                    // My Pageの入力が不足している場合、ポップアップ表示
+                    alert("My Pageの入力が完了していません。\n必要な情報を入力してください。");
+                }
+            })
+            .catch(error => {
+                console.error("エラー:", error);
+                alert("エラーが発生しました。もう一度試してください。");
+            });
+    }
+</script>
 
         <section class="booking-status-section">
             <p class="at-home-bs-title">ライブ予約状況</p>

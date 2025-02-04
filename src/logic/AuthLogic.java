@@ -10,46 +10,26 @@ import model.User;
 
 public class AuthLogic {
     public User login(String tel_number, String password) {
-        System.out.println("Attempting to log in user with tel_number: " + tel_number);
-
         UserDAO dao = new UserDAO(DBManager.getInstance());
-        User user = dao.findByTelNumber(tel_number); // ユーザー情報を先に取得
+        User user = dao.findByTelNumber(tel_number);
 
-        if (user != null) {
-            System.out.println("User found: " + user.getName());
-            boolean passwordMatches = BCrypt.checkpw(password, user.getPassword());
-            System.out.println("Password matches: " + passwordMatches);
-
-            if (passwordMatches) {
-                System.out.println("Login successful for user: " + user.getName());
-                return user;
-            } else {
-                System.out.println("Invalid password for tel_number: " + tel_number);
-            }
-        } else {
-            System.out.println("No user found with tel_number: " + tel_number);
+        if (user != null && BCrypt.checkpw(password, user.getPassword())) {
+            return user;
         }
         return null;
     }
 
     public void loginUserSession(HttpSession session, User user) {
-        System.out.println("Storing user in session.");
         session.setAttribute("loginUser", user);
     }
 
     public void logout(HttpSession session) {
         if (isLoggedIn(session)) {
-            System.out.println("Logging out user. Session ID: " + session.getId());
             session.removeAttribute("loginUser");
-            System.out.println("User logged out successfully. Session ID: " + session.getId());
-        } else {
-            System.out.println("No user is currently logged in.");
         }
     }
 
     public boolean isLoggedIn(HttpSession session) {
-        boolean loggedIn = session.getAttribute("loginUser") != null;
-        System.out.println("Is user logged in? " + loggedIn);
-        return loggedIn;
+        return session.getAttribute("loginUser") != null;
     }
 }

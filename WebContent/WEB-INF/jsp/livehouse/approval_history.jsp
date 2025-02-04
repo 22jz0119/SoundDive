@@ -14,18 +14,19 @@
 
 <!-- ヘッダー -->
 <header class="main-header">
-    <div class="header-container">
-        <h1 class="main-title">Sound Dive</h1>
-        <nav class="header-nav">
-            <ul class="header-nav-ul">
-                <li><a href="${pageContext.request.contextPath}/Livehouse_home">HOME</a></li>
-                <li><a href="${pageContext.request.contextPath}/Livehouse_mypage">MY PAGE</a></li>
-                <li><a href="#">その他1</a></li>
-                <li><a href="#">その他2</a></li>
-            </ul>
-        </nav>
-    </div>
-</header>
+		<div class="header-container">
+			<div class="main-title">
+				<h1 class="main-title-h1">Sound Dive</h1>
+			</div>
+			<nav class="header-nav">
+				<ul class="header-nav-ul">
+					<li><a href="<%= request.getContextPath() %>/Livehouse_home">HOME</a></li>
+					<li><a href="<%= request.getContextPath() %>/Livehouse_mypage">MY PAGE</a></li>
+					<li class="header-box-li2"><a href="#" onclick="logoutAndRedirect();" class="top-logout-btn">LOG OUT</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
 
 <main>
     <section class="application-list-count">
@@ -71,7 +72,16 @@
                             </ul>
                             <ul class="application-artist-list-ul5">
                                 <li class="application-artist-list-ul5-li1">
-                                    <a href="<c:url value='/Application_confirmation' />?id=${application.id}" class="application-artist-list-ul5-li1-a">詳細を見る</a>
+                                    <a href="<c:url value='/Livehouse_history_detail'/>?applicationId=${application.applicationId}"class="application-artist-list-ul5-li1-a">詳細を見る</a>
+                                </li>
+                            </ul>
+                            <!-- 削除ボタン追加 -->
+                            <ul class="application-artist-list-ul5">
+                                <li>
+                                    <form action="${pageContext.request.contextPath}/Approval_history" method="post" onsubmit="return confirm('本当に削除しますか？');">
+                                        <input type="hidden" name="applicationId" value="${application.id}">
+                                        <button type="submit" class="delete-button">削除する</button>
+                                    </form>
                                 </li>
                             </ul>
                         </li>
@@ -124,7 +134,7 @@
                         <c:if test="${fn:length(cogigApplications) eq 1 or previousReservationId ne application.id}">
                             <ul class="application-artist-list-ul5">
                                 <li class="application-artist-list-ul5-li1">
-                                    <a href="<c:url value='/Application_confirmation' />?id=${application.id}" class="application-artist-list-ul5-li1-a">詳細を見る</a>
+                                    <a href="<%= request.getContextPath() %>/Livehouse_history_detail?id=${application.id}" class="application-artist-list-ul5-li1-a">詳細を見る</a>
                                 </li>
                             </ul>
                             </ul> <!-- cogig-groupの閉じタグ -->
