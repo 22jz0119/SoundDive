@@ -113,6 +113,7 @@
                 alert("エラーが発生しました。もう一度試してください。");
             });
     }
+    
 </script>
 
         <section class="booking-status-section">
