@@ -80,8 +80,6 @@ public class At_Mypage extends HttpServlet {
             return;
         }
 
-        System.out.println("[DEBUG] doPost() - User ID: " + userId);
-
         // 削除対象のメンバー
         String[] deletedMemberIds = request.getParameterValues("deleted_member_ids[]");
         List<Integer> deletedMemberIdList = new ArrayList<>();
@@ -90,27 +88,19 @@ public class At_Mypage extends HttpServlet {
                 try {
                     deletedMemberIdList.add(Integer.parseInt(id));
                 } catch (NumberFormatException e) {
-                    System.err.println("[ERROR] Invalid deleted_member_id: " + id);
+                    // 無効な ID はスキップ
                 }
             }
         }
-        System.out.println("[DEBUG] Deleted Member IDs: " + deletedMemberIdList);
 
         // メンバー情報取得
-        System.out.println("[DEBUG] Checking request parameters for members:");
         String[] memberIds = request.getParameterValues("member_id[]");
         String[] memberNames = request.getParameterValues("member_name[]");
         String[] memberRoles = request.getParameterValues("member_role[]");
 
-        // 配列のサイズ確認
-        System.out.println("[DEBUG] member_id[]: " + (memberIds == null ? "null" : memberIds.length));
-        System.out.println("[DEBUG] member_name[]: " + (memberNames == null ? "null" : memberNames.length));
-        System.out.println("[DEBUG] member_role[]: " + (memberRoles == null ? "null" : memberRoles.length));
-
         // NULLを回避するための処理
         int memberCount = (memberNames != null) ? memberNames.length : 0;
         if (memberRoles != null && memberRoles.length != memberCount) {
-            System.err.println("[ERROR] Mismatched member data arrays! Skipping member processing.");
             memberCount = 0; // 一致しない場合、処理をスキップ
         }
 
@@ -121,20 +111,12 @@ public class At_Mypage extends HttpServlet {
                 try {
                     memberId = Integer.parseInt(memberIds[i]); // IDが数値ならパース
                 } catch (NumberFormatException e) {
-                    System.err.println("[ERROR] Invalid member_id: " + memberIds[i]);
+                    // 無効な ID は 0 (新規) として扱う
                 }
             }
 
-            Member newMember = new Member(memberId, 0, memberNames[i], memberRoles[i]);
-            newMembers.add(newMember);
+            newMembers.add(new Member(memberId, 0, memberNames[i], memberRoles[i]));
         }
-
-        // デバッグログ
-        System.out.println("[DEBUG] Processed newMembers:");
-        for (Member m : newMembers) {
-            System.out.println("  -> ID: " + m.getId() + " | Name: " + m.getMember_name() + " | Role: " + m.getMember_position());
-        }
-
 
         String accountName = request.getParameter("account_name");
         String groupGenre = request.getParameter("group_genre");
@@ -191,22 +173,13 @@ public class At_Mypage extends HttpServlet {
                     existingMemberIdList.add(member.getId());
                 }
 
-                System.out.println("[DEBUG] Existing Members in DB:");
-                for (Member member : existingMembers) {
-                    System.out.println("  -> ID: " + member.getId() + " | Name: " + member.getMember_name() + " | Role: " + member.getMember_position());
-                }
-
                 // **メンバー管理**
                 MemberService memberService = new MemberService(Member_tableDAO.getInstance(DBManager.getInstance()));
                 memberService.manageMembers(conn, existingGroup.getId(), deletedMemberIdList, newMembers, existingMemberIdList);
 
                 conn.commit();
-            } else {
-                System.err.println("[ERROR] No artist group found for userId: " + userId);
             }
         } catch (Exception e) {
-            System.err.println("[ERROR] Exception in doPost: " + e.getMessage());
-            e.printStackTrace();
             request.setAttribute("errorMessage", "サーバーでエラーが発生しました。もう一度お試しください。");
         }
         doGet(request, response);
