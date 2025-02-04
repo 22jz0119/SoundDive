@@ -1,9 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
 <title>承認履歴詳細ページ</title>
 </head>
 <body>
@@ -25,9 +28,9 @@
             <div class="main-reservation-confirmation">
                 <section class="confirmation-sec">
                     <div class="confirmation-div">
-                        <h1 class="confirmation-title">アーティスト申請詳細画面</h1>
+                        <h1 class="confirmation-title">承認予約確認画面</h1>
                     </div>
-                    <p class="question-approval">以下の予約を承認しますか？</p>
+                    <p class="question-approval">承認された予約内容です</p>
                 </section>
                 <div class="band-confirmation-container">
                     <div class="confirmation-profile">

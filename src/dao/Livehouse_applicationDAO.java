@@ -510,6 +510,64 @@ public class Livehouse_applicationDAO {
         }
         return members;
     }
+    
+    public LivehouseApplicationWithGroup getApplicationById(int applicationId) {
+        LivehouseApplicationWithGroup application = null;
+
+        String sql = """
+            SELECT 
+                la.application_id, 
+                la.id, 
+                la.datetime, 
+                la.true_false, 
+                la.start_time, 
+                la.finish_time, 
+                la.group_id, 
+                g.account_name, 
+                g.group_genre, 
+                g.band_years, 
+                u.user_id, 
+                u.us_name
+            FROM livehouse_applications la
+            JOIN groups g ON la.group_id = g.group_id
+            JOIN users u ON g.user_id = u.user_id
+            WHERE la.application_id = ?
+        """;
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, applicationId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    // メンバーリストを取得
+                    List<Member> members = getMembersByGroupId(rs.getInt("group_id"));
+
+                    // LivehouseApplicationWithGroup のオブジェクトを作成
+                    application = new LivehouseApplicationWithGroup(
+                        rs.getInt("application_id"),
+                        rs.getInt("id"),
+                        rs.getTimestamp("datetime").toLocalDateTime(),
+                        rs.getBoolean("true_false"),
+                        rs.getTimestamp("start_time").toLocalDateTime(),
+                        rs.getTimestamp("finish_time").toLocalDateTime(),
+                        rs.getInt("group_id"),
+                        rs.getString("account_name"),
+                        rs.getString("group_genre"),
+                        rs.getString("band_years"),
+                        rs.getInt("user_id"),
+                        rs.getString("us_name"),
+                        members
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return application;
+    }
+
+
 
  // 指定されたIDで申請の詳細を取得するメソッド
     public LivehouseApplicationWithGroup getApplicationDetailsById(int applicationId) {

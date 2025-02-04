@@ -42,6 +42,27 @@ public class Approval_history extends HttpServlet {
 
         System.out.println("[DEBUG] 取得したユーザーID: " + userId);
 
+        // `applicationId` が指定されている場合は詳細ページに遷移
+        String applicationIdStr = request.getParameter("applicationId");
+        if (applicationIdStr != null && !applicationIdStr.isEmpty()) {
+            try {
+                int applicationId = Integer.parseInt(applicationIdStr);
+                LivehouseApplicationWithGroup applicationDetail = livehouseApplicationDAO.getApplicationById(applicationId);
+
+                if (applicationDetail != null) {
+                    request.setAttribute("applicationDetail", applicationDetail);
+                    request.getRequestDispatcher("/WEB-INF/jsp/livehouse/approval_history_detail.jsp").forward(request, response);
+                    return;
+                } else {
+                    System.out.println("[WARN] 指定された予約IDのデータが見つかりません。 applicationId: " + applicationId);
+                    request.setAttribute("errorMessage", "指定された予約情報が見つかりません。");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("[ERROR] 無効な予約IDが指定されました: " + applicationIdStr);
+                request.setAttribute("errorMessage", "無効な予約IDが指定されました。");
+            }
+        }
+
         // ライブハウスIDの取得
         int livehouseId = livehouseApplicationDAO.getLivehouseIdByUserId(userId);
         if (livehouseId == -1) {

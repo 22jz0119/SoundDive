@@ -72,7 +72,7 @@
                             </ul>
                             <ul class="application-artist-list-ul5">
                                 <li class="application-artist-list-ul5-li1">
-                                    <a href="<c:url value='/Livehouse_hisory_detail' />?id=${application.id}" class="application-artist-list-ul5-li1-a">詳細を見る</a>
+                                    <a href="<c:url value='/Livehouse_history_detail'/>?applicationId=${application.applicationId}"class="application-artist-list-ul5-li1-a">詳細を見る</a>
                                 </li>
                             </ul>
                             <!-- 削除ボタン追加 -->
@@ -134,7 +134,7 @@
                         <c:if test="${fn:length(cogigApplications) eq 1 or previousReservationId ne application.id}">
                             <ul class="application-artist-list-ul5">
                                 <li class="application-artist-list-ul5-li1">
-                                    <a href="<c:url value='/Livehouse_history_detail' />?id=${application.id}" class="application-artist-list-ul5-li1-a">詳細を見る</a>
+                                    <a href="<%= request.getContextPath() %>/Livehouse_history_detail?id=${application.id}" class="application-artist-list-ul5-li1-a">詳細を見る</a>
                                 </li>
                             </ul>
                             </ul> <!-- cogig-groupの閉じタグ -->
