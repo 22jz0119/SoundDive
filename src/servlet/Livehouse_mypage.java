@@ -102,7 +102,7 @@ public class Livehouse_mypage extends HttpServlet {
 
 
         try {
-            Livehouse_information existingLivehouse = dao.getLivehouse_informationById(userId);
+            Livehouse_information existingLivehouse = dao.getLivehouse_informationByUserId(userId);
             if (existingLivehouse != null) {
                 System.out.println("[DEBUG] Existing Livehouse data before update:");
                 System.out.println("  livehouse_name: " + existingLivehouse.getLivehouse_name());
