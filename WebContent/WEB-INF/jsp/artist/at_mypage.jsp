@@ -70,8 +70,9 @@
             <c:forEach var="member" items="${members}">
                 <div class="member-detail">
                     <!-- メンバーID（隠しフィールド） -->
-                    <input type="hidden" name="existing_member_ids[]" value="${member.id}">
-                    
+					<input type="hidden" name="member_id[]" value="${member.id}">
+					<input type="hidden" name="existing_member_ids[]" value="${member.id}">
+
                     <!-- 氏名 -->
                     <div class="plus-member-details-div1">
                     	<p class="plus-member-detail-title1">メンバー名</p>
@@ -170,6 +171,7 @@
             memberDetail.className = 'member-detail';
 
             memberDetail.innerHTML = `
+                <input type="hidden" name="member_id[]" value="0"> <!-- 新規メンバーはID=0 -->
                 <input type="text" class="profile-card" name="member_name[]" placeholder="氏名" required><br>
                 <input type="text" class="p-c-sub" name="member_role[]" placeholder="役割 例: ボーカル" required><br>
                 <button type="button" class="remove-member-button" onclick="removeMember(this)">閉じる</button>

@@ -80,6 +80,7 @@ public class At_Mypage extends HttpServlet {
             return;
         }
 
+        // 削除対象のメンバー
         String[] deletedMemberIds = request.getParameterValues("deleted_member_ids[]");
         List<Integer> deletedMemberIdList = new ArrayList<>();
         if (deletedMemberIds != null) {
@@ -87,17 +88,34 @@ public class At_Mypage extends HttpServlet {
                 try {
                     deletedMemberIdList.add(Integer.parseInt(id));
                 } catch (NumberFormatException e) {
+                    // 無効な ID はスキップ
                 }
             }
         }
 
+        // メンバー情報取得
+        String[] memberIds = request.getParameterValues("member_id[]");
         String[] memberNames = request.getParameterValues("member_name[]");
         String[] memberRoles = request.getParameterValues("member_role[]");
+
+        // NULLを回避するための処理
+        int memberCount = (memberNames != null) ? memberNames.length : 0;
+        if (memberRoles != null && memberRoles.length != memberCount) {
+            memberCount = 0; // 一致しない場合、処理をスキップ
+        }
+
         List<Member> newMembers = new ArrayList<>();
-        if (memberNames != null && memberRoles != null && memberNames.length == memberRoles.length) {
-            for (int i = 0; i < memberNames.length; i++) {
-                newMembers.add(new Member(0, 0, memberNames[i], memberRoles[i]));
+        for (int i = 0; i < memberCount; i++) {
+            int memberId = 0;
+            if (memberIds != null && i < memberIds.length) {
+                try {
+                    memberId = Integer.parseInt(memberIds[i]); // IDが数値ならパース
+                } catch (NumberFormatException e) {
+                    // 無効な ID は 0 (新規) として扱う
+                }
             }
+
+            newMembers.add(new Member(memberId, 0, memberNames[i], memberRoles[i]));
         }
 
         String accountName = request.getParameter("account_name");
@@ -147,8 +165,18 @@ public class At_Mypage extends HttpServlet {
                 existingGroup.setBand_years(bandYears);
                 existingGroup.setUpdate_date(LocalDate.now());
                 artistGroupDAO.updateArtistGroupByUserId(userId, existingGroup);
+
+                // **既存メンバーの ID を取得**
+                List<Member> existingMembers = memberTableDAO.getMembersByArtistGroupId(existingGroup.getId());
+                List<Integer> existingMemberIdList = new ArrayList<>();
+                for (Member member : existingMembers) {
+                    existingMemberIdList.add(member.getId());
+                }
+
+                // **メンバー管理**
                 MemberService memberService = new MemberService(Member_tableDAO.getInstance(DBManager.getInstance()));
                 memberService.manageMembers(conn, existingGroup.getId(), deletedMemberIdList, newMembers, existingMemberIdList);
+
                 conn.commit();
             }
         } catch (Exception e) {

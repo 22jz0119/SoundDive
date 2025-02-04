@@ -135,21 +135,29 @@ public class Member_tableDAO {
     public List<Member> getMembersByArtistGroupId(int artistGroupId) {
         String sql = "SELECT id, member_name, member_position, artist_group_id FROM member_table WHERE artist_group_id = ?";
         System.out.println("[getMembersByArtistGroupId] Start - artistGroupId=" + artistGroupId);
+
         List<Member> members = new ArrayList<>();
         try (Connection connection = dbManager.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            
             pstmt.setInt(1, artistGroupId);
+            System.out.println("[DEBUG] Executing SQL: " + pstmt.toString()); // SQLの実行を確認
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     Member member = rs2model(rs);
                     members.add(member);
+                    // 各メンバーの詳細を出力
+                    System.out.println("[DEBUG] Retrieved Member: ID=" + member.getId() + 
+                                       " | Name=" + member.getMember_name() + 
+                                       " | Position=" + member.getMember_position());
                 }
             }
         } catch (SQLException e) {
             System.err.println("[Error] Failed to fetch members for groupId=" + artistGroupId);
             e.printStackTrace();
         } finally {
-            System.out.println("[getMembersByArtistGroupId] End");
+            System.out.println("[getMembersByArtistGroupId] End - Retrieved " + members.size() + " members");
         }
         return members;
     }
