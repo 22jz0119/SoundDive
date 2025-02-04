@@ -356,6 +356,13 @@ td.is-disabled {
     object-fit: cover;
 }
 
+.at-home-status-img{
+	width: 300px;
+	height: 200px;
+	object-fit: cover;
+	border-radius: 8px;
+}
+
 .artist-result-frame {
     display: grid;
     list-style-type: none;
@@ -1055,6 +1062,10 @@ input[type="submit"]:active, .info-check:active {
 	border: 1px solid rgb(192, 192, 192);
 }
 
+.apllicationList-MaiinFrame ul{
+	list-style: none;
+}
+
 .application-artist-list-ul0{
 	list-style: none;
 }
@@ -1078,6 +1089,7 @@ input[type="submit"]:active, .info-check:active {
 
 .apllicationList-SubFrame{
 	margin-right: 50px;
+	margin-top: 50px;
 	width: 600px;
 	height: 500px;
 	display: flex;
@@ -2423,9 +2435,14 @@ th.b {
 }
 
 .calendar-table {
-    width: 100%;
+	margin: 20px auto;
+    width: 1500px;
     border-collapse: collapse;
 }
+
+/*#calendar-table{*/
+/*	margin: 100px;*/
+/*}*/
 
 .calendar-cell {
     width: 14%;

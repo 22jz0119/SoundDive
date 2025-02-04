@@ -95,7 +95,7 @@
                 <p class="at-home-bs-done">ライブ予約完了</p>
                 <c:forEach var="app" items="${applicationsTrue}">
                     <div class="at-home-bs-done-frame">
-                        <img src="${app.livehouse_information.picture_image_naigaikan}" alt="Livehouse Image" width="100px" height="100px"/>
+                        <img src="${pageContext.request.contextPath}${app.livehouse_information.picture_image_naigaikan}" alt="Livehouse Image" class="at-home-status-img"/>
                         <ul class="booking-complete-info-ul1">
                             <li class="booking-complete-info-li1">${app.livehouse_information.livehouse_name}</li>
                             <li class="booking-complete-info-li2">予約日</li>
@@ -111,7 +111,7 @@
                 <h2>予約申請中</h2>
                 <c:forEach var="app" items="${applicationsFalse}">
                     <div class="at-home-bs-request-frame">
-                        <img src="${app.livehouse_information.picture_image_naigaikan}" alt="Livehouse Image" width="100px" height="100px"/>
+                        <img src="${pageContext.request.contextPath}${app.livehouse_information.picture_image_naigaikan}" alt="Livehouse Image" class="at-home-status-img"/>
                         <ul class="booking-request-info-ul1">
                             <li class="booking-request-info-li1">${app.livehouse_information.livehouse_name}</li>
                             <li class="booking-request-info-li2">予約日</li>
