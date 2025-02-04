@@ -100,7 +100,6 @@ public class Livehouse_mypage extends HttpServlet {
 
         Part imagePart = request.getPart("picture_image_naigaikan");
 
-
         try {
             Livehouse_information existingLivehouse = dao.getLivehouse_informationByUserId(userId);
             if (existingLivehouse != null) {

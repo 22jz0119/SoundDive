@@ -28,9 +28,6 @@ public class Livehouse_applicationDAO {
         this.dbManager = dbManager;
     }
     
-    
-
-    
     public Integer getArtistGroupIdByApplicationId(int applicationId) {
         String sql = "SELECT artist_group_id FROM livehouse_application_table WHERE id = ?";
         
@@ -118,7 +115,6 @@ public class Livehouse_applicationDAO {
             return false;
         }
     }
-
     
     /**
      * 対バン通知を送信
@@ -178,7 +174,6 @@ public class Livehouse_applicationDAO {
             e.printStackTrace();
         }
     }
-
     /**
      * ソロ通知を送信
      *
@@ -227,8 +222,6 @@ public class Livehouse_applicationDAO {
     }
     
     // Livehouse_applicationを挿入するメソッド
-    
-    
     public boolean updateLivehouseApplication(int applicationId, int livehouseInformationId, LocalDateTime startTime, LocalDateTime finishTime) {
         String sql = "UPDATE livehouse_application_table " +
                      "SET livehouse_information_id = ?, date_time = ?, start_time = ?, finish_time = ? " +
@@ -310,7 +303,6 @@ public class Livehouse_applicationDAO {
 	        return null;  // データが見つからなかった場合はnullを返す
 	    }
 
-    
  // livehouse_information_idでLivehouse_applicationを取得するメソッド
 	    public List<Livehouse_application> getLivehouse_applicationsByLivehouseId(int livehouseInformationId) {
 	        String sql = "SELECT * FROM livehouse_application_table WHERE livehouse_information_id = ?";
@@ -379,7 +371,6 @@ public class Livehouse_applicationDAO {
 
 	        return applications;
 	    }
-
 
     // 申請したグループ情報を結合
     public List<LivehouseApplicationWithGroup> getApplicationsWithGroups() {
@@ -482,8 +473,6 @@ public class Livehouse_applicationDAO {
         return null;
     }
 
-    
-
  // グループIDに関連するメンバーリストを取得 kon
     public List<Member> getMembersByGroupId(int groupId) {
         String sql = "SELECT id, artist_group_id, member_name, member_position " +
@@ -566,8 +555,6 @@ public class Livehouse_applicationDAO {
         }
         return application;
     }
-
-
 
  // 指定されたIDで申請の詳細を取得するメソッド
     public LivehouseApplicationWithGroup getApplicationDetailsById(int applicationId) {
@@ -902,11 +889,6 @@ public class Livehouse_applicationDAO {
         return reservations;
     }
 
-
-
-
-
-
     //履歴削除ボタン
     public boolean deleteReservationById(int applicationId) {
         String sql = "DELETE FROM livehouse_application_table WHERE id = ?";
@@ -925,7 +907,6 @@ public class Livehouse_applicationDAO {
 
         return false;
     }
-
     
  // 承認済み（true_false = 1）のデータのみを取得するメソッド
     public List<LivehouseApplicationWithGroup> getApprovedReservations(int userId, int year, int month, int day) {
@@ -1054,8 +1035,6 @@ public class Livehouse_applicationDAO {
         }
         return approvedReservations;
     }
-
-    
     
     public List<LivehouseApplicationWithGroup> getApprovedReservationsByLivehouse(int livehouseInformationId) {
         // livehouse_information_id を使って絞り込み
@@ -1327,8 +1306,6 @@ public class Livehouse_applicationDAO {
      }
      return -1;  // 取得失敗時
  }
-
-
 
  /**
   * `true_false`を1に更新するメソッド
