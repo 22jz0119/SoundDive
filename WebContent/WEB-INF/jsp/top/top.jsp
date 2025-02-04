@@ -28,6 +28,7 @@
         <div class="top-main-containar">
             <h1 class="top-main-title">SoundDive</h1>
             <p class="top-title-detail">アーティストとライブハウスのブッキングサービス</p>
+            <button id="scroll-to-login" class="scroll-login-btn">ログインはこちら</button>
         </div>
 
         <div class="top-catchphrase">
@@ -41,7 +42,7 @@
 
             <form action="<%= request.getContextPath() %>/Top" method="post">
                 <ul class="top-login-ul">
-                    <li class="top-login-title"><p>LogIn</p></li>
+                    <li class="top-login-title" id="top-login-title"><p>LogIn</p></li>
                     <li class="top-login-ID"><p>Tel Number</p></li>
                     <li class="top-login-id-txt"><input 
 					    type="text" 
@@ -63,5 +64,36 @@
             </ul>
         </div>
     </main>
+    <script>
+        document.getElementById("scroll-to-login").addEventListener("click", function() {
+            const target = document.getElementById("top-login-title");
+            const targetPosition = target.getBoundingClientRect().top + window.scrollY;
+            const startPosition = window.scrollY;
+            const distance = targetPosition - startPosition;
+            const duration = 2300; // スクロールの所要時間（ミリ秒）
+            let startTime = null;
+
+            function scrollAnimation(currentTime) {
+                if (startTime === null) startTime = currentTime;
+                const timeElapsed = currentTime - startTime;
+                const scrollAmount = easeInOutQuad(timeElapsed, startPosition, distance, duration);
+
+                window.scrollTo(0, scrollAmount);
+                
+                if (timeElapsed < duration) {
+                    requestAnimationFrame(scrollAnimation);
+                }
+            }
+
+            function easeInOutQuad(t, b, c, d) {
+                t /= d / 2;
+                if (t < 1) return c / 2 * t * t + b;
+                t--;
+                return -c / 2 * (t * (t - 2) - 1) + b;
+            }
+
+            requestAnimationFrame(scrollAnimation);
+        });
+    </script>
 </body>
 </html>
