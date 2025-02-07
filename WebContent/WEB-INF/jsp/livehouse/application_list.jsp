@@ -44,7 +44,7 @@
                         <c:forEach var="application" items="${soloApplications}">
                             <div class="apllicationList-MaiinFrame">
                             	<div class="application-artist-list-img-containar">
-                                    <img src="../assets/img/アーティスト画像.png" alt="アーティスト画像" class="application-artist-list-ikon">
+                                    <img src="<c:url value='${pictureImageMovie}'/>" alt="バンドのイラスト" class="application-artist-list-ikon">
                                 </div>
                                 <div>
                                 	<ul class="application-artist-list-ul0">
@@ -97,7 +97,7 @@
 
                             
                                 <div class="application-artist-list-img-containar">
-                                    <img src="../assets/img/アーティスト画像.png" alt="アーティスト画像" class="application-artist-list-ikon">
+                                    <img src="<c:url value='${pictureImageMovie}'/>" alt="バンドのイラスト">
                                 </div>
                                 <div>
                                 	<ul class="application-artist-list-ul0">

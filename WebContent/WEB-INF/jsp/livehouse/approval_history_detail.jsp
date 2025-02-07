@@ -35,7 +35,7 @@
                 <div class="band-confirmation-container">
                     <div class="confirmation-profile">
                         <div class="confirmation-artist-img-div">
-                            <img class="confirmation-artist-img" src="../assets/img/アーティスト画像.png" alt="アーティスト画像">
+                            <img src="<c:url value='${pictureImageMovie}'/>" alt="バンドのイラスト">
                         </div>
                         <ul class="confirmation-info">
                             <h2>${application.accountName}</h2>

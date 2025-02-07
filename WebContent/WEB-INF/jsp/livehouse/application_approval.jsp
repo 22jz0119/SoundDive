@@ -36,7 +36,7 @@
         <section class="application-approval-section">
             <ul class="application-approval-ul-1">
                 <li class="approved-artist-img-li">
-                    <p><img class="approved-artist-img" src="<%= request.getContextPath() %>/assets/img/アーティスト画像.png" alt="アーティスト画像"></p>
+                    <p><img src="<c:url value='${pictureImageMovie}'/>" alt="バンドのイラスト"></p>
                 </li>
             </ul>
             

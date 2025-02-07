@@ -30,7 +30,7 @@
 
 <main>
     <section class="application-list-count">
-        <h2>予約承認履歴覧ページ</h2>
+        <h2>予約承認履歴一覧ページ</h2>
         <div class="reservation-date">
             <p>日付: <c:out value="${param.date}" /></p>
             <p>総件数: 
@@ -48,7 +48,7 @@
                     <c:forEach var="application" items="${soloApplications}">
                         <li>
                             <div class="application-artist-list-img-containar">
-                                <img src="../assets/img/アーティスト画像.png" alt="アーティスト画像" class="application-artist-list-ikon">
+                                <img src="<c:url value='${pictureImageMovie}'/>" alt="バンドのイラスト"class="application-artist-list-ikon">
                             </div>
                             <ul class="application-artist-list-ul0">
                                 <li><p>${application.accountName} (ソロ)</p></li>
@@ -105,7 +105,7 @@
 
                         <li>
                             <div class="application-artist-list-img-containar">
-                                <img src="../assets/img/アーティスト画像.png" alt="アーティスト画像" class="application-artist-list-ikon">
+                                <img src="<c:url value='${pictureImageMovie}'/>" alt="バンドのイラスト">>
                             </div>
                             <ul class="application-artist-list-ul0">
                                 <li><p>${application.accountName}</p></li>
