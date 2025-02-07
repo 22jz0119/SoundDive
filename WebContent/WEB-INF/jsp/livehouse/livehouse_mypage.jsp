@@ -44,22 +44,26 @@
             </div>
 
             <div class="livehouse_mypage-inputfield-containar">
-                <ul class="livehouse_mypage-inputfield-ul1">
-                    <li class="livehouse_mypage-inputfield-livehouse-name">
-                        <label for="livehouseName">ライブハウス名</label>
-                        <input type="text" id="livehouseName" name="livehouseName" value="${livehouse != null ? livehouse.livehouse_name : ''}" required>
-                    </li>
-                    <li class="livehouse_mypage-inputfield-onername">
-                        <label for="ownerName">オーナー名</label>
-                        <input type="text" id="ownerName" name="ownerName" value="${livehouse != null ? livehouse.owner_name : ''}" required>
-                    </li>
-                    <li class="livehouse_mypage-inputfield-tel">
-                        <label for="liveTelNumber">電話番号</label>
-                        <input type="text" id="liveTelNumber" name="liveTelNumber" value="${livehouse != null ? livehouse.live_tel_number : ''}" required>
-                    </li>
-                </ul>
-            </div>
-
+			    <ul class="livehouse_mypage-inputfield-ul1">
+			        <li class="livehouse_mypage-inputfield-livehouse-name">
+			            <label for="livehouseName">ライブハウス名</label>
+			            <input type="text" id="livehouseName" name="livehouseName" value="${livehouse != null ? livehouse.livehouse_name : ''}" required>
+			        </li>
+			        <li class="livehouse_mypage-inputfield-onername">
+			            <label for="ownerName">オーナー名</label>
+			            <input type="text" id="ownerName" name="ownerName" value="${livehouse != null ? livehouse.owner_name : ''}" required>
+			        </li>
+			        <li class="livehouse_mypage-inputfield-tel">
+			            <label for="liveTelNumber">電話番号</label>
+			            <input type="text" id="liveTelNumber" name="liveTelNumber" value="${livehouse != null ? livehouse.live_tel_number : ''}" required>
+			        </li>
+			        <li class="livehouse_mypage-inputfield-address">  <!-- ✅ 追加 -->
+			            <label for="livehouseAddress">住所</label>
+			            <input type="text" id="livehouseAddress" name="livehouseAddress" 
+			                   value="${livehouse != null ? livehouse.live_address : ''}" required>
+			        </li>
+			    </ul>
+			</div>
             <div class="livehouse-mypage-livehouseDetail">
                 <label for="livehouseExplanation">ライブハウス説明情報</label>
                 <textarea id="livehouseExplanation" name="livehouseExplanation" style="width: 500px; height: 150px;" required>${livehouse != null ? livehouse.livehouse_explanation_information : ''}</textarea>
@@ -143,6 +147,24 @@
                     gaikanPreview.style.display = 'block';
                 }
             };
+
+            function logoutAndRedirect() {
+    	        // フォームを送信してログアウト処理を実行
+    	        var form = document.createElement("form");
+    	        form.method = "post";
+    	        form.action = "<%= request.getContextPath() %>/At_Home";
+    	        
+    	        // 隠しフィールドにaction=logoutをセット
+    	        var input = document.createElement("input");
+    	        input.type = "hidden";
+    	        input.name = "action";
+    	        input.value = "logout";
+    	        form.appendChild(input);
+    	        
+    	        // フォームを送信
+    	        document.body.appendChild(form);
+    	        form.submit();
+    	    }
         </script>
     </main>
 </body>

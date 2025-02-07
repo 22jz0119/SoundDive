@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.google.gson.Gson" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,6 +23,14 @@
 			</nav>
 		</div>
 	</header>
+	<!-- 通知データを JSON に変換し、非表示の <script> タグに埋め込む -->
+	<script id="notifications-data" type="application/json">
+    <%= new Gson().toJson(request.getAttribute("notifications")) %>
+	</script>
+	
+	<!-- 外部 JavaScript ファイルを読み込む -->
+	<script src="<%= request.getContextPath() %>/assets/js/notification.js" defer></script>
+	
 	
 	<main class="artist-livehouse-details-main">
         <section class="artist-livehouse-detail-section">
@@ -31,6 +40,14 @@
 		<div class="main-application_list">
 			<h2 class="application_list_h2">アーティスト申請カレンダートップ</h2>
 		</div>
+		<!-- 通知ポップアップ -->
+		<div id="notification-popup" class="notification-popup">
+		    <button class="close-btn" onclick="closeNotification()">✖</button>
+		    <div id="notification-content">
+		        <!-- 通知メッセージがここに表示される -->
+		    </div>
+		</div>
+		
 		<section class="calendar-section">
             <div>
             <!-- 
@@ -58,9 +75,10 @@
     const contextPath = '<%= request.getContextPath() %>';
     
 
-    // ✅ livehouseId と livehouseType を埋め込む
+    // livehouseId と livehouseType を埋め込む
     const livehouseInformationId = '<%= request.getAttribute("livehouseInformationId") %>';
     const livehouseType = '<%= request.getAttribute("livehouseType") != null ? request.getAttribute("livehouseType") : "" %>';
+    const notifications = JSON.parse('<%= new Gson().toJson(request.getAttribute("notifications")) %>');
 
     const reservationDataRaw = '<%= request.getAttribute("reservationStatus") != null ? request.getAttribute("reservationStatus") : "{}" %>';
     const currentYear = <%= request.getAttribute("year") != null ? request.getAttribute("year") : "2025" %>;
@@ -72,6 +90,7 @@
     console.log("[DEBUG] reservationDataRaw:", reservationDataRaw);
     console.log("[DEBUG] currentYear:", currentYear);
     console.log("[DEBUG] currentMonth:", currentMonth);
+    console.log("[DEBUG] 取得した通知データ:", notifications);
 </script>
 
 <script src="<%= request.getContextPath() %>/assets/js/livehouse_home.js" defer></script>

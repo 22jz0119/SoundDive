@@ -1,6 +1,8 @@
 package servlet;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -24,13 +26,12 @@ import model.Livehouse_information;
 public class Livehouse_mypage extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Livehouse_informationDAO dao;
-    
+
     @Override
     public void init() throws ServletException {
         super.init();
         DBManager dbManager = DBManager.getInstance();
         dao = new Livehouse_informationDAO(dbManager);
-        System.out.println("[DEBUG] Livehouse_mypage servlet initialized.");
     }
 
     @Override
@@ -38,10 +39,7 @@ public class Livehouse_mypage extends HttpServlet {
         HttpSession session = request.getSession();
         Integer userId = (Integer) session.getAttribute("userId");
 
-        System.out.println("[DEBUG] GET request received. Session userId: " + userId);
-
         if (userId == null) {
-            System.out.println("[ERROR] User is not logged in.");
             request.setAttribute("errorMessage", "ログインが必要です。");
             request.getRequestDispatcher("/WEB-INF/jsp/top/top.jsp").forward(request, response);
             return;
@@ -51,21 +49,17 @@ public class Livehouse_mypage extends HttpServlet {
             Livehouse_information livehouse = dao.getLivehouse_informationByUserId(userId);
 
             if (livehouse != null) {
-                System.out.println("[DEBUG] Retrieved Livehouse information: " + livehouse);
                 request.setAttribute("livehouse", livehouse);
             } else {
-                System.out.println("[WARN] No Livehouse information found for userId: " + userId);
                 request.setAttribute("errorMessage", "ライブハウス情報が見つかりません。");
             }
         } catch (Exception e) {
-            System.err.println("[ERROR] Exception occurred while fetching Livehouse information:");
-            e.printStackTrace();
             request.setAttribute("errorMessage", "データ取得中にエラーが発生しました。");
         }
 
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
     }
-    
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
@@ -74,77 +68,99 @@ public class Livehouse_mypage extends HttpServlet {
 
         HttpSession session = request.getSession();
         Integer userId = (Integer) session.getAttribute("userId");
-        System.out.println("[DEBUG] POST request received. Logged-in userId: " + userId);
 
         if (userId == null) {
-            System.out.println("[ERROR] User is not logged in.");
             request.setAttribute("errorMessage", "ログインが必要です。");
             request.getRequestDispatcher("/WEB-INF/jsp/top/top.jsp").forward(request, response);
             return;
         }
 
+        // **リクエストパラメータ取得**
         String livehouseName = request.getParameter("livehouseName");
         String ownerName = request.getParameter("ownerName");
         String liveTelNumber = request.getParameter("liveTelNumber");
         String livehouseExplanation = request.getParameter("livehouseExplanation");
         String livehouseDetailed = request.getParameter("livehouseDetailed");
         String equipmentInformation = request.getParameter("equipmentInformation");
+        String livehouseAddress = request.getParameter("livehouseAddress"); // ✅ 追加
 
-        System.out.println("[DEBUG] Input data:");
-        System.out.println("  livehouseName: " + livehouseName);
-        System.out.println("  ownerName: " + ownerName);
-        System.out.println("  liveTelNumber: " + liveTelNumber);
-        System.out.println("  livehouseExplanation: " + livehouseExplanation);
-        System.out.println("  livehouseDetailed: " + livehouseDetailed);
-        System.out.println("  equipmentInformation: " + equipmentInformation);
-
+        // **画像アップロード処理**
         Part imagePart = request.getPart("picture_image_naigaikan");
+        String imagePath = null;
 
+        if (imagePart != null && imagePart.getSize() > 0) {
+            String fileName = System.currentTimeMillis() + "_" + imagePart.getSubmittedFileName();
+            String uploadDir = getServletContext().getRealPath("/uploads/");
+            File uploadDirFile = new File(uploadDir);
+            if (!uploadDirFile.exists()) {
+                uploadDirFile.mkdirs();
+            }
+            imagePath = "/uploads/" + fileName;
+
+            try (InputStream inputStream = imagePart.getInputStream()) {
+                java.nio.file.Files.copy(inputStream, java.nio.file.Paths.get(uploadDir + File.separator + fileName));
+            } catch (IOException e) {
+                request.setAttribute("errorMessage", "画像アップロード中にエラーが発生しました。");
+                request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
+                return;
+            }
+        }
 
         try {
-            Livehouse_information existingLivehouse = dao.getLivehouse_informationById(userId);
-            if (existingLivehouse != null) {
-                System.out.println("[DEBUG] Existing Livehouse data before update:");
-                System.out.println("  livehouse_name: " + existingLivehouse.getLivehouse_name());
-                System.out.println("  owner_name: " + existingLivehouse.getOwner_name());
-                System.out.println("  live_tel_number: " + existingLivehouse.getLive_tel_number());
-                System.out.println("  livehouse_explanation_information: " + existingLivehouse.getLivehouse_explanation_information());
-                System.out.println("  livehouse_detailed_information: " + existingLivehouse.getLivehouse_detailed_information());
-                System.out.println("  equipment_information: " + existingLivehouse.getEquipment_information());
+            Livehouse_information existingLivehouse = dao.getLivehouse_informationByUserId(userId);
 
+            if (existingLivehouse != null) {
+                // **既存データがある場合は更新**
                 existingLivehouse.setLivehouse_name(livehouseName);
                 existingLivehouse.setOwner_name(ownerName);
                 existingLivehouse.setLive_tel_number(liveTelNumber);
                 existingLivehouse.setLivehouse_explanation_information(livehouseExplanation);
                 existingLivehouse.setLivehouse_detailed_information(livehouseDetailed);
                 existingLivehouse.setEquipment_information(equipmentInformation);
+                existingLivehouse.setLive_address(livehouseAddress); // ✅ 住所を更新
                 existingLivehouse.setUpdateDate(new Date());
-                
 
-                System.out.println("[DEBUG] Updating Livehouse with new values:");
-                System.out.println("  livehouse_name: " + existingLivehouse.getLivehouse_name());
-                System.out.println("  owner_name: " + existingLivehouse.getOwner_name());
-                System.out.println("  live_tel_number: " + existingLivehouse.getLive_tel_number());
-                System.out.println("  livehouse_explanation_information: " + existingLivehouse.getLivehouse_explanation_information());
-                System.out.println("  livehouse_detailed_information: " + existingLivehouse.getLivehouse_detailed_information());
-                System.out.println("  equipment_information: " + existingLivehouse.getEquipment_information());
+                // **画像がアップロードされた場合のみ更新**
+                if (imagePath != null) {
+                    existingLivehouse.setPicture_image_naigaikan(imagePath);
+                }
 
                 boolean isUpdated = dao.updateLivehouse_information(existingLivehouse);
                 if (isUpdated) {
-                    System.out.println("[DEBUG] Livehouse information updated successfully.");
                     response.sendRedirect(request.getContextPath() + "/Livehouse_mypage");
                     return;
                 } else {
-                    System.err.println("[ERROR] Failed to update Livehouse information.");
                     request.setAttribute("errorMessage", "データの更新に失敗しました。");
+                }
+            } else {
+                // **データがない場合は新規作成**
+            	Livehouse_information newLivehouse = new Livehouse_information(
+            		    0, // ID（自動生成される場合は 0 ）
+            		    ownerName,
+            		    equipmentInformation,
+            		    livehouseExplanation,
+            		    livehouseDetailed,
+            		    livehouseName,
+            		    livehouseAddress, // ✅ 住所をセット
+            		    liveTelNumber,
+            		    imagePath, // ✅ `picture_image_naigaikan` の位置を修正
+            		    new Date(), // createDate
+            		    new Date(),  // updateDate
+            		    userId // ✅ `user_id` を最後に
+            		);
+
+                // **既存の `insertLivehouseInformation()` を流用**
+                boolean isInserted = dao.insertLivehouseInformation(newLivehouse, userId);
+                if (isInserted) {
+                    response.sendRedirect(request.getContextPath() + "/Livehouse_mypage");
+                    return;
+                } else {
+                    request.setAttribute("errorMessage", "データの登録に失敗しました。");
                 }
             }
         } catch (Exception e) {
-            System.err.println("[ERROR] Exception occurred while updating Livehouse information:");
-            e.printStackTrace();
             request.setAttribute("errorMessage", "データ保存中にエラーが発生しました。");
         }
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_mypage.jsp").forward(request, response);
     }
-
 }

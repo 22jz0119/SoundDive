@@ -76,22 +76,25 @@ public class Livehouse_informationDAO {
 
     // ライブハウス情報を挿入する 昆
     public boolean insertLivehouse_information(Livehouse_information livehouse) {
-        String sql = "INSERT INTO livehouse_information (owner_name, equipment_information, " +
+        String sql = "INSERT INTO livehouse_information (user_id, owner_name, equipment_information, " +
                      "livehouse_explanation_information, livehouse_detailed_information, " +
-                     "livehouse_name, live_tel_number, picture_image_naigaikan, create_date, update_date) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     "livehouse_name, live_address, live_tel_number, picture_image_naigaikan, create_date, update_date) " + // ✅ live_address を追加
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";  // ✅ バインドパラメータを増やす
+
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            pstmt.setString(1, livehouse.getOwner_name());
-            pstmt.setString(2, livehouse.getEquipment_information());
-            pstmt.setString(3, livehouse.getLivehouse_explanation_information());
-            pstmt.setString(4, livehouse.getLivehouse_detailed_information());
-            pstmt.setString(5, livehouse.getLivehouse_name());
-            pstmt.setString(6, livehouse.getLive_tel_number());
-            pstmt.setString(7, livehouse.getPicture_image_naigaikan());
-            pstmt.setTimestamp(8, new java.sql.Timestamp(livehouse.getCreateDate().getTime()));
-            pstmt.setTimestamp(9, new java.sql.Timestamp(livehouse.getUpdateDate().getTime()));
+            pstmt.setInt(1, livehouse.getUser_id()); // ✅ FK の user_id をセット
+            pstmt.setString(2, livehouse.getOwner_name());
+            pstmt.setString(3, livehouse.getEquipment_information());
+            pstmt.setString(4, livehouse.getLivehouse_explanation_information());
+            pstmt.setString(5, livehouse.getLivehouse_detailed_information());
+            pstmt.setString(6, livehouse.getLivehouse_name());
+            pstmt.setString(7, livehouse.getLive_address()); // ✅ live_address を追加
+            pstmt.setString(8, livehouse.getLive_tel_number());
+            pstmt.setString(9, livehouse.getPicture_image_naigaikan());
+            pstmt.setTimestamp(10, new java.sql.Timestamp(livehouse.getCreateDate().getTime()));
+            pstmt.setTimestamp(11, new java.sql.Timestamp(livehouse.getUpdateDate().getTime()));
 
             int rows = pstmt.executeUpdate();
             if (rows > 0) {
@@ -107,6 +110,8 @@ public class Livehouse_informationDAO {
         }
         return false;
     }
+
+
     //user テーブルの id と livehouse_information テーブルの user_id を紐づけて、livehouse_information のデータを新規作成
     public boolean insertLivehouseInformation(Livehouse_information livehouse, int userId) {
         String sql = "INSERT INTO livehouse_information (owner_name, equipment_information, livehouse_explanation_information, " +

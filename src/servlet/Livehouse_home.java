@@ -1,9 +1,16 @@
 package servlet;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,15 +23,13 @@ import com.google.gson.Gson;
 
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
+import model.Notice;
 
-/**
- * Servlet implementation class Livehouse_home
- */
 @WebServlet("/Livehouse_home")
 public class Livehouse_home extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
     private Livehouse_applicationDAO dao;
+    private static final Logger LOGGER = Logger.getLogger(Livehouse_home.class.getName());
 
     @Override
     public void init() throws ServletException {
@@ -34,130 +39,112 @@ public class Livehouse_home extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String yearParam = request.getParameter("year");
-        String monthParam = request.getParameter("month");
-        String dayParam = request.getParameter("day");
-        String cogigOrSoloParam = request.getParameter("cogig_or_solo");
+        HttpSession session = request.getSession();
+        Integer userId = (Integer) session.getAttribute("userId");
 
-        log("[DEBUG] Received parameters - year: " + yearParam + ", month: " + monthParam + ", day: " + dayParam + ", cogig_or_solo: " + cogigOrSoloParam);
+        if (userId == null) {
+            LOGGER.warning("[WARN] ユーザーが未ログインのため、トップページへリダイレクト");
+            response.sendRedirect(request.getContextPath() + "/Top");
+            return;
+        }
+
+        LOGGER.info("[INFO] 取得したユーザーID: " + userId);
 
         try {
-            // ログイン状態を確認
-            if (!isLoggedIn(request, response)) {
-                return; // 未ログインの場合は処理終了
-            }
-
-            // パラメータの解析
-            int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam) : LocalDate.now().getYear();
-            int month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam) : LocalDate.now().getMonthValue();
-            int day = (dayParam != null && !dayParam.isEmpty()) ? Integer.parseInt(dayParam) : -1;
-            int cogigOrSolo = (cogigOrSoloParam != null && !cogigOrSoloParam.isEmpty()) ? Integer.parseInt(cogigOrSoloParam) : 1;
-
-            log("[DEBUG] Parsed year: " + year + ", month: " + month + ", day: " + day + ", cogig_or_solo: " + cogigOrSolo);
-
-            if (month < 1 || month > 12) {
-                throw new IllegalArgumentException("月の値が不正です: " + month);
-            }
-
-            // セッションからユーザーIDを取得
-            HttpSession session = request.getSession();
-            Integer userId = (Integer) session.getAttribute("userId");
-
-            if (userId == null) {
-                log("[ERROR] ログインユーザーIDが取得できませんでした。");
-                response.sendRedirect(request.getContextPath() + "/Top");
-                return;
-            }
-
-            log("[DEBUG] 取得したユーザーID: " + userId);
-
-            // ライブハウスIDの取得
+            // **ライブハウスIDの取得**
             int livehouseId = dao.getLivehouseIdByUserId(userId);
             if (livehouseId == -1) {
-                log("[WARN] 該当するライブハウス情報が見つかりません。userId: " + userId);
-
-                if ("json".equals(request.getParameter("format"))) {
-                    response.setContentType("application/json; charset=UTF-8");
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    response.getWriter().write(new Gson().toJson(Map.of("message", "ライブハウス情報が見つかりません", "data", null)));
-                    return;
-                }
-
+                LOGGER.warning("[WARN] 該当するライブハウス情報が見つかりません。userId: " + userId);
                 request.setAttribute("errorMessage", "ライブハウス情報が見つかりません");
-                request.setAttribute("reservationStatus", "{}");
                 request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
                 return;
             }
 
-            log("[DEBUG] 取得したライブハウスID: " + livehouseId);
+            // **未読通知の取得**
+            List<Notice> notifications = new ArrayList<>();
+            try (Connection conn = DBManager.getInstance().getConnection()) {
+                String sql = "SELECT id, livehouse_application_id, create_date, update_date, message, is_read, user_id FROM notice_table WHERE user_id = ? AND is_read = 0 ORDER BY create_date DESC";
+                LOGGER.info("[INFO] 実行するSQLクエリ: " + sql);
 
-            if ("json".equals(request.getParameter("format"))) {
-                try {
-                    Map<String, Integer> reservationCounts = dao.getReservationCountsByLivehouse(year, month, userId);
-                    log("[DEBUG] DAO method実行後 - reservationCounts: " + reservationCounts);
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.setInt(1, userId);
+                    ResultSet rs = stmt.executeQuery();
 
-                    String reservationStatusJson = new Gson().toJson(reservationCounts);
-                    response.setContentType("application/json; charset=UTF-8");
-                    response.getWriter().write(reservationStatusJson);
-                } catch (Exception e) {
-                    log("[ERROR] JSONレスポンス処理中のエラー: " + e.getMessage(), e);
-                    response.setContentType("application/json; charset=UTF-8");
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    response.getWriter().write(new Gson().toJson(Map.of("error", "システムエラーが発生しました。", "details", e.getMessage())));
+                    while (rs.next()) {
+                        Notice notice = new Notice(
+                            rs.getInt("id"),
+                            rs.getInt("livehouse_application_id"),
+                            rs.getTimestamp("create_date").toLocalDateTime(),
+                            rs.getTimestamp("update_date") != null ? rs.getTimestamp("update_date").toLocalDateTime() : null,
+                            rs.getString("message"),
+                            rs.getBoolean("is_read"),
+                            rs.getInt("user_id")
+                        );
+                        notifications.add(notice);
+                        LOGGER.info("[INFO] 取得した通知: " + notice.getMessage() + " (ID: " + notice.getId() + ")");
+                    }
                 }
-                return;
             }
 
-            // JSPへのフォワード
-            Map<String, Integer> reservationCounts = dao.getReservationCountsByLivehouse(year, month, userId);
-            String reservationStatusJson = new Gson().toJson(reservationCounts);
-            log("[DEBUG] JSON変換後 - reservationStatusJson: " + reservationStatusJson);
+            if (notifications.isEmpty()) {
+                LOGGER.info("[INFO] 未読通知はありません");
+            } else {
+                LOGGER.info("[INFO] 取得した未読通知数: " + notifications.size());
+            }
 
+            request.setAttribute("notifications", notifications);
+
+            // **カレンダーの予約情報を取得**
+            Map<String, Integer> reservationCounts = dao.getReservationCountsByLivehouse(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(), userId);
+            String reservationStatusJson = new Gson().toJson(reservationCounts);
             request.setAttribute("reservationStatus", reservationStatusJson);
-            request.setAttribute("year", year);
-            request.setAttribute("month", month);
-            request.setAttribute("day", day);
-            request.setAttribute("cogig_or_solo", cogigOrSolo);
+            request.setAttribute("year", LocalDateTime.now().getYear());
+            request.setAttribute("month", LocalDateTime.now().getMonthValue());
 
             request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
-            log("[DEBUG] Successfully forwarded to JSP.");
+            LOGGER.info("[INFO] Successfully forwarded to JSP.");
 
-        } catch (NumberFormatException e) {
-            log("[ERROR] Invalid parameter format: year or month is not a valid number.", e);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "日付パラメータが不正です。正しい値を入力してください。");
         } catch (SQLException e) {
-            log("[ERROR] SQLエラー: " + e.getMessage(), e);
+            LOGGER.log(Level.SEVERE, "[ERROR] SQLエラー: " + e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SQLエラーが発生しました。");
-        } catch (Exception e) {
-            log("[ERROR] その他のエラー: " + e.getMessage(), e);
-            response.setContentType("application/json; charset=UTF-8");
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write(new Gson().toJson(Map.of("error", "システムエラーが発生しました。", "details", e.getMessage())));
         }
     }
 
-    // ログイン状態を確認
-    private boolean isLoggedIn(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession(false); // 既存のセッションを取得
-        if (session == null || session.getAttribute("userId") == null) {
-            response.sendRedirect(request.getContextPath() + "/Top");
-            return false;
-        }
-        return true;
-    }
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String type = request.getParameter("type"); // "request" or "approval"
+        int reservationId = Integer.parseInt(request.getParameter("reservationId"));
+        String datetime = request.getParameter("datetime");
+        int userId = Integer.parseInt(request.getParameter("userId"));
 
-    // ログアウト処理
-    private void logout(HttpSession session) {
-        if (session != null && session.getAttribute("userId") != null) { // ログイン済みか確認
-            Integer userId = (Integer) session.getAttribute("userId");
-            log("[DEBUG] Logging out user with ID: " + userId + ". Session ID: " + session.getId());
+        LOGGER.info("[INFO] 通知処理開始 - type: " + type + ", reservationId: " + reservationId + ", datetime: " + datetime + ", userId: " + userId);
 
-            session.removeAttribute("userId"); // userId 属性を削除
-            session.invalidate(); // セッションを無効化
+        DBManager dbManager = DBManager.getInstance();
+        try (Connection conn = dbManager.getConnection()) {
+            conn.setAutoCommit(false);
 
-            log("[DEBUG] User with ID: " + userId + " logged out successfully. Session invalidated.");
-        } else {
-            log("[DEBUG] No user is currently logged in.");
+            String message = "request".equals(type) 
+                ? "新しい予約申請が届きました: 予約ID " + reservationId + ", 予約日時: " + datetime
+                : "あなたの予約 (ID: " + reservationId + ") が承認されました";
+
+            String notifySql = "INSERT INTO notice_table (livehouse_application_id, create_date, update_date, message, is_read, user_id) VALUES (?, NOW(), NULL, ?, 0, ?)";
+            LOGGER.info("[INFO] 実行するSQLクエリ: " + notifySql);
+
+            try (PreparedStatement notifyStmt = conn.prepareStatement(notifySql)) {
+                notifyStmt.setInt(1, reservationId);
+                notifyStmt.setString(2, message);
+                notifyStmt.setInt(3, userId);
+                notifyStmt.executeUpdate();
+                LOGGER.info("[INFO] 通知をデータベースに保存 - message: " + message);
+            }
+
+            conn.commit();
+            response.setStatus(HttpServletResponse.SC_OK);
+            LOGGER.info("[INFO] 通知処理完了 - 成功");
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "[ERROR] 通知の作成に失敗しました: " + e.getMessage(), e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "通知の作成に失敗しました");
         }
     }
 }
