@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.Artist_groupDAO;
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
 import model.LivehouseApplicationWithGroup;
@@ -30,6 +31,7 @@ public class Livehouse_history_detail extends HttpServlet {
 
         DBManager dbManager = DBManager.getInstance();
         Livehouse_applicationDAO livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
+        Artist_groupDAO artistGroupDAO = Artist_groupDAO.getInstance(dbManager);  // 追加: Artist_groupDAO
 
         String idParam = request.getParameter("applicationId");
         String action = request.getParameter("action");
@@ -53,8 +55,15 @@ public class Livehouse_history_detail extends HttpServlet {
                 request.setAttribute("application", applicationDetails);
                 LOGGER.info("[SUCCESS] Retrieved application details for ID: " + applicationId);
 
-                // 申請者のグループ情報
+                // 申請者のグループ画像処理
                 int groupId = applicationDetails.getGroupId();
+                String groupImage = artistGroupDAO.getPictureImageMovieByArtistGroupId(groupId);
+                if (groupImage == null || groupImage.isEmpty()) {
+                    groupImage = "/uploads/default_image.png";  // デフォルト画像設定
+                }
+                request.setAttribute("groupImage", groupImage);  // 画像をJSPに渡す
+
+                // 申請者のメンバー情報
                 LOGGER.info("[INFO] Fetching members for group ID: " + groupId);
                 List<Member> members = livehouseApplicationDAO.getMembersByGroupId(groupId);
                 request.setAttribute("members", members);
@@ -81,6 +90,13 @@ public class Livehouse_history_detail extends HttpServlet {
                         LOGGER.info("[INFO] Fetching details for opponent group ID: " + artistGroupId);
                         LivehouseApplicationWithGroup artistGroup = livehouseApplicationDAO.getGroupDetailsById(artistGroupId);
                         request.setAttribute("artistGroup", artistGroup);
+
+                        // 対バングループの画像も取得
+                        String artistGroupImage = artistGroupDAO.getPictureImageMovieByArtistGroupId(artistGroupId);
+                        if (artistGroupImage == null || artistGroupImage.isEmpty()) {
+                            artistGroupImage = "/uploads/default_image.png";  // デフォルト画像
+                        }
+                        request.setAttribute("artistGroupImage", artistGroupImage);  // 対バングループの画像をJSPに渡す
 
                         // **デバッグ用ログ**
                         LOGGER.info("[DEBUG] Opponent Group ID: " + artistGroupId);

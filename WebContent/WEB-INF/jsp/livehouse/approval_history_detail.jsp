@@ -35,7 +35,11 @@
                 <div class="band-confirmation-container">
                     <div class="confirmation-profile">
                         <div class="confirmation-artist-img-div">
-                            <img src="<c:url value='${pictureImageMovie}'/>" alt="バンドのイラスト">
+                            <c:set var="groupId" value="${application.groupId}" />
+                                    <c:set var="imagePath" value="${pictureImageMap[groupId]}" />
+                                    <img src="${pageContext.request.contextPath}${imagePath}" 
+                                         alt="バンドのイラスト" 
+                                         style="width: 150px; height: auto; max-height: 150px; object-fit: cover; border-radius: 10px;">
                         </div>
                         <ul class="confirmation-info">
                             <h2>${application.accountName}</h2>
@@ -54,7 +58,11 @@
                         <h2>対バングループ情報</h2>
                         <div class="confirmation-profile">
                             <div class="confirmation-artist-img-div">
-                                <img class="confirmation-artist-img" src="../assets/img/アーティスト画像.png" alt="アーティスト画像">
+                                <c:set var="groupId" value="${application.groupId}" />
+                                    <c:set var="imagePath" value="${pictureImageMap[groupId]}" />
+                                    <img src="${pageContext.request.contextPath}${imagePath}" 
+                                         alt="バンドのイラスト" 
+                                         style="width: 150px; height: auto; max-height: 150px; object-fit: cover; border-radius: 10px;">
                             </div>
                             <ul class="confirmation-info">
                                 <h2>${artistGroup.accountName}</h2>
