@@ -94,10 +94,9 @@
 				    <!-- 戻るボタン -->
 				    <button class="approve-btn" onclick="location.href='navigate?action=list'">戻る</button>
 				    <!-- 承認ボタン -->
-					<button class="decline-btn" onclick="location.href='Application_confirmation?action=approval&id=${application.applicationId}'">承認</button>
-
+					<button class="decline-btn" onclick="location.href='Application_approval?id=${application.applicationId}&groupId=${application.groupId}'">承認</button>
 				</div>
- </div>
+ 			</div>
         </main>
     </body>
 </html>

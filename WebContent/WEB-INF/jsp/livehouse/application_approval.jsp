@@ -37,13 +37,15 @@
             <ul class="application-approval-ul-1">
                 <li class="approved-artist-img-li">
                     <p>
-    <c:set var="groupId" value="${application.groupId}" />
-    <c:set var="imagePath" value="${pictureImageMap[groupId]}" />
-    <img src="${pageContext.request.contextPath}${imagePath}" 
-         alt="バンドのイラスト" 
-         style="width: 150px; height: auto; max-height: 150px; object-fit: cover; border-radius: 10px;" />
-</p>
-
+					    <c:set var="groupId" value="${application.groupId}" />
+						<c:set var="imagePath" value="${pictureImageMap[groupId]}" />
+						<c:if test="${not empty imagePath}">
+						    <img src="${pageContext.request.contextPath}${imagePath}" 
+						         alt="バンドのイラスト" 
+						         style="width: 150px; height: auto; max-height: 150px; object-fit: cover; border-radius: 10px;" />
+						</c:if>
+					</p>
+					 
                 </li>
             </ul>
             
@@ -104,10 +106,13 @@
                 <div class="confirmation-profile">
                     <div class="confirmation-artist-img-div">
                         <c:set var="groupId" value="${application.groupId}" />
-                                    <c:set var="imagePath" value="${pictureImageMap[groupId]}" />
-                                    <img src="${pageContext.request.contextPath}${imagePath}" 
-                                         alt="バンドのイラスト" 
-                                         style="width: 150px; height: auto; max-height: 150px; object-fit: cover; border-radius: 10px;">
+						<c:set var="imagePath" value="${pictureImageMap[groupId]}" />
+						<c:if test="${not empty imagePath}">
+						    <img src="${pageContext.request.contextPath}${imagePath}" 
+						         alt="バンドのイラスト" 
+						         style="width: 150px; height: auto; max-height: 150px; object-fit: cover; border-radius: 10px;" />
+						</c:if>
+
                     </div>
                     <ul class="confirmation-info">
                         <h2>${artistGroup.accountName}</h2>

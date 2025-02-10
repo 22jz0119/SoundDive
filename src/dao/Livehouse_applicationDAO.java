@@ -583,19 +583,6 @@ public class Livehouse_applicationDAO {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    System.out.println("[DEBUG] Row data retrieved:");
-                    System.out.println("application_id: " + rs.getInt("application_id"));
-                    System.out.println("date_time: " + rs.getTimestamp("date_time"));
-                    System.out.println("true_false: " + rs.getBoolean("true_false"));
-                    System.out.println("start_time: " + rs.getTimestamp("start_time"));
-                    System.out.println("finish_time: " + rs.getTimestamp("finish_time"));
-                    System.out.println("group_id: " + rs.getInt("group_id"));
-                    System.out.println("account_name: " + rs.getString("account_name"));
-                    System.out.println("group_genre: " + rs.getString("group_genre"));
-                    System.out.println("band_years: " + rs.getString("band_years"));
-                    System.out.println("user_id: " + rs.getInt("user_id"));
-                    System.out.println("us_name: " + rs.getString("us_name"));
-
                     // group_id が NULL の場合は -1 をセット
                     int groupId = rs.getObject("group_id") != null ? rs.getInt("group_id") : -1;
 
