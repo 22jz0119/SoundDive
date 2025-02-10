@@ -72,7 +72,7 @@
             const targetPosition = target.getBoundingClientRect().top + window.scrollY;
             const startPosition = window.scrollY;
             const distance = targetPosition - startPosition;
-            const duration = 5000; // スクロールの所要時間（ミリ秒）
+            const duration = 2000; // スクロールの所要時間（ミリ秒）
             let startTime = null;
 
             function scrollAnimation(currentTime) {
