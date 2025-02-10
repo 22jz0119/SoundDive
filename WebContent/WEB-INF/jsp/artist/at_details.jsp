@@ -41,9 +41,6 @@
 			</div>
 	    	<div class="at-detail-liveinfo-containar">
 	    	
-	    		
-				
-				
 				<div class="at-detail-liveinfo-main">
 					<ul class="at-detail-liveinfo-img-ul">
 						<li class="at-detail-liveinfo-img-frame"><img src="${pageContext.request.contextPath}${livehouse.picture_image_naigaikan}" alt="画像" class="at-detail-liveinfo-img" style="width: 200px;, height: 300px;"/></li>

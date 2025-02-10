@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,8 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.google.gson.Gson;
-
+import dao.Artist_groupDAO;
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
 import model.LivehouseApplicationWithGroup;
@@ -29,6 +29,7 @@ public class Approval_history extends HttpServlet {
         System.out.println("[INFO] Approval_history Servlet: doGet() started");
         DBManager dbManager = DBManager.getInstance();
         Livehouse_applicationDAO livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
+        Artist_groupDAO artistGroupDAO = Artist_groupDAO.getInstance(dbManager);  // Artist_groupDAOを追加
         HttpSession session = request.getSession();
 
         // セッションからユーザーIDを取得
@@ -42,83 +43,57 @@ public class Approval_history extends HttpServlet {
 
         System.out.println("[DEBUG] 取得したユーザーID: " + userId);
 
-        // `applicationId` が指定されている場合は詳細ページに遷移
-        String applicationIdStr = request.getParameter("applicationId");
-        if (applicationIdStr != null && !applicationIdStr.isEmpty()) {
-            try {
-                int applicationId = Integer.parseInt(applicationIdStr);
-                LivehouseApplicationWithGroup applicationDetail = livehouseApplicationDAO.getApplicationById(applicationId);
-
-                if (applicationDetail != null) {
-                    request.setAttribute("applicationDetail", applicationDetail);
-                    request.getRequestDispatcher("/WEB-INF/jsp/livehouse/approval_history_detail.jsp").forward(request, response);
-                    return;
-                } else {
-                    System.out.println("[WARN] 指定された予約IDのデータが見つかりません。 applicationId: " + applicationId);
-                    request.setAttribute("errorMessage", "指定された予約情報が見つかりません。");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("[ERROR] 無効な予約IDが指定されました: " + applicationIdStr);
-                request.setAttribute("errorMessage", "無効な予約IDが指定されました。");
-            }
-        }
-
         // ライブハウスIDの取得
         int livehouseId = livehouseApplicationDAO.getLivehouseIdByUserId(userId);
         if (livehouseId == -1) {
             System.out.println("[WARN] 該当するライブハウス情報が見つかりません。userId: " + userId);
-
-            if ("json".equals(request.getParameter("format"))) {
-                response.setContentType("application/json; charset=UTF-8");
-                response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().write(new Gson().toJson(Map.of("message", "ライブハウス情報が見つかりません", "data", null)));
-                return;
-            }
-
             request.setAttribute("errorMessage", "ライブハウス情報が見つかりません");
             request.setAttribute("reservationStatus", "{}");
             request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
             return;
         }
 
-        System.out.println("[DEBUG] 取得したライブハウスID: " + livehouseId);
-        
-        // 承認済みの予約を取得（ログインユーザーのライブハウスIDに紐づくもののみ）
+        // 承認済みの予約を取得
         List<LivehouseApplicationWithGroup> soloApplications = livehouseApplicationDAO.getReservationsWithTrueFalseOne(livehouseId);
         List<LivehouseApplicationWithGroup> cogigApplications = livehouseApplicationDAO.getReservationsByCogigOrSoloTrueFalseOne(livehouseId);
 
         System.out.println("[DEBUG] soloApplications size: " + soloApplications.size());
         System.out.println("[DEBUG] cogigApplications size: " + cogigApplications.size());
 
-        // JSP にデータを渡す
-        request.setAttribute("soloApplications", soloApplications);
-        request.setAttribute("cogigApplications", cogigApplications);
-        request.getRequestDispatcher("/WEB-INF/jsp/livehouse/approval_history.jsp").forward(request, response);
-    }
+        // 画像マッピング
+        Map<Integer, String> pictureImageMap = new HashMap<>();  // グループID -> 画像のパス
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("[INFO] Approval_history Servlet: doPost() started");
-        String applicationIdStr = request.getParameter("applicationId");
-
-        if (applicationIdStr != null && !applicationIdStr.isEmpty()) {
-            try {
-                int applicationId = Integer.parseInt(applicationIdStr);
-                Livehouse_applicationDAO dao = new Livehouse_applicationDAO(DBManager.getInstance());
-                boolean isDeleted = dao.deleteReservationById(applicationId);
-
-                if (isDeleted) {
-                    System.out.println("[DEBUG] 予約ID " + applicationId + " を削除しました。");
-                } else {
-                    System.out.println("[ERROR] 予約ID " + applicationId + " の削除に失敗しました。");
+        // ソロアプリケーションに対する画像処理
+        for (LivehouseApplicationWithGroup app : soloApplications) {
+            int groupId = app.getGroupId();
+            if (!pictureImageMap.containsKey(groupId)) {
+                String pictureImage = artistGroupDAO.getPictureImageMovieByArtistGroupId(groupId);
+                if (pictureImage == null || pictureImage.isEmpty()) {
+                    pictureImage = "/uploads/default_image.png"; // デフォルト画像
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("[ERROR] 不正な予約IDが指定されました: " + applicationIdStr);
+                pictureImageMap.put(groupId, pictureImage);
             }
-        } else {
-            System.out.println("[ERROR] 予約IDが送信されていません。");
         }
 
-        response.sendRedirect(request.getContextPath() + "/Approval_history");
+        // 対バンアプリケーションに対する画像処理
+        for (LivehouseApplicationWithGroup app : cogigApplications) {
+            int groupId = app.getGroupId();
+            if (!pictureImageMap.containsKey(groupId)) {
+                String pictureImage = artistGroupDAO.getPictureImageMovieByArtistGroupId(groupId);
+                if (pictureImage == null || pictureImage.isEmpty()) {
+                    pictureImage = "/uploads/default_image.png"; // デフォルト画像
+                }
+                pictureImageMap.put(groupId, pictureImage);
+            }
+        }
+
+        // JSPにデータを渡す
+        request.setAttribute("soloApplications", soloApplications);
+        request.setAttribute("cogigApplications", cogigApplications);
+        request.setAttribute("pictureImageMap", pictureImageMap); // 画像マップを渡す
+
+        // JSPへフォワード
+        request.getRequestDispatcher("/WEB-INF/jsp/livehouse/approval_history.jsp").forward(request, response);
     }
 }
+

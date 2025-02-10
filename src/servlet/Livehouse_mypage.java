@@ -38,6 +38,7 @@ public class Livehouse_mypage extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         Integer userId = (Integer) session.getAttribute("userId");
+        System.out.println("doGet: userId = " + userId);
 
         if (userId == null) {
             request.setAttribute("errorMessage", "ログインが必要です。");
@@ -68,6 +69,7 @@ public class Livehouse_mypage extends HttpServlet {
 
         HttpSession session = request.getSession();
         Integer userId = (Integer) session.getAttribute("userId");
+        System.out.println("doPost: userId = " + userId);
 
         if (userId == null) {
             request.setAttribute("errorMessage", "ログインが必要です。");
@@ -82,7 +84,7 @@ public class Livehouse_mypage extends HttpServlet {
         String livehouseExplanation = request.getParameter("livehouseExplanation");
         String livehouseDetailed = request.getParameter("livehouseDetailed");
         String equipmentInformation = request.getParameter("equipmentInformation");
-        String livehouseAddress = request.getParameter("livehouseAddress"); // ✅ 追加
+        String livehouseAddress = request.getParameter("livehouseAddress");
 
         // **画像アップロード処理**
         Part imagePart = request.getPart("picture_image_naigaikan");
@@ -110,17 +112,15 @@ public class Livehouse_mypage extends HttpServlet {
             Livehouse_information existingLivehouse = dao.getLivehouse_informationByUserId(userId);
 
             if (existingLivehouse != null) {
-                // **既存データがある場合は更新**
                 existingLivehouse.setLivehouse_name(livehouseName);
                 existingLivehouse.setOwner_name(ownerName);
                 existingLivehouse.setLive_tel_number(liveTelNumber);
                 existingLivehouse.setLivehouse_explanation_information(livehouseExplanation);
                 existingLivehouse.setLivehouse_detailed_information(livehouseDetailed);
                 existingLivehouse.setEquipment_information(equipmentInformation);
-                existingLivehouse.setLive_address(livehouseAddress); // ✅ 住所を更新
+                existingLivehouse.setLive_address(livehouseAddress);
                 existingLivehouse.setUpdateDate(new Date());
 
-                // **画像がアップロードされた場合のみ更新**
                 if (imagePath != null) {
                     existingLivehouse.setPicture_image_naigaikan(imagePath);
                 }
@@ -131,31 +131,6 @@ public class Livehouse_mypage extends HttpServlet {
                     return;
                 } else {
                     request.setAttribute("errorMessage", "データの更新に失敗しました。");
-                }
-            } else {
-                // **データがない場合は新規作成**
-            	Livehouse_information newLivehouse = new Livehouse_information(
-            		    0, // ID（自動生成される場合は 0 ）
-            		    ownerName,
-            		    equipmentInformation,
-            		    livehouseExplanation,
-            		    livehouseDetailed,
-            		    livehouseName,
-            		    livehouseAddress, // ✅ 住所をセット
-            		    liveTelNumber,
-            		    imagePath, // ✅ `picture_image_naigaikan` の位置を修正
-            		    new Date(), // createDate
-            		    new Date(),  // updateDate
-            		    userId // ✅ `user_id` を最後に
-            		);
-
-                // **既存の `insertLivehouseInformation()` を流用**
-                boolean isInserted = dao.insertLivehouseInformation(newLivehouse, userId);
-                if (isInserted) {
-                    response.sendRedirect(request.getContextPath() + "/Livehouse_mypage");
-                    return;
-                } else {
-                    request.setAttribute("errorMessage", "データの登録に失敗しました。");
                 }
             }
         } catch (Exception e) {

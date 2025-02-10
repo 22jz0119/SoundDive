@@ -26,6 +26,7 @@
 		</div>
 	</header>
 
+
     <main>
         <form action="<%= request.getContextPath() %>/Livehouse_mypage" method="POST" enctype="multipart/form-data">
             <div class="profile-container">
