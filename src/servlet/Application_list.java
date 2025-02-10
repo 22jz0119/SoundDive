@@ -2,7 +2,9 @@ package servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -39,30 +41,21 @@ public class Application_list extends HttpServlet {
 
         List<LivehouseApplicationWithGroup> soloApplications = new ArrayList<>();
         List<LivehouseApplicationWithGroup> cogigApplications = new ArrayList<>();
+        Map<Integer, String> pictureImageMap = new HashMap<>(); // groupIdごとの画像マッピング
 
         if (year != -1 && month != -1 && day != -1) {
-            // cogig_or_solo = 1 のデータを取得
-            System.out.println("[DEBUG] Fetching reservations with cogig_or_solo = 1");
             soloApplications = livehouseApplicationDAO.getReservationsWithTrueFalseZero(year, month, day);
-            System.out.println("[DEBUG] soloApplications size: " + soloApplications.size());
+            cogigApplications = livehouseApplicationDAO.getReservationsByCogigOrSolo(year, month, day);
 
             for (LivehouseApplicationWithGroup app : soloApplications) {
-                System.out.println("[DEBUG] Solo Application ID: " + app.getApplicationId());
-                
-                // groupId を取得してログ出力
                 int groupId = app.getGroupId();
-                
-                if (groupId == 0) {
-                    System.out.println("[WARNING] Group ID is 0. This might indicate missing artist_group data.");
+                if (!pictureImageMap.containsKey(groupId)) {
+                    String pictureImageMovie = artistGroupDAO.getPictureImageMovieByArtistGroupId(groupId);
+                    if (pictureImageMovie == null || pictureImageMovie.isEmpty()) {
+                        pictureImageMovie = "/uploads/default_image.png"; // デフォルト画像を設定
+                    }
+                    pictureImageMap.put(groupId, pictureImageMovie);
                 }
-
-                // `artist_groupDAO` を使用して `pictureImageMovie` を取得
-                String pictureImageMovie = artistGroupDAO.getPictureImageMovieByArtistGroupId(groupId);
-                if (pictureImageMovie == null || pictureImageMovie.isEmpty()) {
-                    pictureImageMovie = "/uploads/default_image.png"; // デフォルト画像を設定
-                }
-
-                System.out.println("[DEBUG] Set pictureImageMovie: " + pictureImageMovie);
             }
 
             // cogig_or_solo = 2 のデータを取得
@@ -71,29 +64,20 @@ public class Application_list extends HttpServlet {
             System.out.println("[DEBUG] cogigApplications size: " + cogigApplications.size());
 
             for (LivehouseApplicationWithGroup app : cogigApplications) {
-                System.out.println("[DEBUG] Co-Gig Application ID: " + app.getApplicationId());
-                
-                // groupId を取得してログ出力
                 int groupId = app.getGroupId();
-                System.out.println("[DEBUG] Group ID: " + groupId);
-                
-                if (groupId == 0) {
-                    System.out.println("[WARNING] Group ID is 0. This might indicate missing artist_group data.");
+                if (!pictureImageMap.containsKey(groupId)) {
+                    String pictureImageMovie = artistGroupDAO.getPictureImageMovieByArtistGroupId(groupId);
+                    if (pictureImageMovie == null || pictureImageMovie.isEmpty()) {
+                        pictureImageMovie = "/uploads/default_image.png"; // デフォルト画像を設定
+                    }
+                    pictureImageMap.put(groupId, pictureImageMovie);
                 }
-
-                // `artist_groupDAO` を使用して `pictureImageMovie` を取得
-                String pictureImageMovie = artistGroupDAO.getPictureImageMovieByArtistGroupId(groupId);
-                if (pictureImageMovie == null || pictureImageMovie.isEmpty()) {
-                    System.out.println("[WARNING] No picture found for Group ID: " + groupId + ". Using default image.");
-                    pictureImageMovie = "/uploads/default_image.png"; // デフォルト画像を設定
-                }
-
-                System.out.println("[DEBUG] Set pictureImageMovie: " + pictureImageMovie);
             }
 
             // データを JSP に渡す
             request.setAttribute("soloApplications", soloApplications);
             request.setAttribute("cogigApplications", cogigApplications);
+            request.setAttribute("pictureImageMap", pictureImageMap); // JSP に画像マップを渡す
         } else {
             // パラメータエラー時の処理
             if (year == -1) System.out.println("[DEBUG] Missing or invalid parameter: year");
