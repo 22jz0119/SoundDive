@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.Artist_groupDAO; // 追加
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
 import model.LivehouseApplicationWithGroup;
@@ -22,6 +23,7 @@ public class Application_list extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         DBManager dbManager = DBManager.getInstance();
         Livehouse_applicationDAO livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
+        Artist_groupDAO artistGroupDAO = Artist_groupDAO.getInstance(dbManager);
 
         // パラメータ取得
         String yearParam = request.getParameter("year");
@@ -43,16 +45,50 @@ public class Application_list extends HttpServlet {
             System.out.println("[DEBUG] Fetching reservations with cogig_or_solo = 1");
             soloApplications = livehouseApplicationDAO.getReservationsWithTrueFalseZero(year, month, day);
             System.out.println("[DEBUG] soloApplications size: " + soloApplications.size());
+
             for (LivehouseApplicationWithGroup app : soloApplications) {
                 System.out.println("[DEBUG] Solo Application ID: " + app.getApplicationId());
+                
+                // groupId を取得してログ出力
+                int groupId = app.getGroupId();
+                
+                if (groupId == 0) {
+                    System.out.println("[WARNING] Group ID is 0. This might indicate missing artist_group data.");
+                }
+
+                // `artist_groupDAO` を使用して `pictureImageMovie` を取得
+                String pictureImageMovie = artistGroupDAO.getPictureImageMovieByArtistGroupId(groupId);
+                if (pictureImageMovie == null || pictureImageMovie.isEmpty()) {
+                    pictureImageMovie = "/uploads/default_image.png"; // デフォルト画像を設定
+                }
+
+                System.out.println("[DEBUG] Set pictureImageMovie: " + pictureImageMovie);
             }
 
             // cogig_or_solo = 2 のデータを取得
             System.out.println("[DEBUG] Fetching reservations with cogig_or_solo = 2");
             cogigApplications = livehouseApplicationDAO.getReservationsByCogigOrSolo(year, month, day);
             System.out.println("[DEBUG] cogigApplications size: " + cogigApplications.size());
+
             for (LivehouseApplicationWithGroup app : cogigApplications) {
                 System.out.println("[DEBUG] Co-Gig Application ID: " + app.getApplicationId());
+                
+                // groupId を取得してログ出力
+                int groupId = app.getGroupId();
+                System.out.println("[DEBUG] Group ID: " + groupId);
+                
+                if (groupId == 0) {
+                    System.out.println("[WARNING] Group ID is 0. This might indicate missing artist_group data.");
+                }
+
+                // `artist_groupDAO` を使用して `pictureImageMovie` を取得
+                String pictureImageMovie = artistGroupDAO.getPictureImageMovieByArtistGroupId(groupId);
+                if (pictureImageMovie == null || pictureImageMovie.isEmpty()) {
+                    System.out.println("[WARNING] No picture found for Group ID: " + groupId + ". Using default image.");
+                    pictureImageMovie = "/uploads/default_image.png"; // デフォルト画像を設定
+                }
+
+                System.out.println("[DEBUG] Set pictureImageMovie: " + pictureImageMovie);
             }
 
             // データを JSP に渡す

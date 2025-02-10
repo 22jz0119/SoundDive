@@ -36,6 +36,8 @@
                 </p>
             </div>
         </section>
+        
+        <p>デバッグ: pageContext.request.contextPath = ${pageContext.request.contextPath}</p>
 
         <div class="application-lists">
 			<div class="application-list-solo">
@@ -44,8 +46,11 @@
                         <c:forEach var="application" items="${soloApplications}">
                             <div class="apllicationList-MaiinFrame">
                             	<div class="application-artist-list-img-containar">
-                                    <img src="<c:url value='${pictureImageMovie}'/>" alt="バンドのイラスト" class="application-artist-list-ikon">
+                                    <img src="${pageContext.request.contextPath}${pictureImageMovie}" alt="バンドのイラスト" class="application-artist-list-ikon">
                                 </div>
+                                <p>デバッグ: pictureImageMovie = ${pictureImageMovie}</p>
+                                
+                                
                                 <div>
                                 	<ul class="application-artist-list-ul0">
                                     <li><p>${application.accountName} (ソロ)</p></li>
@@ -73,10 +78,7 @@
 	                                    </li>
 	                                </ul>
                                 </div>
-                            </div>
-                                
-                                
-                            
+                            </div>  
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
@@ -97,11 +99,14 @@
 
                             
                                 <div class="application-artist-list-img-containar">
-                                    <img src="<c:url value='${pictureImageMovie}'/>" alt="バンドのイラスト">
+                                    <img src="${pageContext.request.contextPath}${pictureImageMovie}" alt="バンドのイラスト">
                                 </div>
                                 <div>
+                                <p>デバッグ: pictureImageMovie = ${pictureImageMovie}</p>
+                                <p>デバッグ: pageContext.request.contextPath = ${pageContext.request.contextPath}</p>
+                                
                                 	<ul class="application-artist-list-ul0">
-	                                    <li class="application-artist-list-ul0-li1"><p>${application.accountName}</p></li>
+	                                    <li class="application-artist-list-ul0-li1"><p>${pageContext.request.contextPath}${pictureImageMovie}</p></li>
 	                                </ul>
 	                                <ul class="application-artist-list-ul1">
 	                                    <li class="application-artist-list-ul1-li1"><p>ジャンル</p></li>
