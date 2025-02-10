@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.google.gson.Gson" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,20 +17,15 @@
 				<ul class="header-nav-ul">
 					<li><a href="<%= request.getContextPath() %>/Livehouse_mypage">MY PAGE</a></li>
 					<li><a href="<%= request.getContextPath() %>/Approval_history">承認履歴</a></li>
-					<li class="header-box-li2"><a href="#" onclick="logoutAndRedirect();" class="top-logout-btn">LOG OUT</a></li>
+					<li><a href="${pageContext.request.contextPath}/Approval_history?year=${year}&month=${month}&day=${day}">承認履歴?</a></li>
+					
+					<li><a href="#">リンク2</a></li>
+					<li class="header-box-li2"><a href="#" onclick="logoutAndRedirect();" class="top-logout-btn">ログアウト</a></li>
 				</ul>
 			</nav>
 		</div>
 	</header>
-	<!-- 通知データを JSON に変換し、非表示の <script> タグに埋め込む -->
-	<script id="notifications-data" type="application/json">
-    <%= new Gson().toJson(request.getAttribute("notifications")) %>
-	</script>
-	
-	<!-- 外部 JavaScript ファイルを読み込む -->
-	<script src="<%= request.getContextPath() %>/assets/js/notification.js" defer></script>
-	
-	
+
 	<main class="artist-livehouse-details-main">
         <section class="artist-livehouse-detail-section">
             <!-- ライブハウス情報を表示 -->
@@ -40,21 +34,13 @@
 		<div class="main-application_list">
 			<h2 class="application_list_h2">アーティスト申請カレンダートップ</h2>
 		</div>
-		<!-- 通知ポップアップ -->
-		<div id="notification-popup" class="notification-popup">
-		    <button class="close-btn" onclick="closeNotification()">✖</button>
-		    <div id="notification-content">
-		        <!-- 通知メッセージがここに表示される -->
-		    </div>
-		</div>
-		
 		<section class="calendar-section">
             <div>
             <!-- 
                 <h2 class="OpenSpots-Reserve">アーティストからのライブハウス予約申請カレンダー</h2>
              -->
                 <p class="OpenSpots-Reserve-detile">緑の日にちを選択して、申請情報の可否へ進んでください</p>
-                <p class="Notes-or-Cautions">※申請データなし ×</p>
+                <p class="Notes-or-Cautions">※申請データなし 青</p>
             </div>
             <div id="calendar-container"></div>
         </section>
@@ -74,23 +60,18 @@
      <script>
     const contextPath = '<%= request.getContextPath() %>';
     
-
-    // livehouseId と livehouseType を埋め込む
+    // ✅ livehouseId と livehouseType を埋め込む
     const livehouseInformationId = '<%= request.getAttribute("livehouseInformationId") %>';
     const livehouseType = '<%= request.getAttribute("livehouseType") != null ? request.getAttribute("livehouseType") : "" %>';
-    const notifications = JSON.parse('<%= new Gson().toJson(request.getAttribute("notifications")) %>');
-
     const reservationDataRaw = '<%= request.getAttribute("reservationStatus") != null ? request.getAttribute("reservationStatus") : "{}" %>';
     const currentYear = <%= request.getAttribute("year") != null ? request.getAttribute("year") : "2025" %>;
     const currentMonth = <%= request.getAttribute("month") != null ? request.getAttribute("month") : "2" %>;
-
     console.log("[DEBUG] contextPath:", contextPath);
     console.log("[DEBUG] livehouseInformationId:", livehouseInformationId);
     console.log("[DEBUG] livehouseType:", livehouseType);
     console.log("[DEBUG] reservationDataRaw:", reservationDataRaw);
     console.log("[DEBUG] currentYear:", currentYear);
     console.log("[DEBUG] currentMonth:", currentMonth);
-    console.log("[DEBUG] 取得した通知データ:", notifications);
 </script>
 
 <script src="<%= request.getContextPath() %>/assets/js/livehouse_home.js" defer></script>
@@ -114,13 +95,11 @@ function logoutAndRedirect() {
             var form = document.createElement("form");
             form.method = "post";
             form.action = "<%= request.getContextPath() %>/At_Home";
-
             var input = document.createElement("input");
             input.type = "hidden";
             input.name = "action";
             input.value = "logout";
             form.appendChild(input);
-
             document.body.appendChild(form);
             form.submit();
         }

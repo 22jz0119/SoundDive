@@ -1,16 +1,11 @@
 package servlet;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,128 +18,184 @@ import com.google.gson.Gson;
 
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
-import model.Notice;
+import model.LivehouseApplicationWithGroup;
 
+/**
+ * Servlet implementation class Livehouse_home
+ */
 @WebServlet("/Livehouse_home")
 public class Livehouse_home extends HttpServlet {
     private static final long serialVersionUID = 1L;
+
     private Livehouse_applicationDAO dao;
-    private static final Logger LOGGER = Logger.getLogger(Livehouse_home.class.getName());
 
     @Override
     public void init() throws ServletException {
+        log("[DEBUG] Initializing Livehouse_home servlet.");
         DBManager dbManager = DBManager.getInstance();
         dao = new Livehouse_applicationDAO(dbManager);
+        log("[DEBUG] DAO initialized successfully.");
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("userId");
+        log("[DEBUG] doGet method called.");
+        String yearParam = request.getParameter("year");
+        String monthParam = request.getParameter("month");
+        String dayParam = request.getParameter("day");
+        String cogigOrSoloParam = request.getParameter("cogig_or_solo");
 
-        if (userId == null) {
-            LOGGER.warning("[WARN] ユーザーが未ログインのため、トップページへリダイレクト");
-            response.sendRedirect(request.getContextPath() + "/Top");
-            return;
-        }
-
-        LOGGER.info("[INFO] 取得したユーザーID: " + userId);
+        log("[DEBUG] Received parameters - year: " + yearParam + ", month: " + monthParam + ", day: " + dayParam + ", cogig_or_solo: " + cogigOrSoloParam);
 
         try {
-            // **ライブハウスIDの取得**
+            // ログイン状態を確認
+            if (!isLoggedIn(request, response)) {
+                return; // 未ログインの場合は処理終了
+            }
+            // パラメータの解析
+            int year = (yearParam != null && !yearParam.isEmpty()) ? Integer.parseInt(yearParam) : LocalDate.now().getYear();
+            int month = (monthParam != null && !monthParam.isEmpty()) ? Integer.parseInt(monthParam) : LocalDate.now().getMonthValue();
+            int day = (dayParam != null && !dayParam.isEmpty()) ? Integer.parseInt(dayParam) : -1;
+            int cogigOrSolo = (cogigOrSoloParam != null && !cogigOrSoloParam.isEmpty()) ? Integer.parseInt(cogigOrSoloParam) : 1;
+
+            log("[DEBUG] Parsed year: " + year + ", month: " + month + ", day: " + day + ", cogig_or_solo: " + cogigOrSolo);
+
+            if (month < 1 || month > 12) {
+                throw new IllegalArgumentException("月の値が不正です: " + month);
+            }
+
+         // セッションの確認
+            HttpSession session = request.getSession(false); // 既存のセッションを取得
+            if (session == null) {
+                log("[ERROR] セッションが存在しません。");
+                response.setContentType("application/json; charset=UTF-8");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write(new Gson().toJson(Map.of("error", "セッションが存在しません。ログインしてください。")));
+                return;
+            }
+
+            // セッションからユーザーIDを取得
+            Integer userId = (Integer) session.getAttribute("userId");
+            if (userId == null) {
+                log("[ERROR] ログインユーザーIDが取得できませんでした。");
+                response.sendRedirect(request.getContextPath() + "/Top");
+                return;
+            }
+
+
+            log("[DEBUG] 取得したユーザーID: " + userId);
+
+            // ライブハウスIDの取得
+         // ライブハウスIDの取得
             int livehouseId = dao.getLivehouseIdByUserId(userId);
             if (livehouseId == -1) {
-                LOGGER.warning("[WARN] 該当するライブハウス情報が見つかりません。userId: " + userId);
+                log("[WARN] 該当するライブハウス情報が見つかりません。userId: " + userId);
+
+                // もしJSONレスポンスを求める場合
+                if ("json".equals(request.getParameter("format"))) {
+                    response.setContentType("application/json; charset=UTF-8");
+                    response.setStatus(HttpServletResponse.SC_OK); // 200 OKで返す
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.getWriter().write(new Gson().toJson(Map.of("message", "ライブハウス情報が見つかりません", "data", null)));
+                    return;
+                }
+
+                // JSPにフォワードする場合（情報がない場合の画面表示を続行）
                 request.setAttribute("errorMessage", "ライブハウス情報が見つかりません");
+                request.setAttribute("reservationStatus", "{}"); // 空のデータを設定
+                request.setAttribute("reservationStatus", "{}");
                 request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
                 return;
             }
 
-            // **未読通知の取得**
-            List<Notice> notifications = new ArrayList<>();
-            try (Connection conn = DBManager.getInstance().getConnection()) {
-                String sql = "SELECT id, livehouse_application_id, create_date, update_date, message, is_read, user_id FROM notice_table WHERE user_id = ? AND is_read = 0 ORDER BY create_date DESC";
-                LOGGER.info("[INFO] 実行するSQLクエリ: " + sql);
+            log("[DEBUG] 取得したライブハウスID: " + livehouseId);
+            
+            // リクエストがJSONを求めている場合
+            if ("json".equals(request.getParameter("format"))) {
+                try {
+                    Map<String, Integer> reservationCounts = dao.getReservationCountsByLivehouse(year, month, userId);
+                    log("[DEBUG] DAO method実行後 - reservationCounts: " + reservationCounts);
 
-                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                    stmt.setInt(1, userId);
-                    ResultSet rs = stmt.executeQuery();
-
-                    while (rs.next()) {
-                        Notice notice = new Notice(
-                            rs.getInt("id"),
-                            rs.getInt("livehouse_application_id"),
-                            rs.getTimestamp("create_date").toLocalDateTime(),
-                            rs.getTimestamp("update_date") != null ? rs.getTimestamp("update_date").toLocalDateTime() : null,
-                            rs.getString("message"),
-                            rs.getBoolean("is_read"),
-                            rs.getInt("user_id")
-                        );
-                        notifications.add(notice);
-                        LOGGER.info("[INFO] 取得した通知: " + notice.getMessage() + " (ID: " + notice.getId() + ")");
-                    }
+                    // JSONに変換してレスポンスを返却
+                    String reservationStatusJson = new Gson().toJson(reservationCounts);
+                    response.setContentType("application/json; charset=UTF-8");
+                    response.getWriter().write(reservationStatusJson);
+                } catch (Exception e) {
+                    log("[ERROR] JSONレスポンス処理中のエラー: " + e.getMessage(), e);
+                    response.setContentType("application/json; charset=UTF-8");
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    response.getWriter().write(new Gson().toJson(Map.of("error", "システムエラーが発生しました。", "details", e.getMessage())));
                 }
+                return; // JSONレスポンスを返したら処理終了
             }
 
-            if (notifications.isEmpty()) {
-                LOGGER.info("[INFO] 未読通知はありません");
-            } else {
-                LOGGER.info("[INFO] 取得した未読通知数: " + notifications.size());
-            }
-
-            request.setAttribute("notifications", notifications);
-
-            // **カレンダーの予約情報を取得**
-            Map<String, Integer> reservationCounts = dao.getReservationCountsByLivehouse(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(), userId);
+            // JSPへのフォワード
+            Map<String, Integer> reservationCounts = dao.getReservationCountsByLivehouse(year, month, userId);
             String reservationStatusJson = new Gson().toJson(reservationCounts);
+            log("[DEBUG] JSON変換後 - reservationStatusJson: " + reservationStatusJson);
+
             request.setAttribute("reservationStatus", reservationStatusJson);
-            request.setAttribute("year", LocalDateTime.now().getYear());
-            request.setAttribute("month", LocalDateTime.now().getMonthValue());
+            request.setAttribute("year", year);
+            request.setAttribute("month", month);
+            request.setAttribute("day", day);
+            request.setAttribute("cogig_or_solo", cogigOrSolo);
 
+            List<LivehouseApplicationWithGroup> reservations = new ArrayList<>();
+            List<LivehouseApplicationWithGroup> cogigOrSolo1Reservations = new ArrayList<>();
+            List<LivehouseApplicationWithGroup> cogigOrSolo2Reservations = new ArrayList<>();
+            if (cogigOrSolo == 1) {
+                log("[DEBUG] cogig_or_solo = 1 での処理");
+                cogigOrSolo1Reservations = dao.getReservationsWithTrueFalseZero(year, month, day);
+                log("[DEBUG] Retrieved cogig_or_solo = 1 reservations: " + cogigOrSolo1Reservations);
+            } else if (cogigOrSolo == 2) {
+                log("[DEBUG] cogig_or_solo = 2 での処理");
+                cogigOrSolo2Reservations = dao.getReservationsByCogigOrSolo(year, month, day);
+                log("[DEBUG] Retrieved cogig_or_solo = 2 reservations: " + cogigOrSolo2Reservations);
+            }
+            request.setAttribute("reservations", reservations);
+            request.setAttribute("cogigOrSolo1Reservations", cogigOrSolo1Reservations);
+            request.setAttribute("cogigOrSolo2Reservations", cogigOrSolo2Reservations);
+            if (day != -1) {
+                String redirectUrl = String.format("/Application_list?year=%d&month=%d&day=%d&cogig_or_solo=%d", year, month, day, cogigOrSolo);
+                log("[DEBUG] Redirecting to: " + redirectUrl);
+                response.sendRedirect(request.getContextPath() + redirectUrl);
+                return;
+            }
             request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
-            LOGGER.info("[INFO] Successfully forwarded to JSP.");
+            log("[DEBUG] Successfully forwarded to JSP.");
 
+        } catch (NumberFormatException e) {
+            log("[ERROR] Invalid parameter format: year or month is not a valid number.", e);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "日付パラメータが不正です。正しい値を入力してください。");
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "[ERROR] SQLエラー: " + e.getMessage(), e);
+            log("[ERROR] SQLエラー: " + e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SQLエラーが発生しました。");
+        } catch (Exception e) {
+            log("[ERROR] その他のエラー: " + e.getMessage(), e);
+            response.setContentType("application/json; charset=UTF-8");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write(new Gson().toJson(Map.of("error", "システムエラーが発生しました。", "details", e.getMessage())));
         }
     }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String type = request.getParameter("type"); // "request" or "approval"
-        int reservationId = Integer.parseInt(request.getParameter("reservationId"));
-        String datetime = request.getParameter("datetime");
-        int userId = Integer.parseInt(request.getParameter("userId"));
-
-        LOGGER.info("[INFO] 通知処理開始 - type: " + type + ", reservationId: " + reservationId + ", datetime: " + datetime + ", userId: " + userId);
-
-        DBManager dbManager = DBManager.getInstance();
-        try (Connection conn = dbManager.getConnection()) {
-            conn.setAutoCommit(false);
-
-            String message = "request".equals(type) 
-                ? "新しい予約申請が届きました: 予約ID " + reservationId + ", 予約日時: " + datetime
-                : "あなたの予約 (ID: " + reservationId + ") が承認されました";
-
-            String notifySql = "INSERT INTO notice_table (livehouse_application_id, create_date, update_date, message, is_read, user_id) VALUES (?, NOW(), NULL, ?, 0, ?)";
-            LOGGER.info("[INFO] 実行するSQLクエリ: " + notifySql);
-
-            try (PreparedStatement notifyStmt = conn.prepareStatement(notifySql)) {
-                notifyStmt.setInt(1, reservationId);
-                notifyStmt.setString(2, message);
-                notifyStmt.setInt(3, userId);
-                notifyStmt.executeUpdate();
-                LOGGER.info("[INFO] 通知をデータベースに保存 - message: " + message);
-            }
-
-            conn.commit();
-            response.setStatus(HttpServletResponse.SC_OK);
-            LOGGER.info("[INFO] 通知処理完了 - 成功");
-
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "[ERROR] 通知の作成に失敗しました: " + e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "通知の作成に失敗しました");
+    // ログイン状態を確認
+    private boolean isLoggedIn(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false); // 既存のセッションを取得
+        if (session == null || session.getAttribute("userId") == null) {
+            response.sendRedirect(request.getContextPath() + "/Top");
+            return false;
+        }
+        return true;
+    }
+    // ログアウト処理
+    private void logout(HttpSession session) {
+        if (session != null && session.getAttribute("userId") != null) { // ログイン済みか確認
+            Integer userId = (Integer) session.getAttribute("userId");
+            log("[DEBUG] Logging out user with ID: " + userId + ". Session ID: " + session.getId());
+            session.removeAttribute("userId"); // userId 属性を削除
+            session.invalidate(); // セッションを無効化
+            log("[DEBUG] User with ID: " + userId + " logged out successfully. Session invalidated.");
+        } else {
+            log("[DEBUG] No user is currently logged in.");
         }
     }
 }
