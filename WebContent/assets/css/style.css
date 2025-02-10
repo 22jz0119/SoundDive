@@ -63,6 +63,61 @@ header>.header-container {
 	margin: 20px;
 }
 
+/* 矢印画像を上下に揺らすアニメーション */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+
+.guide-item{
+	position: fixed;
+	top: 25%;
+	left: 15%;
+	margin-top: 200px;
+	animation: bounce 1s infinite ease-in-out;
+	
+}
+
+.guide-txt-btn{
+	font-family: "Shippori Mincho B1", serif;
+	font-size: 1.4rem;
+	font-weight: 600;
+	width: 200px;
+	height: 50px;
+	background: rgb(255, 168, 111);
+	border-radius: 5px;
+}
+
+.guide-txt-frame{
+	display: flex;
+	justify-content: center;
+}
+
+
+
+
+.guide-img-frame{
+	display: flex;
+	justify-content: center;
+}
+
+.kuhaku{
+	margin-top: 150px;
+}
+
+
+.guide-img{
+	width: 128px;
+	height: 128px;
+	
+}
+
+
 
 main{
     margin: 0 300px;
@@ -109,11 +164,12 @@ main{
 	
     display: flex;
     justify-content: center;
+    
 }
 .a-t-home-key-visual{
 	padding-top: 150px;
     width: 1200px;
-
+	z-index: -1;
 }
 
 /* at-home ヘッダー */
@@ -340,7 +396,7 @@ td.is-disabled {
     width: 800px; /* 横幅550pxに固定 */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     color: white;
 }
 
@@ -361,6 +417,9 @@ td.is-disabled {
 	height: 200px;
 	object-fit: cover;
 	border-radius: 8px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .artist-result-frame {
@@ -1493,15 +1552,15 @@ th.b {
 .member-detail{
 	display: flex;
 	justify-content: center;
-	margin: 30px;
+	margin: 0 20px 0 30px;
 }
 
 .profile-card{
 	width: 170px;
 	height: 50px;
 	margin-top: 50px;
-	margin-left: 350px;
-	margin-right: 90px;
+	margin-left: 290px;
+	margin-right: 75px;
 }
 
 .p-c-sub{
@@ -2278,6 +2337,37 @@ th.b {
     transition: all 0.3s ease;
     background-color: #f9f9f9;
 }
+.livehouse_mypage-inputfield-address{
+	list-style: none;
+	display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#livehouseAddress{
+	width: 300px;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+#livehouseAddress:focus{
+	border-color: #007bff;
+    background-color: #fff;
+}
+
+#livehouseAddress::placeholder{
+	color: transparent;
+}
+
+
+
+
+
 
 /* フォーカス時のスタイル */
 #liveTelNumber:focus {
@@ -2479,7 +2569,7 @@ th.b {
 .at-home-bs-done-frame{
 	width: 1000px;
 	height: 200px;
-	margin: 0 20px;
+	margin: 50px 20px;
     padding: 10px 100px;
     justify-content: space-around;
     align-items: center;
@@ -2491,6 +2581,7 @@ th.b {
 
 .booking-complete-info-ul1{
 	list-style: none;
+	
 }
 
 .booking-complete-info-li1{

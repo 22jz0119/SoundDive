@@ -70,20 +70,33 @@
             </ul>
         </div>
     </header>
+    
 
     <main>
+	    <div class="guide-item">
+	    	<div class="guide-txt-frame">
+	    		<button id="guide-txt" class="guide-txt-btn">予約はこちら</button>
+	    	</div>
+	    	<div class="guide-img-frame">
+	    		<img src="<%= request.getContextPath() %>/assets/img/ander_arrow.png" alt="" class="guide-img">
+	    	</div>
+	    	
+	    	
+	    </div>
+	    
         <div class="a-t-home-keyvisual-div"><img src="<%= request.getContextPath() %>/assets/img/key-visual.jpg" alt="" class="a-t-home-key-visual"></div>
-        <div class="booking-title">
-            <h2 class="booking-title-h2">Booking</h2>
+        <p class="kuhaku" id="kuhaku"></p>
+        <div class="booking-title" id="booking-title">
+            <h2 class="booking-title-h2" id="booking-title-h2">Booking</h2>
         </div>
         <section class="booking-nav-section">
 		    <form id="bookingForm" action="<%= request.getContextPath() %>/At_Home" method="post">
 		        <div class="booking-button">
 		            <div class="booking-solo-button">
-		                <button type="button" onclick="validateMypage('solo')" class="solo-button">SOLO LIVE</button>
+		                <button type="button" onclick="validateMypage('solo')" class="solo-button">SOLO LIVE<br><small>一人で予約はこちら</small></button>
 		            </div>
 		            <div class="booking-multi-button">
-		                <button type="button" onclick="validateMypage('multi')" class="multi-button">MULTI LIVE</button>
+		                <button type="button" onclick="validateMypage('multi')" class="multi-button">MULTI LIVE<br><small>対バンはこちら</small></button>
 		            </div>
 		        </div>
 		    </form>
@@ -153,6 +166,7 @@
                 </c:forEach>
             </div>
         </section>
+        
      </main>
 
      <script>
@@ -244,5 +258,54 @@
             form.submit();
         }
     </script>
+     <script>
+	    document.addEventListener("DOMContentLoaded", function () {
+	        document.getElementById("guide-txt").addEventListener("click", function() {
+	            smoothScrollTo(document.getElementById("booking-title-h2"), 1000, 100);
+	        });
+	
+	        function smoothScrollTo(target, duration, offset = 0) {
+	            let start = window.scrollY; // 現在のスクロール位置
+	            let end = target.getBoundingClientRect().top + window.scrollY - offset; // 余白を考慮
+	            let distance = end - start; // 移動距離
+	            let startTime = performance.now(); // 開始時間
+	
+	            function scrollStep(timestamp) {
+	                let elapsed = timestamp - startTime; // 経過時間
+	                let progress = Math.min(elapsed / duration, 1); // 進行度（最大1）
+	                let easeProgress = progress < 0.5 
+	                    ? 2 * progress * progress 
+	                    : 1 - Math.pow(-2 * progress + 2, 2) / 2; // イージング関数
+	
+	                window.scrollTo(0, start + distance * easeProgress); // スクロール更新
+	
+	                if (progress < 1) {
+	                    requestAnimationFrame(scrollStep); // 次のフレームで実行
+	                }
+	            }
+	
+	            requestAnimationFrame(scrollStep);
+	        }
+	    });
+	</script>
+	<script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let guideItem = document.querySelector(".guide-item");
+            let bookingStatus = document.querySelector(".at-home-bs-done");
+
+            let observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        guideItem.style.display = "none"; // 超えたら消える
+                    } else {
+                        guideItem.style.display = "block"; // それ以外なら表示
+                    }
+                });
+            }, { threshold: 0 });
+
+            observer.observe(bookingStatus);
+        });
+    </script>
+    
 </body>
 </html>
