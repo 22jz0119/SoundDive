@@ -3,7 +3,6 @@
 <%@ page import="model.Notice" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -11,19 +10,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
-
     <title>アーティストホーム画面</title>
 </head>
 
 <body class="artist_home">
     <header class="main-header">
-        <div class="header-container">
+        <div class="header-container2">
             <div class="main-title">
-                <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="" class="main-logo">
+                <h1 class="main-title-h1">Sound Dive</h1>
             </div>
-            <ul class="header-nav-ul">
-                <li><a href="<%= request.getContextPath() %>/At_Mypage">MY PAGE</a></li>
-                <li class="notification-container">
+            <ul class="header-nav-ul2">
+                <li class="header-box-li2"><a href="<%= request.getContextPath() %>/At_Mypage" class="top-mypage-btn">MY PAGE</a></li>
+                <li class="notification-container header-box-li2">
                     <a href="#" class="notification-icon" onclick="toggleNotificationWindow(event)">
                         <% 
                             List<Notice> notifications = (List<Notice>) request.getAttribute("notifications");
@@ -36,50 +34,99 @@
                                 }
                             }
                         %>
-                        <span id="notificationCount"><%= unreadCount %></span>
+                        <span id="notificationCount">通知<%= unreadCount %>件</span>
                     </a>
                     <div class="notification-window" id="notificationWindow" style="display: none;">
                         <ul id="notificationList">
-                            <% 
-                                if (notifications != null) {
-                                    for (Notice notice : notifications) { 
-                            %>
-                                <li class="<%= notice.isRead() ? "read" : "unread" %>">
-                                    <span><%= notice.getMessage() != null ? notice.getMessage() : "メッセージがありません" %></span>
-                                    <button onclick="markAsRead(<%= notice.getId() %>)">既読</button>
-                                </li>
-                                <br>
-                            <% 
-                                    }
-                                } else {
-                            %>
-                                <li>通知はありません。</li>
+                            <% if (notifications != null && !notifications.isEmpty()) { 
+                                for (Notice notice : notifications) { %>
+                                    <li class="<%= notice.isRead() ? "read" : "unread" %>">
+                                        <span class="tuuti">
+                                            <!-- 通知メッセージを表示 -->
+                                            <% if (notice.getMessage() != null) { %>
+                                                <%= notice.getMessage() %>
+                                            <% } else { %>
+                                                メッセージがありません
+                                            <% } %>
+                                        </span>
+                                        <!-- cogig_or_solo に応じた通知 -->
+                                        <% 
+										    Integer applicationId = notice.getLivehouseApplicationId();
+										    if (applicationId != null && applicationId > 0) { 
+										%>
+										    <span class="notification-type"></span>
+										<% } %>
+                                        <button class="notification-button" onclick="markAsRead(<%= notice.getId() %>)">既読</button>
+                                    </li>
+                            <%  } 
+                            } else { %>
+                                <li class="tuuti">通知はありません。</li>
                             <% } %>
                         </ul>
                     </div>
                 </li>
-                <li><a href="#">000</a></li>
-                <li><a href="#" onclick="logoutAndRedirect();">ログアウト</a></li>
+                <li class="header-box-li2"><a href="#" onclick="logoutAndRedirect();" class="top-logout-btn">ログアウト</a></li>
             </ul>
         </div>
     </header>
+    
+
     <main>
+	    <div class="guide-item">
+	    	<div class="guide-txt-frame">
+	    		<button id="guide-txt" class="guide-txt-btn">予約はこちら</button>
+	    	</div>
+	    	<div class="guide-img-frame">
+	    		<img src="<%= request.getContextPath() %>/assets/img/ander_arrow.png" alt="" class="guide-img">
+	    	</div>
+	    	
+	    	
+	    </div>
+	    
         <div class="a-t-home-keyvisual-div"><img src="<%= request.getContextPath() %>/assets/img/key-visual.jpg" alt="" class="a-t-home-key-visual"></div>
-        <div class="booking-title">
-            <h2 class="booking-title-h2">Booking</h2>
+        <p class="kuhaku" id="kuhaku"></p>
+        <div class="booking-title" id="booking-title">
+            <h2 class="booking-title-h2" id="booking-title-h2">Booking</h2>
         </div>
         <section class="booking-nav-section">
-            <form action="<%= request.getContextPath() %>/At_Home" method="post">
-                <div class="booking-button">
-                    <div class="booking-solo-button">
-                        <button type="submit" name="action" value="solo" class="solo-button">SOLO LIVE</button>
-                    </div>
-                    <div class="booking-multi-button">
-                        <button type="submit" name="action" value="multi" class="multi-button">MULTI LIVE</button>
-                    </div>
-                </div>
-            </form>
-        </section>
+		    <form id="bookingForm" action="<%= request.getContextPath() %>/At_Home" method="post">
+		        <div class="booking-button">
+		            <div class="booking-solo-button">
+		                <button type="button" onclick="validateMypage('solo')" class="solo-button">SOLO LIVE<br><small>一人で予約はこちら</small></button>
+		            </div>
+		            <div class="booking-multi-button">
+		                <button type="button" onclick="validateMypage('multi')" class="multi-button">MULTI LIVE<br><small>対バンはこちら</small></button>
+		            </div>
+		        </div>
+		    </form>
+		</section>
+		
+		<script>
+    function validateMypage(liveType) {
+        fetch('<%= request.getContextPath() %>/CheckMypageStatus', { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "ok") {
+                    // My Pageの入力がされている場合、フォームを送信
+                    let form = document.getElementById("bookingForm");
+                    let input = document.createElement("input");
+                    input.type = "hidden";
+                    input.name = "action";
+                    input.value = liveType;
+                    form.appendChild(input);
+                    form.submit();
+                } else {
+                    // My Pageの入力が不足している場合、ポップアップ表示
+                    alert("My Pageの入力が完了していません。\n必要な情報を入力してください。");
+                }
+            })
+            .catch(error => {
+                console.error("エラー:", error);
+                alert("エラーが発生しました。もう一度試してください。");
+            });
+    }
+    
+</script>
 
         <section class="booking-status-section">
             <p class="at-home-bs-title">ライブ予約状況</p>
@@ -87,37 +134,38 @@
                 <p class="at-home-bs-done">ライブ予約完了</p>
                 <c:forEach var="app" items="${applicationsTrue}">
                     <div class="at-home-bs-done-frame">
-                        <img src="${app.livehouse_information.picture_image_naigaikan}" alt="Livehouse Image" width="100px" height="100px"/>
-                        <ul>
-                            <li>${app.livehouse_information.livehouse_name}</li>
-                            <li>予約日</li>
-                            <li>${app.date_time}</li>
+                        <img src="${pageContext.request.contextPath}${app.livehouse_information.picture_image_naigaikan}" alt="Livehouse Image" class="at-home-status-img"/>
+                        <ul class="booking-complete-info-ul1">
+                            <li class="booking-complete-info-li1">${app.livehouse_information.livehouse_name}</li>
+                            <li class="booking-complete-info-li2">予約日</li>
+                            <li class="booking-complete-info-li3">${app.date_time}</li>
                         </ul>
-                        <ul>
-                            <li>${app.livehouse_information.live_address}</li>
-                            <li>電話番号</li>
-                            <li>${app.livehouse_information.live_tel_number}</li>
+                        <ul class="booking-complete-info-ul2">
+                            <li class="booking-complete-info-li2-1">${app.livehouse_information.live_address}</li>
+                            <li class="booking-complete-info-li2-2">電話番号</li>
+                            <li class="booking-complete-info-li2-3">${app.livehouse_information.live_tel_number}</li>
                         </ul>
                     </div>
                 </c:forEach>
                 <h2>予約申請中</h2>
                 <c:forEach var="app" items="${applicationsFalse}">
                     <div class="at-home-bs-request-frame">
-                        <img src="${app.livehouse_information.picture_image_naigaikan}" alt="Livehouse Image" width="100px" height="100px"/>
-                        <ul>
-                            <li>${app.livehouse_information.livehouse_name}</li>
-                            <li>予約日</li>
-                            <li>${app.date_time}</li>
+                        <img src="${pageContext.request.contextPath}${app.livehouse_information.picture_image_naigaikan}" alt="Livehouse Image" class="at-home-status-img"/>
+                        <ul class="booking-request-info-ul1">
+                            <li class="booking-request-info-li1">${app.livehouse_information.livehouse_name}</li>
+                            <li class="booking-request-info-li2">予約日</li>
+                            <li class="booking-request-info-li3">${app.date_time}</li>
                         </ul>
-                        <ul>
-                            <li>${app.livehouse_information.live_address}</li>
-                            <li>電話番号</li>
-                            <li>${app.livehouse_information.live_tel_number}</li>
+                        <ul class="booking-request-info-ul2">
+                            <li class="booking-request-info-li2-1">${app.livehouse_information.live_address}</li>
+                            <li class="booking-request-info-li2-2">電話番号</li>
+                            <li class="booking-request-info-li2-3">${app.livehouse_information.live_tel_number}</li>
                         </ul>
                     </div>
                 </c:forEach>
             </div>
         </section>
+        
      </main>
 
      <script>
@@ -209,5 +257,54 @@
             form.submit();
         }
     </script>
+     <script>
+	    document.addEventListener("DOMContentLoaded", function () {
+	        document.getElementById("guide-txt").addEventListener("click", function() {
+	            smoothScrollTo(document.getElementById("booking-title-h2"), 1000, 100);
+	        });
+	
+	        function smoothScrollTo(target, duration, offset = 0) {
+	            let start = window.scrollY; // 現在のスクロール位置
+	            let end = target.getBoundingClientRect().top + window.scrollY - offset; // 余白を考慮
+	            let distance = end - start; // 移動距離
+	            let startTime = performance.now(); // 開始時間
+	
+	            function scrollStep(timestamp) {
+	                let elapsed = timestamp - startTime; // 経過時間
+	                let progress = Math.min(elapsed / duration, 1); // 進行度（最大1）
+	                let easeProgress = progress < 0.5 
+	                    ? 2 * progress * progress 
+	                    : 1 - Math.pow(-2 * progress + 2, 2) / 2; // イージング関数
+	
+	                window.scrollTo(0, start + distance * easeProgress); // スクロール更新
+	
+	                if (progress < 1) {
+	                    requestAnimationFrame(scrollStep); // 次のフレームで実行
+	                }
+	            }
+	
+	            requestAnimationFrame(scrollStep);
+	        }
+	    });
+	</script>
+	<script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let guideItem = document.querySelector(".guide-item");
+            let bookingStatus = document.querySelector(".at-home-bs-done");
+
+            let observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        guideItem.style.display = "none"; // 超えたら消える
+                    } else {
+                        guideItem.style.display = "block"; // それ以外なら表示
+                    }
+                });
+            }, { threshold: 0 });
+
+            observer.observe(bookingStatus);
+        });
+    </script>
+    
 </body>
 </html>

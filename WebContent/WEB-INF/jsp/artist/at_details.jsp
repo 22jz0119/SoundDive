@@ -22,8 +22,6 @@
                 <ul class="header-nav-ul">
                     <li><a href="<%= request.getContextPath() %>/At_Home">HOME</a></li>
                     <li><a href="<%= request.getContextPath() %>/At_Mypage">MY PAGE</a></li>
-                    <li><a href="">000</a></li>
-                    <li><a href="">000</a></li>
                     <li>
 					    <a href="#" onclick="logoutAndRedirect();">ログアウト</a>
 					</li>
@@ -43,12 +41,9 @@
 			</div>
 	    	<div class="at-detail-liveinfo-containar">
 	    	
-	    		
-				
-				
 				<div class="at-detail-liveinfo-main">
 					<ul class="at-detail-liveinfo-img-ul">
-						<li class="at-detail-liveinfo-img-frame"><img src="<%= livehouse.getPicture_image_naigaikan() %>" alt="画像" class="at-detail-liveinfo-img" style="width: 200px;, height: 300px;"/></li>
+						<li class="at-detail-liveinfo-img-frame"><img src="${pageContext.request.contextPath}${livehouse.picture_image_naigaikan}" alt="画像" class="at-detail-liveinfo-img" style="width: 200px;, height: 300px;"/></li>
 					</ul>
 					<ul class="at-detail-liveinfo-main-ul">
 						<li class="at-detail-liveinfo-main-li1"><p class="at-detail-liveinfo-main-li1-p">オーナー名  <%= livehouse.getOwner_name() %></p></li>

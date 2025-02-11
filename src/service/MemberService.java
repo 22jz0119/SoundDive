@@ -13,38 +13,43 @@ public class MemberService {
         this.memberTableDAO = memberTableDAO;
     }
 
-    public void manageMembers(Connection conn, int groupId, List<Integer> deletedMemberIds, List<Member> newMembers) throws Exception {
-        // 1. 既存メンバーを取得
+    public void manageMembers(Connection conn, int groupId, List<Integer> deletedMemberIds, List<Member> newMembers, List<Integer> existingMemberIds) throws Exception {
         List<Member> existingMembers = memberTableDAO.getMembersByArtistGroupId(groupId);
-        System.out.println("[manageMembers] Existing members: " + existingMembers);
 
-        // 2. 削除処理
+        // **削除処理**
         if (deletedMemberIds != null && !deletedMemberIds.isEmpty()) {
             for (int memberId : deletedMemberIds) {
                 boolean exists = existingMembers.stream().anyMatch(member -> member.getId() == memberId);
                 if (exists) {
                     memberTableDAO.deleteMemberById(memberId);
-                } else {
-                    System.out.println("[manageMembers] Member ID not found for deletion: " + memberId);
                 }
+            }
+            // 削除後のメンバーリストを更新
+            existingMembers = memberTableDAO.getMembersByArtistGroupId(groupId);
+        }
+
+        // **既存メンバーの更新**
+        for (Member existingMember : existingMembers) {
+            for (Member newMember : newMembers) {
+                if (existingMember.getId() == newMember.getId() && newMember.getId() > 0) {
+                    if (!existingMember.getMember_name().equals(newMember.getMember_name()) || 
+                        !existingMember.getMember_position().equals(newMember.getMember_position())) {
+
+                        System.out.println("[manageMembers] Updating member ID: " + newMember.getId());
+                        memberTableDAO.updateMember(newMember);  // 更新処理
+                    }
+                }
+                System.out.println("[manageMembers] Checking existing member: " + existingMember.getId() + " - " + existingMember.getMember_name());
+                System.out.println("[manageMembers] Checking new member: " + newMember.getId() + " - " + newMember.getMember_name());
             }
         }
 
-        // 3. 挿入する新規メンバーをフィルタリング
+        // **新規メンバーの追加**
         List<Member> membersToInsert = newMembers.stream()
-            .filter(newMember -> newMember.getId() == 0) // 新規挿入するメンバーのみ
-            .filter(newMember -> existingMembers.stream()
-                .noneMatch(existingMember -> 
-                    existingMember.getMember_name().equals(newMember.getMember_name()) &&
-                    existingMember.getMember_position().equals(newMember.getMember_position())
-                )
-            )
-            .distinct() // 重複排除
+            .filter(newMember -> newMember.getId() == 0) // ID 0 のメンバーのみ追加
+            .distinct()
             .toList();
 
-        System.out.println("[manageMembers] Members to insert: " + membersToInsert);
-
-        // 4. 挿入処理
         if (!membersToInsert.isEmpty()) {
             memberTableDAO.insertMembers(groupId, membersToInsert);
         }

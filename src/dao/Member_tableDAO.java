@@ -135,22 +135,29 @@ public class Member_tableDAO {
     public List<Member> getMembersByArtistGroupId(int artistGroupId) {
         String sql = "SELECT id, member_name, member_position, artist_group_id FROM member_table WHERE artist_group_id = ?";
         System.out.println("[getMembersByArtistGroupId] Start - artistGroupId=" + artistGroupId);
+
         List<Member> members = new ArrayList<>();
         try (Connection connection = dbManager.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            
             pstmt.setInt(1, artistGroupId);
+            System.out.println("[DEBUG] Executing SQL: " + pstmt.toString()); // SQLの実行を確認
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     Member member = rs2model(rs);
                     members.add(member);
-                    System.out.println("[Result] Fetched Member: " + member);
+                    // 各メンバーの詳細を出力
+                    System.out.println("[DEBUG] Retrieved Member: ID=" + member.getId() + 
+                                       " | Name=" + member.getMember_name() + 
+                                       " | Position=" + member.getMember_position());
                 }
             }
         } catch (SQLException e) {
             System.err.println("[Error] Failed to fetch members for groupId=" + artistGroupId);
             e.printStackTrace();
         } finally {
-            System.out.println("[getMembersByArtistGroupId] End");
+            System.out.println("[getMembersByArtistGroupId] End - Retrieved " + members.size() + " members");
         }
         return members;
     }
@@ -163,14 +170,18 @@ public class Member_tableDAO {
                 if (newMember.getId() > 0 && newMember.getId() == existingMember.getId()) {
                     if (!newMember.getMember_name().equals(existingMember.getMember_name()) || 
                         !newMember.getMember_position().equals(existingMember.getMember_position())) {
+                        System.out.println("[updateExistingMembers] Updating member ID: " + newMember.getId() +
+                                           " from name: " + existingMember.getMember_name() + " to: " + newMember.getMember_name() +
+                                           ", position: " + existingMember.getMember_position() + " to: " + newMember.getMember_position());
                         updateMember(newMember);
+                    } else {
+                        System.out.println("[updateExistingMembers] No changes detected for member ID: " + newMember.getId());
                     }
                 }
             }
         }
         System.out.println("[updateExistingMembers] End");
     }
-    
  // メンバー数をカウントするメソッド
     public int countMembersByGroupId(int groupId) {
         String sql = "SELECT COUNT(*) AS member_count FROM member_table WHERE artist_group_id = ?";
@@ -196,7 +207,6 @@ public class Member_tableDAO {
             rs.getString("member_name"),
             rs.getString("member_position")
         );
-        System.out.println("[rs2model] Created Member: " + member);
         return member;
     }
 }

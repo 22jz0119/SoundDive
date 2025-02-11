@@ -29,12 +29,95 @@ header {
 }
 
 
+
 header>.header-container {
     padding-top: 20px;
     height: 60px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    
 }
+
+.top-mypage-btn{
+	text-decoration: none;
+	color: white;
+	border-bottom: 1px solid #FFFFFF;
+}
+
+
+.notification-icon{
+	color: white;
+	text-decoration: none;
+	border-bottom: 1px solid #FFFFFF;
+	
+}
+.top-logout-btn{
+	color: white;
+	text-decoration: none;
+	border-bottom: 1px solid #FFFFFF;
+}
+
+
+.header-box-li{
+	margin: 20px;
+}
+
+/* 矢印画像を上下に揺らすアニメーション */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+
+.guide-item{
+	position: fixed;
+	top: 25%;
+	left: 15%;
+	margin-top: 200px;
+	animation: bounce 1s infinite ease-in-out;
+	
+}
+
+.guide-txt-btn{
+	font-family: "Shippori Mincho B1", serif;
+	font-size: 1.4rem;
+	font-weight: 600;
+	width: 200px;
+	height: 50px;
+	background: rgb(255, 168, 111);
+	border-radius: 5px;
+}
+
+.guide-txt-frame{
+	display: flex;
+	justify-content: center;
+}
+
+
+
+
+.guide-img-frame{
+	display: flex;
+	justify-content: center;
+}
+
+.kuhaku{
+	margin-top: 150px;
+}
+
+
+.guide-img{
+	width: 128px;
+	height: 128px;
+	
+}
+
+
 
 main{
     margin: 0 300px;
@@ -46,14 +129,14 @@ main{
     height: 100%;
 }
 .main-title{
-
     font-size: 1.5rem;
     margin-left: 300px;
 }
 
 .main-title-h1{
-    margin: 0 auto;
+    margin-top: 10px;
 }
+
 
 
 .header-nav {
@@ -67,6 +150,7 @@ main{
 }
 
 .header-nav-ul{
+	margin-right: 100px;
     list-style: none;
     display: flex;
 }
@@ -80,12 +164,39 @@ main{
 	
     display: flex;
     justify-content: center;
+    
 }
+
 .a-t-home-key-visual{
 	padding-top: 150px;
     width: 1200px;
-
+	z-index: -1;
 }
+
+/* at-home ヘッダー */
+.header-container2{
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.main-title2{
+	margin-top: 20px;
+}
+
+.header-nav-ul2{
+	margin-right: 150px;
+	display: flex;
+	align-items: center;
+	list-style: none;
+	
+}
+
+.header-box-li2{
+	margin-right: 70px;
+}
+
+
 
 /* h1 {
     color: red;
@@ -276,16 +387,17 @@ td.is-disabled {
 	flex-wrap: wrap;
 	gap: 20px;
 }
+
 .artist-result-box {
 	margin: 20px 30px;
     background: linear-gradient(to right, #FF6500, #1E3E62, #0B192C, #000000) ;
     border: 1px solid #ccc;
     padding: 20px;
     box-sizing: border-box;
-    width: 550px; /* 横幅550pxに固定 */
+    width: 800px; /* 横幅550pxに固定 */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     color: white;
 }
 
@@ -299,6 +411,16 @@ td.is-disabled {
     width: 200px;
     height: 100px;
     object-fit: cover;
+}
+
+.at-home-status-img{
+	width: 300px;
+	height: 200px;
+	object-fit: cover;
+	border-radius: 8px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .artist-result-frame {
@@ -974,61 +1096,70 @@ input[type="submit"]:active, .info-check:active {
 .application-artist-list-main > div {
     margin-right: 10px; /* 要素間のスペース */
 }
+
 .application-artist-list-ikon{
     width: 300px;
     height: 300px;
 }
+
+.application-list-solo{
+	width: 1400px;
+	margin: 200px auto;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content:center;
+}
+
+
+.apllicationList-MaiinFrame{
+	margin-right: 50px;
+	margin-bottom: 50px;
+	width: 600px;
+	height: 500px;
+	display: flex;
+	align-items: center;
+	background: linear-gradient(to right, #FF6500, #1E3E62, #0B192C, #000000) ;
+	border: 1px solid rgb(192, 192, 192);
+}
+
+.apllicationList-MaiinFrame ul{
+	list-style: none;
+}
+
 .application-artist-list-ul0{
-    display: flex;
-    justify-content: flex-start;
-    list-style: none;
-}
-.application-artist-list-ul0 p{
-    font-size: 1.7rem;
+	list-style: none;
 }
 
-.application-artist-list-ul1{
-    display: flex;
-    justify-content: flex-start;
-    list-style: none;
+.application-artist-list-ul0-li1{
+	font-size: 1.6rem;
+	border-bottom: 1px solid #FFFFFF;
 }
 
-.application-artist-list-ul1 p{
-    font-size: 1.3rem;
+
+
+
+
+.application-list-multi{
+	width: 1400px;
+	margin-top: 100px auto;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
 }
 
-.application-artist-list-ul2{
-    display: flex;
-    justify-content: flex-start;
-    list-style: none;
+.apllicationList-SubFrame{
+	margin-right: 50px;
+	margin-top: 50px;
+	width: 600px;
+	height: 500px;
+	display: flex;
+	align-items: center;
+	background: linear-gradient(to right, #FF6500, #1E3E62, #0B192C, #000000) ;
+	border: 1px solid rgb(192, 192, 192);
 }
 
-.application-artist-list-ul2 p{
-    font-size: 1.3rem;
-}
 
-.application-artist-list-ul3{
-    list-style: none;
-    display: flex;
-    justify-content: flex-start;
-}
 
-.application-artist-list-ul3 p{
-    font-size: 1.3rem;
-}
-
-.application-artist-list-ul4{
-    display: flex;
-    justify-content: flex-start;
-    list-style: none;
-}
-
-.application-artist-list-ul5{
-    margin-top: 30px;
-    list-style: none;
-    display: flex;
-    justify-content: center;
-}
 
 
 
@@ -1048,11 +1179,6 @@ input[type="submit"]:active, .info-check:active {
     line-height: 1.2; /* 行間を詰める */
 }
 
-.application-artist-list-ul1 li,
-.application-artist-list-ul2 li,
-.application-artist-list-ul3 li {
-    margin-right: 20px;
-}
 
 
 
@@ -1230,8 +1356,8 @@ th.b {
 }
 
 .band-image {
-    width: 100px; /* 画像のサイズを調整 */
-    height: auto; /* アスペクト比を維持 */
+    width: 300px; /* 画像のサイズを調整 */
+    height: 400px; /* アスペクト比を維持 */
 }
 
 .artist-search-box{
@@ -1423,11 +1549,25 @@ th.b {
 	justify-content: center;
 }
 
+
+.member-detail{
+	display: flex;
+	justify-content: center;
+	margin: 0 20px 0 30px;
+}
+
 .profile-card{
-	width: 200px;
-	height: 30px;
-	margin: 30px 0 0 850px;
-	
+	width: 170px;
+	height: 50px;
+	margin-top: 50px;
+	margin-left: 290px;
+	margin-right: 75px;
+}
+
+.p-c-sub{
+	width: 170px;
+	height: 50px;
+	margin-top: 50px;
 }
 
 
@@ -1436,10 +1576,12 @@ th.b {
     padding: 10px;
 }
 
+
 .plus-member-details-div1{
 	margin-top: 30px;
 	display: flex;
 	justify-content: center;
+	
 }
 
 .plus-member-detail-title1{
@@ -1478,8 +1620,10 @@ th.b {
 }
 
 .remove-member-button{
-	margin-top: 20px;
-	margin-left: 1000px;
+	width: 150px;
+	height: 50px;
+	margin-top: 100px;
+	margin-left: 100px;
 	background-color: #4CAF50; /* 緑色の背景 */
     color: white; /* 文字色は白 */
     border: none; /* ボーダーなし */
@@ -1490,6 +1634,7 @@ th.b {
     cursor: pointer; /* クリックできることを示すカーソル */
     transition: background-color 0.3s ease;
 }
+
 
 .form-group-genre{
 	margin-top: 50px;
@@ -1692,13 +1837,22 @@ th.b {
 }
 
 .form-group-2{
+	display: flex;
+	justify-content: center;
+	align-items: center;
     margin-top: 100px;
 }
 
+.form-group-2-p{
+	margin-right: 10px;
+}
+
 #band-history{
-    padding: 50px 400px;
+/*    padding: 5px 50px;*/
+	width: 100px;
+	height: 20px;
     text-align: center;
-    border-radius: 1%;
+    border-radius: 5px;
 }
 
 .form-group-3 {
@@ -1916,12 +2070,16 @@ th.b {
 
 
 .top-catchphrase{
-    margin-top: 600px;
+	margin-top: 700px;
+    display: flex;
+    justify-content: center;
     
 }
 
 .top-explain{
-    margin: 700px 300px 0 300px;
+	margin-top: 700px;
+   display: flex;
+   justify-content: center;
 }   
 
 .top-explain-txt{
@@ -2032,6 +2190,9 @@ th.b {
     margin-top: 130px;
     text-align: center;
 }
+.top-newaccount{
+	list-style: none;
+}
 
 #top-newaccount-btn{
     font-family: "Shippori Mincho B1", serif;
@@ -2049,6 +2210,7 @@ th.b {
     letter-spacing: 2.5px;
 }
 
+
 /*ライブハウスマイページ*/
 
 
@@ -2059,6 +2221,29 @@ th.b {
 .livehouse_mypage-inputfield-livehouse-name{
     display: flex;
     justify-content: center;
+    align-items: center;
+}
+
+#livehouseName {
+    width: 300px;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+#livehouseName:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    background-color: #fff;
+}
+
+#livehouseName::placeholder {
+    color: #999;
+    font-style: italic;
 }
 .livehouse_mypage-guide-livehousename{
     font-size: 1.4rem;
@@ -2077,6 +2262,60 @@ th.b {
 .livehouse_mypage-inputfield-onername{
     display: flex;
     justify-content: center;
+    align-items: center;
+}
+
+#ownerName {
+    width: 300px;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+/* フォーカス時のスタイル */
+#ownerName:focus {
+    border-color: #007bff;
+    background-color: #fff;
+}
+
+/* プレースホルダーの透明化 */
+#ownerName::placeholder {
+    color: transparent;
+}
+
+/* フォーカス時や入力時のプレースホルダーテキスト */
+#ownerName:focus::placeholder {
+    color: transparent;
+}
+
+/* ラベルのスタイル */
+#ownerName + label {
+    position: absolute;
+    top: 0;
+    left: 15px;
+    font-size: 14px;
+    color: #888;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+/* フォーカス時や入力時にラベルの位置変更 */
+#ownerName:focus + label,
+#ownerName:not(:placeholder-shown) + label {
+    top: -18px;
+    left: 15px;
+    font-size: 12px;
+    color: #007bff;
+}
+
+/* 入力ボックスのホバー時 */
+#ownerName:hover {
+    border-color: #3498db;
+    cursor: pointer;
 }
 
 #livehouse-mypage-onername{
@@ -2087,6 +2326,90 @@ th.b {
 .livehouse_mypage-inputfield-tel{
     display: flex;
     justify-content: center;
+    align-items: center;
+}
+#liveTelNumber {
+    width: 300px;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+}
+.livehouse_mypage-inputfield-address{
+	list-style: none;
+	display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#livehouseAddress{
+	width: 300px;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+#livehouseAddress:focus{
+	border-color: #007bff;
+    background-color: #fff;
+}
+
+#livehouseAddress::placeholder{
+	color: transparent;
+}
+
+
+
+
+
+
+/* フォーカス時のスタイル */
+#liveTelNumber:focus {
+    border-color: #007bff;
+    background-color: #fff;
+}
+
+/* プレースホルダーの透明化 */
+#liveTelNumber::placeholder {
+    color: transparent;
+}
+
+/* フォーカス時や入力時のプレースホルダーテキスト */
+#liveTelNumber:focus::placeholder {
+    color: transparent;
+}
+
+/* ラベルのスタイル */
+#liveTelNumber + label {
+    position: absolute;
+    top: 0;
+    left: 15px;
+    font-size: 14px;
+    color: #888;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+/* フォーカス時や入力時にラベルの位置変更 */
+#liveTelNumber:focus + label,
+#liveTelNumber:not(:placeholder-shown) + label {
+    top: -18px;
+    left: 15px;
+    font-size: 12px;
+    color: #007bff;
+}
+
+/* 入力ボックスのホバー時 */
+#liveTelNumber:hover {
+    border-color: #3498db;
+    cursor: pointer;
 }
 
 .livehouse_mypage-guide-tel{
@@ -2203,9 +2526,14 @@ th.b {
 }
 
 .calendar-table {
-    width: 100%;
+	margin: 20px auto;
+    width: 1500px;
     border-collapse: collapse;
 }
+
+/*#calendar-table{*/
+/*	margin: 100px;*/
+/*}*/
 
 .calendar-cell {
     width: 14%;
@@ -2240,24 +2568,108 @@ th.b {
 }
 
 .at-home-bs-done-frame{
-	margin: 60px 20px;
+	width: 1000px;
+	height: 200px;
+	margin: 50px 20px;
     padding: 10px 100px;
     justify-content: space-around;
+    align-items: center;
     display: flex;
     font-size: 0.9rem;
-    background: rgba(188, 33, 16, 0.62);
+    background-image: linear-gradient( 135deg, #FF9D6C 10%, #BB4E75 100%);
     border-radius: 10px;
 }
 
+.booking-complete-info-ul1{
+	list-style: none;
+	
+}
+
+.booking-complete-info-li1{
+	font-size: 1.8rem;
+	border-bottom: 1px solid #FFFFFF;
+	margin-bottom: 10px;
+}
+
+.booking-complete-info-li2{
+	font-size: 1.5rem;
+}
+
+.booking-complete-info-li3{
+	font-size: 1.6rem;
+	
+}
+
+.booking-complete-info-ul2{
+	list-style: none;
+	
+}
+
+.booking-complete-info-li2-1{
+	margin-top: 30px;
+	font-size: 1.3rem;
+}
+
+.booking-complete-info-li2-2{
+	font-size: 1.3rem;
+}
+
+.booking-complete-info-li2-3{
+	font-size: 1.3rem;
+}
+
+
 .at-home-bs-request-frame{
-	margin: 60px 20px;
-    padding: 10px 100px;
+	width: 1000px;
+	height: 200px;
+	margin: 50px 20px;
+    padding: 20px 100px;
     justify-content:space-around;
+    align-items: center;
     display: flex;
     font-size: 0.9rem;
-    background: rgba(65, 194, 45, 0.403);
+    background-image: linear-gradient( 135deg, #79F1A4 10%, #0E5CAD 100%);
     border-radius: 10px;
 }
+
+.booking-request-info-ul1{
+	list-style: none;
+}
+
+.booking-request-info-li1{
+	font-size: 1.8rem;
+	border-bottom: 1px solid #FFFFFF;
+	margin-bottom: 10px;
+}
+
+.booking-request-info-li2{
+	font-size: 1.5rem;
+}
+
+.booking-request-info-li3{
+	font-size: 1.6rem;
+	
+}
+
+.booking-request-info-ul2{
+	list-style: none;
+	
+}
+
+.booking-request-info-li2-1{
+	margin-top: 30px;
+	font-size: 1.3rem;
+}
+
+.booking-request-info-li2-2{
+	font-size: 1.3rem;
+}
+
+.booking-request-info-li2-3{
+	font-size: 1.3rem;
+}
+
+
 
 .cogig-containar {
     display: flex;
@@ -2550,3 +2962,71 @@ th.b {
 	margin-left: 50px;
 }
 
+/* アーティストホーム */
+.notification-window {
+    position: absolute; /* 通知ウィンドウを親要素内で絶対位置指定 */
+    top: 50px; /* ボタンから少し下にずらす */
+    left: 0; /* 必要に応じて調整 */
+    background-color: white; /* 背景色を指定 */
+    border: 1px solid #ccc; /* 枠線を指定 */
+    border-radius: 5px; /* 角を丸くする */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 影を追加 */
+    z-index: 1000; /* 他の要素の上に表示されるようにする */
+    max-height: 300px; /* 最大高さを設定してスクロールを可能にする */
+    overflow-y: auto; /* 縦スクロールを許可 */
+    padding: 10px; /* 内側の余白 */
+    display: none; /* 初期状態で非表示 */
+}
+
+.tuuti {
+	color: #000;
+}
+
+.notification-window li {
+    margin-bottom: 10px; /* 各通知アイテムの間に余白 */
+    padding: 5px; /* 通知アイテム内の余白 */
+    border-bottom: 1px solid #ccc; /* 通知の下に境界線 */
+}
+
+.notification-window ul {
+    padding: 0; /* 通知ウィンドウ内のリスト全体の余白を削除 */
+    margin: 0;
+    list-style: none; /* 通知リストのマーカーを削除 */
+}
+
+.notification-window li:last-child {
+    margin-bottom: 0; /* 最後のアイテムに余白を追加しない */
+    border-bottom: none; /* 最後のアイテムには境界線を付けない */
+}
+
+.scroll-login-btn {
+	font-family: "Shippori Mincho B1", serif;
+    display: block;
+    margin: 100px auto; /* 上下20pxのマージンで中央配置 */
+    padding: 30px 100px;
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: white;
+    background: #883C45;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(255, 117, 140, 0.3);
+    text-align: center;
+}
+
+.scroll-login-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(255, 117, 140, 0.5);
+}
+
+.scroll-login-btn:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(255, 117, 140, 0.3);
+}
+
+.application-artist-list-img-containar{
+	margin: 20px;
+	
+}

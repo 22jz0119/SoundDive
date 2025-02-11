@@ -37,16 +37,27 @@ public class At_Cogig extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
-            // livehouse_type をパラメータとして受け取る
-            String livehouseType = request.getParameter("livehouse_type");
-            System.out.println("[DEBUG] Received livehouse_type: " + livehouseType);
-
-            // livehouse_type が null の場合は "multi" に設定
-            if (livehouseType == null) {
-                livehouseType = "multi"; // デフォルト値
-                System.out.println("[DEBUG] livehouse_type is null, setting default value to 'multi'.");
-            }
+	    	if (!isLoggedIn(request, response)) {
+	            return;
+	        }
+	
+	        HttpSession session = request.getSession();
+	        Integer loggedInUserId = (Integer) session.getAttribute("userId");
+	
+	        if (loggedInUserId == null) {
+	            response.sendRedirect(request.getContextPath() + "/Top");
+	            return;
+	        }
+	        try {
+	            // livehouse_type をパラメータとして受け取る
+	            String livehouseType = request.getParameter("livehouse_type");
+	            System.out.println("[DEBUG] Received livehouse_type: " + livehouseType);
+	
+	            // livehouse_type が null の場合は "multi" に設定
+	            if (livehouseType == null) {
+	                livehouseType = "multi"; // デフォルト値
+	                System.out.println("[DEBUG] livehouse_type is null, setting default value to 'multi'.");
+	            }
 
             // 'multi' の場合のみ処理
             if (livehouseType.equals("multi")) {
@@ -59,7 +70,7 @@ public class At_Cogig extends HttpServlet {
                 if (query != null && !query.isEmpty()) {
                     artistGroups = artistGroupDAO.searchGroupsByName(query);
                 } else {
-                    artistGroups = artistGroupDAO.getAllGroups();
+                    artistGroups = artistGroupDAO.getAllGroupsNotMyUserId(loggedInUserId);
                 }
 
                 // 重複を排除するために user_id でフィルタリング

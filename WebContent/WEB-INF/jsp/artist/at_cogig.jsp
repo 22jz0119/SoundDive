@@ -19,8 +19,6 @@
                 <ul class="header-nav-ul">
                     <li><a href="<%= request.getContextPath() %>/At_Home">HOME</a></li>
                     <li><a href="<%= request.getContextPath() %>/At_Mypage">MY PAGE</a></li>
-                    <li><a href="">000</a></li>
-                    <li><a href="">000</a></li>
                     <li>
 					    <a href="#" onclick="logoutAndRedirect();">ログアウト</a>
 					</li>
@@ -74,7 +72,7 @@
     					<div class="cogig-prof-box">
     						<div class="cogig-prof-img-box">
     							<c:if test="${not empty artist.picture_image_movie}">
-				                    <img src="${pageContext.request.contextPath}${artist.picture_image_movie}" alt="バンドのイラスト" class="band-image" width="100px" height="100px">
+				                    <img src="${pageContext.request.contextPath}${artist.picture_image_movie}" alt="バンドのイラスト" class="band-image" >
 				                </c:if>
     						</div>
     						<div>

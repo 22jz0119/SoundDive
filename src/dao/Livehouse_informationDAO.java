@@ -76,22 +76,25 @@ public class Livehouse_informationDAO {
 
     // ライブハウス情報を挿入する 昆
     public boolean insertLivehouse_information(Livehouse_information livehouse) {
-        String sql = "INSERT INTO livehouse_information (owner_name, equipment_information, " +
+        String sql = "INSERT INTO livehouse_information (user_id, owner_name, equipment_information, " +
                      "livehouse_explanation_information, livehouse_detailed_information, " +
-                     "livehouse_name, live_tel_number, picture_image_naigaikan, create_date, update_date) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     "livehouse_name, live_address, live_tel_number, picture_image_naigaikan, create_date, update_date) " + // ✅ live_address を追加
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";  // ✅ バインドパラメータを増やす
+
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            pstmt.setString(1, livehouse.getOwner_name());
-            pstmt.setString(2, livehouse.getEquipment_information());
-            pstmt.setString(3, livehouse.getLivehouse_explanation_information());
-            pstmt.setString(4, livehouse.getLivehouse_detailed_information());
-            pstmt.setString(5, livehouse.getLivehouse_name());
-            pstmt.setString(6, livehouse.getLive_tel_number());
-            pstmt.setString(7, livehouse.getPicture_image_naigaikan());
-            pstmt.setTimestamp(8, new java.sql.Timestamp(livehouse.getCreateDate().getTime()));
-            pstmt.setTimestamp(9, new java.sql.Timestamp(livehouse.getUpdateDate().getTime()));
+            pstmt.setInt(1, livehouse.getUser_id()); // ✅ FK の user_id をセット
+            pstmt.setString(2, livehouse.getOwner_name());
+            pstmt.setString(3, livehouse.getEquipment_information());
+            pstmt.setString(4, livehouse.getLivehouse_explanation_information());
+            pstmt.setString(5, livehouse.getLivehouse_detailed_information());
+            pstmt.setString(6, livehouse.getLivehouse_name());
+            pstmt.setString(7, livehouse.getLive_address()); // ✅ live_address を追加
+            pstmt.setString(8, livehouse.getLive_tel_number());
+            pstmt.setString(9, livehouse.getPicture_image_naigaikan());
+            pstmt.setTimestamp(10, new java.sql.Timestamp(livehouse.getCreateDate().getTime()));
+            pstmt.setTimestamp(11, new java.sql.Timestamp(livehouse.getUpdateDate().getTime()));
 
             int rows = pstmt.executeUpdate();
             if (rows > 0) {
@@ -107,6 +110,8 @@ public class Livehouse_informationDAO {
         }
         return false;
     }
+
+
     //user テーブルの id と livehouse_information テーブルの user_id を紐づけて、livehouse_information のデータを新規作成
     public boolean insertLivehouseInformation(Livehouse_information livehouse, int userId) {
         String sql = "INSERT INTO livehouse_information (owner_name, equipment_information, livehouse_explanation_information, " +
@@ -134,18 +139,55 @@ public class Livehouse_informationDAO {
             return false;  // 失敗した場合はfalseを返す
         }
     }
+    
+    public Livehouse_information getLivehouse_informationByUserId(int userId) {
+        String sql = "SELECT * FROM livehouse_information WHERE user_id = ?";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+            pstmt.setInt(1, userId);
+            System.out.println("[DEBUG] Executing SQL: " + pstmt);
 
+            ResultSet rs = pstmt.executeQuery();
 
+            if (rs.next()) {
+                System.out.println("[DEBUG] Retrieved Data: " + rs);
+                
+                return new Livehouse_information(
+                    rs.getInt("id"),
+                    rs.getString("owner_name"),
+                    rs.getString("equipment_information"),
+                    rs.getString("livehouse_explanation_information"),
+                    rs.getString("livehouse_detailed_information"),
+                    rs.getString("livehouse_name"),
+                    rs.getString("live_address"),
+                    rs.getString("live_tel_number"),
+                    rs.getString("picture_image_naigaikan"),
+                    rs.getTimestamp("create_date"), // DATETIME 形式
+                    rs.getTimestamp("update_date"),
+                    rs.getInt("user_id")
+                );
+            } else {
+                System.out.println("[DEBUG] No record found for user_id: " + userId);
+            }
+        } catch (SQLException e) {
+            System.err.println("[ERROR] SQL Exception while retrieving Livehouse information for user_id: " + userId);
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-
- // IDでライブハウス情報を取得するメソッド
-    public Livehouse_information getLivehouse_informationById(int id) {
+ // userIdでライブハウス情報を取得するメソッド
+    public Livehouse_information getLivehouse_informationById(int Id) {
         String sql = "SELECT * FROM livehouse_information WHERE id = ?";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, id);
+            pstmt.setInt(1, Id);
+
+            // デバッグログ: 実行するクエリとパラメータを出力
+            System.out.println("[DEBUG] Executing SQL: " + pstmt);
+
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
@@ -158,19 +200,37 @@ public class Livehouse_informationDAO {
                 String live_address = rs.getString("live_address");
                 String live_tel_number = rs.getString("live_tel_number");
                 String picture_image_naigaikan = rs.getString("picture_image_naigaikan");
-                Date createDate = rs.getTimestamp("create_date");  // DATETIMEを適切に処理
-                Date updateDate = rs.getTimestamp("update_date");  // DATETIMEを適切に処理
-                int user_id = rs.getInt("user_id");  // user_idを取得
+                Date createDate = rs.getTimestamp("create_date"); // DATETIMEを適切に処理
+                Date updateDate = rs.getTimestamp("update_date"); // DATETIMEを適切に処理
 
-                // 取得したデータをLivehouse_informationオブジェクトにセット
-                return new Livehouse_information(id, owner_name, equipment_information,
+                // デバッグログ: 取得した値を出力
+                System.out.println("[DEBUG] Retrieved Data:");
+                System.out.println("  owner_name: " + owner_name);
+                System.out.println("  equipment_information: " + equipment_information);
+                System.out.println("  livehouse_explanation_information: " + livehouse_explanation_information);
+                System.out.println("  livehouse_detailed_information: " + livehouse_detailed_information);
+                System.out.println("  livehouse_name: " + livehouse_name);
+                System.out.println("  live_address: " + live_address);
+                System.out.println("  live_tel_number: " + live_tel_number);
+                System.out.println("  picture_image_naigaikan: " + picture_image_naigaikan);
+                System.out.println("  createDate: " + createDate);
+                System.out.println("  updateDate: " + updateDate);
+                System.out.println("  id: " + Id);
+
+                // 取得したデータをLivehouse_informationオブジェクトにセットして返す
+                return new Livehouse_information(rs.getInt("id"), owner_name, equipment_information,
                         livehouse_explanation_information, livehouse_detailed_information, livehouse_name,
-                        live_address, live_tel_number, picture_image_naigaikan, createDate, updateDate, user_id);
+                        live_address, live_tel_number, picture_image_naigaikan, createDate, updateDate, Id);
+            } else {
+                // デバッグログ: レコードが見つからない場合
+                System.out.println("[DEBUG] No record found for id: " + Id);
             }
         } catch (SQLException e) {
+            // デバッグログ: エラー発生時の情報を出力
+            System.err.println("[ERROR] SQL Exception while retrieving Livehouse information for id: " + Id);
             e.printStackTrace();
         }
-        return null;
+        return null; // レコードが見つからなかった場合やエラーが発生した場合
     }
 
     // ライブハウス情報を表示するメソッド
@@ -271,8 +331,6 @@ public class Livehouse_informationDAO {
 
         return livehouses;
     }
-
-
     
     // データ削除
     public boolean deleteLivehouse_informationById(int id) {
@@ -290,6 +348,7 @@ public class Livehouse_informationDAO {
 
     
     // データ更新
+ // データ更新
     public boolean updateLivehouse_information(Livehouse_information livehouse_information) {
         String sql = "UPDATE livehouse_information SET owner_name = ?, equipment_information = ?, " +
                      "livehouse_explanation_information = ?, livehouse_detailed_information = ?, " +
@@ -308,32 +367,34 @@ public class Livehouse_informationDAO {
             pstmt.setString(7, livehouse_information.getLive_tel_number());
             pstmt.setTimestamp(8, new java.sql.Timestamp(livehouse_information.getUpdateDate().getTime()));
             pstmt.setString(9, livehouse_information.getPicture_image_naigaikan());
-            pstmt.setInt(10, livehouse_information.getId());
+            pstmt.setInt(10, livehouse_information.getUser_id()); // 修正
 
             // デバッグログ: SQLステートメントの確認
-            System.out.println("Executing SQL: " + pstmt);
+            System.out.println("[DEBUG] Executing SQL: " + pstmt);
+            System.out.println("[DEBUG] Updating Livehouse for user_id: " + livehouse_information.getUser_id());
 
             // クエリを実行し、更新された行数を取得
             int rowsUpdated = pstmt.executeUpdate();
 
             // デバッグログ: 実行結果の確認
-            System.out.println("Rows Updated: " + rowsUpdated);
+            System.out.println("[DEBUG] Rows Updated: " + rowsUpdated);
 
             // 更新成功なら true を返す
             return rowsUpdated > 0;
 
         } catch (SQLException e) {
             // デバッグログ: エラー詳細の出力
-            System.err.println("SQL Error during update:");
+            System.err.println("[ERROR] SQL Error during update:");
             e.printStackTrace();
 
             // エラー処理
-            handleSQLException(e, "Failed to update Livehouse information with ID: " + livehouse_information.getId());
+            handleSQLException(e, "Failed to update Livehouse information with user_id: " + livehouse_information.getUser_id());
         }
 
         // 更新失敗の場合は false を返す
         return false;
     }
+
 
 
     

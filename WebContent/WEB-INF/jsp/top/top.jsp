@@ -17,10 +17,18 @@
         </video>
     </div>
     
+    <% if (request.getAttribute("msg") != null) { %>
+    <script>
+        alert("<%= request.getAttribute("msg") %>");
+    </script>
+<% } %>
+
+    
     <main class="top-main">
         <div class="top-main-containar">
             <h1 class="top-main-title">SoundDive</h1>
             <p class="top-title-detail">アーティストとライブハウスのブッキングサービス</p>
+            <button id="scroll-to-login" class="scroll-login-btn">ログインはこちら</button>
         </div>
 
         <div class="top-catchphrase">
@@ -31,28 +39,63 @@
             <p class="top-explain-txt">SoundDiveは、アーティストとライブハウスをつなぐために設計された画期的なブッキングサービスです。</p>
         </div>
 
-        <div class="top-login-containar">
+
             <form action="<%= request.getContextPath() %>/Top" method="post">
                 <ul class="top-login-ul">
-                    <li class="top-login-title"><p>LogIn</p></li>
+                    <li class="top-login-title" id="top-login-title"><p>LogIn</p></li>
                     <li class="top-login-ID"><p>Tel Number</p></li>
-                    <li class="top-login-id-txt"><input type="text" id="top-loginId-txtbox" name="tel_number"></li>
+                    <li class="top-login-id-txt"><input 
+					    type="text" 
+					    id="top-loginId-txtbox" 
+					    name="tel_number" 
+					    maxlength="11" 
+					    pattern="\d{10,11}" 
+					    required 
+					    title="電話番号は10桁または11桁の数字で入力してください。">
+					</li>
                     <li class="top-login-pass"><p>PassWord</p></li>
                     <li class="top-login-pass-txt"><input type="password" id="top-loginPass-textbox" name="password"></li>
                     <li><button type="submit" class="top-login-btn">Login</button></li>
                 </ul>
             </form>
 
-            <ul>
+
+            <ul class="top-newaccount">
                 <li class="top-newaccount-btnframe"><button type="button" id="top-newaccount-btn" onclick="location.href='<%= request.getContextPath() %>/New_Acount'">NewAccount</button></li>
             </ul>
         </div>
-
-        <!-- エラーメッセージの表示 -->
-        <c:if test="${not empty msg}">
-            <div class="error-message">${msg}</div>
-        </c:if>
-
     </main>
+    
+    <script>
+        document.getElementById("scroll-to-login").addEventListener("click", function() {
+            const target = document.getElementById("top-login-title");
+            const targetPosition = target.getBoundingClientRect().top + window.scrollY;
+            const startPosition = window.scrollY;
+            const distance = targetPosition - startPosition;
+            const duration = 2000; // スクロールの所要時間（ミリ秒）
+            let startTime = null;
+
+            function scrollAnimation(currentTime) {
+                if (startTime === null) startTime = currentTime;
+                const timeElapsed = currentTime - startTime;
+                const scrollAmount = easeInOutQuad(timeElapsed, startPosition, distance, duration);
+
+                window.scrollTo(0, scrollAmount);
+                
+                if (timeElapsed < duration) {
+                    requestAnimationFrame(scrollAnimation);
+                }
+            }
+
+            function easeInOutQuad(t, b, c, d) {
+                t /= d / 2;
+                if (t < 1) return c / 2 * t * t + b;
+                t--;
+                return -c / 2 * (t * (t - 2) - 1) + b;
+            }
+
+            requestAnimationFrame(scrollAnimation);
+        });
+    </script>
 </body>
 </html>

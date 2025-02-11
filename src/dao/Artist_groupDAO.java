@@ -81,26 +81,61 @@ public class Artist_groupDAO {
     // アーティストグループを更新するメソッド
     public boolean updateArtistGroupByUserId(int userId, Artist_group updatedGroup) {
         String sql = "UPDATE artist_group SET account_name = ?, picture_image_movie = ?, group_genre = ?, band_years = ?, update_date = NOW(), rating_star = ? WHERE user_id = ?";
-        try (Connection conn = dbManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        System.out.println("[INFO] Updating artist group for userId: " + userId);
+        
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = dbManager.getConnection();  
+            conn.setAutoCommit(false);  // 明示的にトランザクションを開始
+
+            pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, updatedGroup.getAccount_name());
             pstmt.setString(2, updatedGroup.getPicture_image_movie());
             pstmt.setString(3, updatedGroup.getGroup_genre());
             pstmt.setInt(4, updatedGroup.getBand_years());
             pstmt.setString(5, updatedGroup.getRating_star());
             pstmt.setInt(6, userId);
+            
             int rowsUpdated = pstmt.executeUpdate();
-
+            
             if (rowsUpdated > 0) {
+                conn.commit();  // 成功時にコミット
+                System.out.println("[INFO] Successfully updated artist group for userId: " + userId);
+
                 // キャッシュを更新
                 addToCache(updatedGroup);
+                
                 return true;
+            } else {
+                System.out.println("[WARN] No rows updated for userId: " + userId);
+                conn.rollback();  // 変更がなければロールバック
             }
         } catch (SQLException e) {
+            System.err.println("[ERROR] Failed to update artist group for userId: " + userId);
             e.printStackTrace();
+            try {
+                if (conn != null) conn.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) {
+                    conn.setAutoCommit(true);  // 最後に autoCommit を元に戻す
+                    conn.close();
+                }
+            } catch (SQLException closeEx) {
+                closeEx.printStackTrace();
+            }
         }
-        return false; // エラーが発生した場合はfalse
+        
+        return false;
     }
+
     
     public Artist_group getGroupById(int id) {
         String sql = "SELECT * FROM artist_group WHERE id = ?"; // id を使用
@@ -241,6 +276,34 @@ public class Artist_groupDAO {
 
         return groups;
     }
+    
+    public List<Artist_group> getAllGroupsNotMyUserId(int loggedInUserId) {
+        String sql = "SELECT * FROM artist_group WHERE user_id != ?";
+        List<Artist_group> groups = new ArrayList<>();
+        System.out.println("[DEBUG] getAllGroups: クエリ実行開始: " + sql + " (除外ユーザーID: " + loggedInUserId + ")");
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, loggedInUserId); // ログインユーザーを除外
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Artist_group group = rs2model(rs);
+                groups.add(group);
+                // 各取得したグループの情報をログに表示
+                System.out.println("[DEBUG] Retrieved Group: ID=" + group.getId() + ", Name=" + group.getAccount_name());
+            }
+            System.out.println("[DEBUG] getAllGroups: 取得したグループ数: " + groups.size());
+
+        } catch (SQLException e) {
+            System.err.println("[ERROR] getAllGroups: データ取得中にエラーが発生しました: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return groups;
+    }
+
     
     public boolean updateApprovalStatus(int groupId, boolean status) {
         String sql = "UPDATE アーティストグループ SET 承認 = ? WHERE ID = ?";
