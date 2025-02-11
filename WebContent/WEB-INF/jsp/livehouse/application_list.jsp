@@ -33,7 +33,9 @@
             <div class="reservation-date">
                 <p>日付: <c:out value="${param.date}" /></p>
                 <p>総件数: 
-                    <c:out value="${fn:length(cogigApplications) + fn:length(soloApplications)}" default="0" />件
+                    <!-- JSP側 -->
+                <c:out value="${totalReservations}" default="0" />件
+
                 </p>
             </div>
         </section>

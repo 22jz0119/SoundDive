@@ -3,9 +3,7 @@ package servlet;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,7 +26,7 @@ public class Application_approval extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-    	System.out.println("[DEBUG] doGet method entered"); // ログを追加
+        System.out.println("[DEBUG] doGet method entered"); // ログを追加
         String applicationIdParam = request.getParameter("id");
         if (applicationIdParam == null || applicationIdParam.isEmpty()) {
             handleError(request, response, "申請IDが指定されていません");
@@ -54,10 +52,13 @@ public class Application_approval extends HttpServlet {
             String formattedDateTime = (dateTime != null) ? dateTime.format(DATE_TIME_FORMATTER) : DEFAULT_DATE_TIME;
             System.out.println("Formatted Datetime: " + formattedDateTime);
 
-            // 画像処理
-            Map<Integer, String> pictureImageMap = new HashMap<>();
-            addGroupImageToMap(applicationDetails.getGroupId(), artistGroupDAO, pictureImageMap);
-            
+            // 画像処理：申請者グループの画像を取得
+            String groupImage = artistGroupDAO.getPictureImageMovieByArtistGroupId(applicationDetails.getGroupId());
+            if (groupImage == null || groupImage.isEmpty()) {
+                groupImage = "/uploads/default_image.png";  // デフォルト画像設定
+            }
+            request.setAttribute("groupImage", groupImage);  // 画像をJSPに渡す
+
             // リクエストスコープに申請詳細をセット
             request.setAttribute("application", applicationDetails);
             request.setAttribute("formattedDateTime", formattedDateTime);
@@ -66,7 +67,7 @@ public class Application_approval extends HttpServlet {
             int cogigOrSolo = livehouseApplicationDAO.getCogigOrSoloByApplicationId(applicationId);
             request.setAttribute("cogigOrSolo", cogigOrSolo);
             
-         // 申請詳細の取得後にgroupIdを表示する
+            // 申請詳細の取得後にgroupIdを表示する
             int groupId = applicationDetails.getGroupId();  // `groupId` を取得
             System.out.println("[DEBUG] groupId: " + groupId);  // groupIdをログに出力
 
@@ -83,13 +84,16 @@ public class Application_approval extends HttpServlet {
                 LivehouseApplicationWithGroup artistGroup = livehouseApplicationDAO.getGroupDetailsById(artistGroupId);
                 request.setAttribute("artistGroup", artistGroup);
 
+                // 対バングループの画像を取得
+                String artistGroupImage = artistGroupDAO.getPictureImageMovieByArtistGroupId(artistGroupId);
+                if (artistGroupImage == null || artistGroupImage.isEmpty()) {
+                    artistGroupImage = "/uploads/default_image.png";  // デフォルト画像
+                }
+                request.setAttribute("artistGroupImage", artistGroupImage);  // 対バングループの画像をJSPに渡す
+
                 // デバッグ用ログ
                 System.out.println("[DEBUG] artistGroupId: " + artistGroupId);
                 System.out.println("[DEBUG] artistGroup Name: " + (artistGroup != null ? artistGroup.getAccountName() : "NULL"));
-                System.out.println("[DEBUG] artistGroup Genre: " + (artistGroup != null ? artistGroup.getGroupGenre() : "NULL"));
-
-                // 対バングループの画像も取得
-                addGroupImageToMap(artistGroupId, artistGroupDAO, pictureImageMap);
             } else {
                 System.out.println("[DEBUG] artistGroupId is invalid or zero.");
             }
@@ -98,47 +102,13 @@ public class Application_approval extends HttpServlet {
             request.setAttribute("artistGroupId", artistGroupId);
 
             // 画像データをJSPに渡す
-            request.setAttribute("pictureImageMap", pictureImageMap);
-
-            // 画像パスをリクエストから取得して渡す
-         // 画像パスをリクエストから取得して渡す
-            String imagePath = request.getParameter("imagePath");
-            if (imagePath != null && !imagePath.isEmpty()) {
-                request.setAttribute("imagePath", imagePath); // 画像パスをリクエストにセット
-                System.out.println("[DEBUG] Image path received: " + imagePath); // 画像パスをログに出力
-            } else {
-                System.out.println("[DEBUG] No image path received from request.");
-            }
-
-            // JSP にフォワード
-            request.getRequestDispatcher("WEB-INF/jsp/livehouse/application_approval.jsp").forward(request, response);
+            request.getRequestDispatcher("WEB-INF/jsp/livehouse/application_confirmation.jsp").forward(request, response);
         } catch (NumberFormatException e) {
             handleError(request, response, "無効な申請ID形式です");
             e.printStackTrace();
         } catch (Exception e) {
             handleError(request, response, "エラーが発生しました");
             e.printStackTrace();
-        }
-    }
-
-    private void addGroupImageToMap(int groupId, Artist_groupDAO artistGroupDAO, Map<Integer, String> pictureImageMap) {
-    	System.out.println("[DEBUG] Entered addGroupImageToMap for groupId: " + groupId); // メソッドの開始を確認
-        // グループIDがマップにすでに存在する場合、画像は取得しない
-        if (!pictureImageMap.containsKey(groupId)) {
-            // 画像を取得
-            String groupImage = artistGroupDAO.getPictureImageMovieByArtistGroupId(groupId);
-            
-            // 画像が空またはnullの場合、デフォルト画像を使用
-            if (groupImage == null || groupImage.isEmpty()) {
-                groupImage = "/uploads/default_image.png"; // デフォルト画像を設定
-                System.out.println("[DEBUG] Group image is null or empty. Using default image.");
-            } else {
-                System.out.println("[DEBUG] Group image found for groupId " + groupId + ": " + groupImage);
-            }
-
-            // マップに画像パスを保存
-            pictureImageMap.put(groupId, groupImage);
-            System.out.println("[DEBUG] Image path added to pictureImageMap for groupId " + groupId + ": " + groupImage);
         }
     }
 
@@ -153,6 +123,7 @@ public class Application_approval extends HttpServlet {
     private void handleError(HttpServletRequest request, HttpServletResponse response, String errorMessage) throws ServletException, IOException {
         System.err.println("Error: " + errorMessage);
         request.setAttribute("error", errorMessage);
-        request.getRequestDispatcher("WEB-INF/jsp/livehouse/application_approval.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/jsp/livehouse/application_confirmation.jsp").forward(request, response);
     }
 }
+

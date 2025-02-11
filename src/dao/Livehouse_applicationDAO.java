@@ -1278,6 +1278,60 @@ public class Livehouse_applicationDAO {
 
         return reservationStatus;
     }
+ // リスト表示 承認前　1の処理（ソロ予約の取得）
+    public List<LivehouseApplicationWithGroup> getReservationsWithTrueFalseZero(int year, int month, int day) {
+        // 修正したSQLクエリ：cogig_or_solo = 1 を明確に指定
+        String sql = "SELECT DISTINCT la.id AS application_id, la.date_time, la.true_false, la.start_time, la.finish_time, " +
+                     "la.livehouse_information_id, la.user_id, ag.id AS artist_group_id, la.cogig_or_solo, " + 
+                     "ag.account_name, ag.group_genre, ag.band_years, u.us_name " + 
+                     "FROM livehouse_application_table la " +
+                     "LEFT JOIN artist_group ag ON la.user_id = ag.user_id " +  // user_id を使って artist_group を結合
+                     "LEFT JOIN user u ON la.user_id = u.id " +
+                     "WHERE la.true_false = 0 AND YEAR(la.date_time) = ? AND MONTH(la.date_time) = ? " +
+                     "AND DAY(la.date_time) = ? AND la.cogig_or_solo = 1"; // cogig_or_solo = 1 を指定
+
+        System.out.println("[DEBUG] SQL Query: " + sql);
+
+        List<LivehouseApplicationWithGroup> reservations = new ArrayList<>();
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // パラメータを設定
+            pstmt.setInt(1, year);
+            pstmt.setInt(2, month);
+            pstmt.setInt(3, day);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    // groupId を取得
+                    int groupId = rs.getInt("artist_group_id");
+
+                    // メンバー情報を取得
+                    List<Member> members = getMembersByGroupId(groupId);
+
+                    // データを LivehouseApplicationWithGroup に追加
+                    reservations.add(new LivehouseApplicationWithGroup(
+                        rs.getInt("application_id"),
+                        rs.getInt("application_id"),
+                        rs.getTimestamp("date_time") != null ? rs.getTimestamp("date_time").toLocalDateTime() : null,
+                        rs.getBoolean("true_false"),
+                        rs.getTimestamp("start_time") != null ? rs.getTimestamp("start_time").toLocalDateTime() : null,
+                        rs.getTimestamp("finish_time") != null ? rs.getTimestamp("finish_time").toLocalDateTime() : null,
+                        groupId,
+                        rs.getString("account_name") != null ? rs.getString("account_name") : "",
+                        rs.getString("group_genre") != null ? rs.getString("group_genre") : "",
+                        rs.getString("band_years") != null ? rs.getString("band_years") : "",
+                        rs.getInt("user_id"),
+                        rs.getString("us_name") != null ? rs.getString("us_name") : "",
+                        members
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reservations;
+    }
 
  // カレンダー申請件数表示（ライブハウスごとに日別集計）
  // カレンダー申請件数表示（ログイン中のライブハウスIDに基づく件数取得）

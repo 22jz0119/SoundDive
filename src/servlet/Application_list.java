@@ -66,10 +66,15 @@ public class Application_list extends HttpServlet {
         List<LivehouseApplicationWithGroup> cogigApplications = new ArrayList<>();
         Map<Integer, String> pictureImageMap = new HashMap<>(); // groupIdごとの画像マッピング
 
+        int totalReservations = 0; // 予約件数をカウントする変数
+
         if (year != -1 && month != -1 && day != -1) {
             // livehouseInformationId を渡してデータを取得
             soloApplications = livehouseApplicationDAO.getReservationsWithTrueFalseZero(livehouseInformationId);
             cogigApplications = livehouseApplicationDAO.getReservationsByCogigOrSoloTrueFalseZero(livehouseInformationId);
+
+            // 予約件数をカウント
+            totalReservations = soloApplications.size() + cogigApplications.size();
 
             for (LivehouseApplicationWithGroup app : soloApplications) {
                 int groupId = app.getGroupId();
@@ -102,6 +107,7 @@ public class Application_list extends HttpServlet {
             request.setAttribute("soloApplications", soloApplications);
             request.setAttribute("cogigApplications", cogigApplications);
             request.setAttribute("pictureImageMap", pictureImageMap); // JSP に画像マップを渡す
+            request.setAttribute("totalReservations", totalReservations); // 予約件数を渡す
         } else {
             // パラメータエラー時の処理
             if (year == -1) System.out.println("[DEBUG] Missing or invalid parameter: year");
@@ -115,6 +121,7 @@ public class Application_list extends HttpServlet {
         // JSP へフォワード
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_list.jsp").forward(request, response);
     }
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

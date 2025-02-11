@@ -99,32 +99,28 @@
             </div>
         </section>
 
-        <!-- 対バンの場合の情報を追加 -->
         <c:if test="${cogigOrSolo == 2}">
-            <div class="band-confirmation-container">
-                <h2>対バングループ情報</h2>
-                <div class="confirmation-profile">
-                    <div class="confirmation-artist-img-div">
-                        <c:set var="groupId" value="${application.groupId}" />
-						<c:set var="imagePath" value="${pictureImageMap[groupId]}" />
-						<c:if test="${not empty imagePath}">
-						    <img src="${pageContext.request.contextPath}${imagePath}" 
-						         alt="バンドのイラスト" 
-						         style="width: 150px; height: auto; max-height: 150px; object-fit: cover; border-radius: 10px;" />
-						</c:if>
-
+                    <div class="band-confirmation-container">
+                        <h2>対バングループ情報</h2>
+                        <div class="confirmation-profile">
+                            <div class="confirmation-artist-img-div">
+                                <c:set var="groupId" value="${application.groupId}" />
+                                    <c:set var="imagePath" value="${pictureImageMap[groupId]}" />
+                                    <img src="${pageContext.request.contextPath}${imagePath}" 
+                                         alt="バンドのイラスト" 
+                                         style="width: 150px; height: auto; max-height: 150px; object-fit: cover; border-radius: 10px;">
+                            </div>
+                            <ul class="confirmation-info">
+                                <h2>${artistGroup.accountName}</h2>
+                                <h1>ジャンル: ${artistGroup.groupGenre}</h1>
+                                <h1>メンバー</h1>
+                                <c:forEach var="member" items="${artistMembers}">
+                                    <li class="confirmation-name">${member.member_position}: ${member.member_name}</li>
+                                </c:forEach>
+                            </ul>
+                        </div>
                     </div>
-                    <ul class="confirmation-info">
-                        <h2>${artistGroup.accountName}</h2>
-                        <h1>ジャンル: ${artistGroup.groupGenre}</h1>
-                        <h1>メンバー</h1>
-                        <c:forEach var="member" items="${artistMembers}">
-                            <li class="confirmation-name">${member.member_position}: ${member.member_name}</li>
-                        </c:forEach>
-                    </ul>
-                </div>
-            </div>
-        </c:if>
+                </c:if>
         
         <h2>承認ページから予約の確認・削除ができます。</h2>
         
