@@ -11,8 +11,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import dao.Artist_groupDAO; // 追加
+import dao.Artist_groupDAO;
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
 import model.LivehouseApplicationWithGroup;
@@ -26,6 +27,28 @@ public class Application_list extends HttpServlet {
         DBManager dbManager = DBManager.getInstance();
         Livehouse_applicationDAO livehouseApplicationDAO = new Livehouse_applicationDAO(dbManager);
         Artist_groupDAO artistGroupDAO = Artist_groupDAO.getInstance(dbManager);
+
+        // セッションからユーザーIDを取得
+        HttpSession session = request.getSession();
+        Integer userId = (Integer) session.getAttribute("userId");
+
+        if (userId == null) {
+            System.out.println("[ERROR] ログインユーザーIDが取得できませんでした。");
+            response.sendRedirect(request.getContextPath() + "/Top");
+            return;
+        }
+
+        System.out.println("[DEBUG] 取得したユーザーID: " + userId);
+
+        // ライブハウスIDの取得
+        Integer livehouseInformationId = livehouseApplicationDAO.getLivehouseIdByUserId(userId);
+        if (livehouseInformationId == -1) {
+            System.out.println("[WARN] 該当するライブハウス情報が見つかりません。userId: " + userId);
+            request.setAttribute("errorMessage", "ライブハウス情報が見つかりません");
+            request.setAttribute("reservationStatus", "{}");
+            request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
+            return;
+        }
 
         // パラメータ取得
         String yearParam = request.getParameter("year");
@@ -44,8 +67,9 @@ public class Application_list extends HttpServlet {
         Map<Integer, String> pictureImageMap = new HashMap<>(); // groupIdごとの画像マッピング
 
         if (year != -1 && month != -1 && day != -1) {
-            soloApplications = livehouseApplicationDAO.getReservationsWithTrueFalseZero(year, month, day);
-            cogigApplications = livehouseApplicationDAO.getReservationsByCogigOrSolo(year, month, day);
+            // livehouseInformationId を渡してデータを取得
+            soloApplications = livehouseApplicationDAO.getReservationsWithTrueFalseZero(livehouseInformationId);
+            cogigApplications = livehouseApplicationDAO.getReservationsByCogigOrSoloTrueFalseZero(livehouseInformationId);
 
             for (LivehouseApplicationWithGroup app : soloApplications) {
                 int groupId = app.getGroupId();
@@ -60,7 +84,7 @@ public class Application_list extends HttpServlet {
 
             // cogig_or_solo = 2 のデータを取得
             System.out.println("[DEBUG] Fetching reservations with cogig_or_solo = 2");
-            cogigApplications = livehouseApplicationDAO.getReservationsByCogigOrSolo(year, month, day);
+            cogigApplications = livehouseApplicationDAO.getReservationsByCogigOrSoloTrueFalseZero(livehouseInformationId);
             System.out.println("[DEBUG] cogigApplications size: " + cogigApplications.size());
 
             for (LivehouseApplicationWithGroup app : cogigApplications) {
