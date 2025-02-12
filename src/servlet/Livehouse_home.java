@@ -85,7 +85,6 @@ public class Livehouse_home extends HttpServlet {
 
             log("[DEBUG] 取得したユーザーID: " + userId);
 
-            // ライブハウスIDの取得
          // ライブハウスIDの取得
             int livehouseId = dao.getLivehouseIdByUserId(userId);
             if (livehouseId == -1) {
