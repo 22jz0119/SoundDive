@@ -17,9 +17,6 @@
 				<ul class="header-nav-ul">
 					<li><a href="<%= request.getContextPath() %>/Livehouse_mypage">MY PAGE</a></li>
 					<li><a href="<%= request.getContextPath() %>/Approval_history">承認履歴</a></li>
-					<li><a href="${pageContext.request.contextPath}/Approval_history?year=${year}&month=${month}&day=${day}">承認履歴?</a></li>
-					
-					<li><a href="#">リンク2</a></li>
 					<li class="header-box-li2"><a href="#" onclick="logoutAndRedirect();" class="top-logout-btn">ログアウト</a></li>
 				</ul>
 			</nav>

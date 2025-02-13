@@ -142,7 +142,7 @@
                                     <c:if test="${previousReservationId ne application.id or fn:length(cogigApplications) eq 1}">
                                         <ul class="application-artist-list-ul5">
                                             <li class="application-artist-list-ul5-li1">
-                                                <a href="<c:url value='/Application_confirmation' />?id=${application.id}" class="application-artist-list-ul5-li1-a">詳細を見る</a>
+                                                <a href="<c:url value='/Livehouse_history_detail' />?id=${application.id}" class="application-artist-list-ul5-li1-a">詳細を見る</a>
                                             </li>
                                         </ul>
                                     </c:if>
