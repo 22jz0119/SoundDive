@@ -745,31 +745,39 @@ public class Livehouse_applicationDAO {
         }
         return reservations;
     }
+    //承認前対バン
 
     public List<LivehouseApplicationWithGroup> getReservationsByCogigOrSoloTrueFalseZero(
             Integer livehouseInformationId, Integer year, Integer month, Integer day) {
 
         // DISTINCTを使用して重複を排除
     	String baseSql = "SELECT DISTINCT la.id AS application_id, " +
-                "       la.date_time AS datetime, " +
-                "       la.true_false, " +
-                "       la.start_time, " +
-                "       la.finish_time, " +
-                "       la.artist_group_id AS group_id, " +
-                "       ag1.account_name AS group_account_name, " +
-                "       ag1.group_genre AS group_genre, " +
-                "       ag1.band_years AS band_years, " +
-                "       la.user_id, " +
-                "       u.us_name AS user_name, " +
-                "       CASE WHEN la.cogig_or_solo = 2 THEN ag2.id ELSE NULL END AS user_group_id, " +
-                "       CASE WHEN la.cogig_or_solo = 2 THEN ag2.account_name ELSE NULL END AS user_group_account_name, " +
-                "       CASE WHEN la.cogig_or_solo = 2 THEN ag2.group_genre ELSE NULL END AS user_group_genre, " +
-                "       CASE WHEN la.cogig_or_solo = 2 THEN ag2.band_years ELSE NULL END AS user_group_band_years " +
-                "FROM livehouse_application_table la " +
-                "LEFT JOIN user u ON la.user_id = u.id " +
-                "LEFT JOIN artist_group ag1 ON la.artist_group_id = ag1.id " +
-                "LEFT JOIN artist_group ag2 ON la.cogig_or_solo = 2 AND u.id = ag2.user_id " +
-                "WHERE la.true_false = 0";
+    	        "       la.id AS id, " +  // 'la.id' を明示的に参照
+    	        "       la.date_time AS datetime, " +
+    	        "       la.true_false, " +
+    	        "       la.start_time, " +
+    	        "       la.finish_time, " +
+    	        "       la.artist_group_id AS group_id, " +
+    	        "       ag1.account_name AS group_account_name, " +
+    	        "       ag1.group_genre AS group_genre, " +
+    	        "       ag1.band_years AS band_years, " +
+    	        "       la.user_id, " +
+    	        "       u.us_name AS user_name, " +
+    	        "       CASE WHEN la.cogig_or_solo = 2 THEN ag2.id ELSE NULL END AS user_group_id, " + // 対バンの場合
+    	        "       CASE WHEN la.cogig_or_solo = 2 THEN ag2.account_name ELSE NULL END AS user_group_account_name, " + // 対バンの場合
+    	        "       CASE WHEN la.cogig_or_solo = 2 THEN ag2.group_genre ELSE NULL END AS user_group_genre, " + // 対バンの場合
+    	        "       CASE WHEN la.cogig_or_solo = 2 THEN ag2.band_years ELSE NULL END AS user_group_band_years, " + // 対バンの場合
+    	        "       ag3.account_name AS user_group_account_name, " + // 対バンの場合
+    	        "       ag3.group_genre AS user_group_genre, " +       // 対バンの場合
+    	        "       ag3.band_years AS user_group_band_years " +   // 対バンの場合
+    	        "FROM livehouse_application_table la " +
+    	        "LEFT JOIN user u ON la.user_id = u.id " +
+    	        "LEFT JOIN artist_group ag1 ON la.user_id = ag1.user_id AND la.cogig_or_solo = 2 " +  // ソロのグループ情報取得
+    	        "LEFT JOIN artist_group ag2 ON la.artist_group_id = ag2.id " + // artist_group_id に基づく対バンのグループ情報取得
+    	        "LEFT JOIN artist_group ag3 ON la.cogig_or_solo = 2 AND u.id = ag3.user_id " +   // 対バンでユーザーの所属グループ情報取得
+    	        "WHERE la.true_false = 0 AND la.cogig_or_solo = 2";  // コギグの条件
+
+
 
         // livehouseInformationId が null でない場合のみ追加
         if (livehouseInformationId != null && livehouseInformationId > 0) {
@@ -822,13 +830,19 @@ public class Livehouse_applicationDAO {
                     int groupId = rs.getInt("group_id");
                     int userGroupId = rs.getInt("user_group_id");
 
+                    // ログに出力して、artist_group_idに基づくグループ情報を確認
+                    System.out.println("[DEBUG] Retrieved Record: application_id=" + rs.getInt("application_id") +
+                            ", group_id=" + groupId + ", user_group_id=" + userGroupId +
+                            ", group_account_name=" + rs.getString("group_account_name") +
+                            ", user_group_account_name=" + rs.getString("user_group_account_name"));
+
                     // artist_group_id に基づくメンバーリストを取得
                     List<Member> groupMembers = groupId > 0 ? getMembersByGroupId(groupId) : new ArrayList<>();
 
                     // LivehouseApplicationWithGroupのインスタンスを作成
                     LivehouseApplicationWithGroup application = new LivehouseApplicationWithGroup(
                         rs.getInt("application_id"),                      // application_id
-                        rs.getInt("id"),                              // id
+                        rs.getInt("id"),                                  // id
                         rs.getTimestamp("datetime") != null ? rs.getTimestamp("datetime").toLocalDateTime() : null, // datetime
                         rs.getBoolean("true_false"),                      // trueFalse
                         rs.getTimestamp("start_time") != null ? rs.getTimestamp("start_time").toLocalDateTime() : null, // startTime
@@ -847,11 +861,6 @@ public class Livehouse_applicationDAO {
                     // user_id に基づく artist_group の情報を追加
                     addUserGroupToReservations(rs, reservations);
 
-                    // 取得したレコードのログ
-                    System.out.println("[DEBUG] Retrieved Record: application_id=" + application.getApplicationId() +
-                            ", group_id=" + groupId + ", user_id=" + application.getUserId() +
-                            ", user_name=" +
-                            ", user_group_id=" + (userGroupId > 0 ? userGroupId : "NULL"));
                 }
             }
         } catch (SQLException e) {
@@ -863,6 +872,9 @@ public class Livehouse_applicationDAO {
 
         return reservations;
     }
+
+
+
 
     // user_id に基づく artist_group の情報をリストに追加
     private void addUserGroupToReservations(ResultSet rs, List<LivehouseApplicationWithGroup> reservations) throws SQLException {
@@ -891,6 +903,7 @@ public class Livehouse_applicationDAO {
             ));
         }
     }
+
 
     //承認済み１のデータ
     //リスト対バン　２の処理

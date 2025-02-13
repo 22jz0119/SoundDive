@@ -17,7 +17,6 @@ import dao.Artist_groupDAO;
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
 import model.LivehouseApplicationWithGroup;
-import model.Member;
 
 @WebServlet("/Application_list")
 public class Application_list extends HttpServlet {
@@ -77,36 +76,16 @@ public class Application_list extends HttpServlet {
             soloApplications = livehouseApplicationDAO.getReservationsWithTrueFalseZero(livehouseInformationId, year, month, day);
             cogigApplications = livehouseApplicationDAO.getReservationsByCogigOrSoloTrueFalseZero(livehouseInformationId, year, month, day);
 
-            // 対バンの場合の追加処理
-            Map<Integer, Integer> applicationCogigOrSoloMap = new HashMap<>();
-            for (LivehouseApplicationWithGroup application : cogigApplications) {
-                int applicationId = application.getApplicationId();
-                int cogigOrSolo = livehouseApplicationDAO.getCogigOrSoloByApplicationId(applicationId); // ここでcogigOrSoloを取得
-                applicationCogigOrSoloMap.put(applicationId, cogigOrSolo);
-                
-                // 対バングループ情報を取得
-                retrieveArtistGroupDetails(applicationId, pictureImageMap, livehouseApplicationDAO, artistGroupDAO, request);
-            }
-
             // 予約件数をカウント
             totalReservations = soloApplications.size() + cogigApplications.size();
             System.out.println("[DEBUG] Retrieved soloApplications: " + soloApplications.size() + " cogigApplications: " + cogigApplications.size());
             System.out.println("[DEBUG] Total reservations: " + totalReservations);
 
-            // soloApplications の詳細ログ
-            for (LivehouseApplicationWithGroup app : soloApplications) {
-                System.out.println("[DEBUG] Solo Application details: " + app.getApplicationId() + ", groupId: " + app.getGroupId() + ", accountName: " + app.getAccountName());
-            }
-
-            // cogigApplications の詳細ログ
-            for (LivehouseApplicationWithGroup app : cogigApplications) {
-                System.out.println("[DEBUG] Cogig Application details: " + app.getApplicationId() + ", groupId: " + app.getGroupId() + ", accountName: " + app.getAccountName());
-            }
-
             // 画像マッピング処理
+            // ソロアプリケーションに対する画像取得
             for (LivehouseApplicationWithGroup app : soloApplications) {
                 int groupId = app.getGroupId();
-                if (!pictureImageMap.containsKey(groupId)) {
+                if (groupId != 0 && !pictureImageMap.containsKey(groupId)) {
                     String pictureImageMovie = artistGroupDAO.getPictureImageMovieByArtistGroupId(groupId);
                     if (pictureImageMovie == null || pictureImageMovie.isEmpty()) {
                         pictureImageMovie = "/uploads/default_image.png"; // デフォルト画像を設定
@@ -115,16 +94,18 @@ public class Application_list extends HttpServlet {
                 }
             }
 
-            // 画像マッピング処理（cogigApplicationsにも適用）
+            // コギグアプリケーションに対する画像取得
             for (LivehouseApplicationWithGroup app : cogigApplications) {
                 int groupId = app.getGroupId();
-                if (!pictureImageMap.containsKey(groupId)) {
+                if (groupId != 0 && !pictureImageMap.containsKey(groupId)) {
                     String pictureImageMovie = artistGroupDAO.getPictureImageMovieByArtistGroupId(groupId);
                     if (pictureImageMovie == null || pictureImageMovie.isEmpty()) {
                         pictureImageMovie = "/uploads/default_image.png"; // デフォルト画像を設定
                     }
                     pictureImageMap.put(groupId, pictureImageMovie);
                 }
+
+                // 対バンのグループ情報は SQL で取得済みなので追加の処理は不要
             }
 
             // 最終データの確認ログ
@@ -146,40 +127,6 @@ public class Application_list extends HttpServlet {
 
         // JSP へフォワード
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_list.jsp").forward(request, response);
-    }
-
-    // user_id に基づく artist_group の情報を取得するメソッド
-    private void retrieveArtistGroupDetails(int applicationId, Map<Integer, String> pictureImageMap,
-            Livehouse_applicationDAO livehouseApplicationDAO, Artist_groupDAO artistGroupDAO, HttpServletRequest request) {
-        // まず、cogig_or_solo が 2 の場合、対バングループ情報を取得
-        int cogigOrSolo = livehouseApplicationDAO.getCogigOrSoloByApplicationId(applicationId); // applicationId に基づき cogig_or_solo を取得
-
-        if (cogigOrSolo == 2) {
-            // 対バングループの ID を取得
-            int artistGroupId = livehouseApplicationDAO.getArtistGroupIdByApplicationId(applicationId);
-            if (artistGroupId > 0) {
-                // 対バングループのメンバー情報を取得
-                List<Member> artistMembers = livehouseApplicationDAO.getMembersByGroupId(artistGroupId);
-                request.setAttribute("artistMembers", artistMembers);  // メンバー情報をリクエストにセット
-
-                // 対バングループの詳細情報を取得
-                LivehouseApplicationWithGroup artistGroup = livehouseApplicationDAO.getGroupDetailsById(artistGroupId);
-                request.setAttribute("artistGroup", artistGroup);  // グループ情報をリクエストにセット
-
-                // 対バングループの画像情報を取得
-                if (!pictureImageMap.containsKey(artistGroupId)) {
-                    String artistPictureImage = artistGroupDAO.getPictureImageMovieByArtistGroupId(artistGroupId);
-                    if (artistPictureImage == null || artistPictureImage.isEmpty()) {
-                        artistPictureImage = "/uploads/default_image.png"; // デフォルト画像
-                    }
-                    pictureImageMap.put(artistGroupId, artistPictureImage);  // 画像情報をマップに追加
-                }
-
-                // デバッグ用ログ
-                System.out.println("[DEBUG] artistGroupId: " + artistGroupId);
-                System.out.println("[DEBUG] artistGroup Name: " + (artistGroup != null ? artistGroup.getAccountName() : "NULL"));
-            }
-        }
     }
 
     @Override
