@@ -84,19 +84,19 @@
                         	<li>申請ID: ${application.applicationId}</li>
                         	--%>
                             <li>予約者名: ${application.accountName} ${application.us_name}</li>
-                            <li>予約日時: ${application.datetime}</li>
                             <li>開始時間: ${application.startTime}</li>
                             <li>終了時間: ${application.finishTime}</li>
                         </ul>
                     </div>
                 </div>
                 <div class="application_confirmation-btn">
-				    <!-- 戻るボタン -->
-				    <button class="approve-btn" onclick="location.href='navigate?action=list'">戻る</button>
-				    <!-- 承認ボタン -->
-					<button class="decline-btn" onclick="location.href='Application_approval?id=${application.applicationId}&groupId=${application.groupId}'">承認</button>
-				</div>
- 			</div>
+			    <!-- 戻るボタン -->
+			    <button class="approve-btn" onclick="location.href='navigate?action=list'">戻る</button>
+			
+			    <!-- 承認ボタン -->
+			    <button class="decline-btn" onclick="location.href='Application_confirmation?action=approval&id=${application.applicationId}'">承認</button>
+</div>
+
         </main>
     </body>
 </html>

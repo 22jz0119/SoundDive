@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import dao.Artist_groupDAO;
 import dao.DBManager;
@@ -32,7 +33,31 @@ public class Application_confirmation extends HttpServlet {
 
         String idParam = request.getParameter("id");
         String action = request.getParameter("action");
+        System.out.println("[DEBUG] action parameter: " + action);  // actionが 'approval' であることを確認
+        
 
+        
+     // セッションからユーザーIDを取得
+        HttpSession session = request.getSession();
+        Integer userId = (Integer) session.getAttribute("userId");
+
+        if (userId == null) {
+            System.out.println("[ERROR] ログインユーザーIDが取得できませんでした。");
+            response.sendRedirect(request.getContextPath() + "/Top");
+            return;
+        }
+
+        System.out.println("[DEBUG] 取得したユーザーID: " + userId);
+
+        // ライブハウスIDの取得
+        Integer livehouseInformationId = livehouseApplicationDAO.getLivehouseIdByUserId(userId);
+        if (livehouseInformationId == -1) {
+            System.out.println("[WARN] 該当するライブハウス情報が見つかりません。userId: " + userId);
+            request.setAttribute("errorMessage", "ライブハウス情報が見つかりません");
+            request.setAttribute("reservationStatus", "{}");
+            request.getRequestDispatcher("/WEB-INF/jsp/livehouse/livehouse_home.jsp").forward(request, response);
+            return;
+        }
         if (idParam != null) {
             try {
                 int applicationId = Integer.parseInt(idParam);
@@ -45,22 +70,17 @@ public class Application_confirmation extends HttpServlet {
                 }
 
                 request.setAttribute("application", applicationDetails);
-
-             // 承認ボタンが押された場合の処理
+                
                 // 承認ボタンが押された場合の処理
                 if ("approval".equals(action)) {
                     // `true_false`を1に更新
                     updateTrueFalse(applicationId, dbManager);
-
-                    // artistGroupIdを取得
-                    int groupId = applicationDetails.getGroupId();
-                    request.setAttribute("artistGroupId", groupId); // ここでartistGroupIdをリクエスト属性にセット
                     // 承認ページに遷移
-                    request.setAttribute("application", applicationDetails);
                     request.setAttribute("applicationId", applicationId);
                     request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_approval.jsp").forward(request, response);
                     return;
                 }
+
                 
                 // 申請者のグループ情報
                 int groupId = applicationDetails.getGroupId();
@@ -130,7 +150,6 @@ public class Application_confirmation extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
-
     /**
      * `true_false`を1に更新するメソッド
      */
@@ -145,4 +164,5 @@ public class Application_confirmation extends HttpServlet {
             throw new RuntimeException("Failed to update true_false in the database", e);
         }
     }
+
 }

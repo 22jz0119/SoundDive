@@ -1547,39 +1547,8 @@ public class Livehouse_applicationDAO {
  /**
   * `true_false`を1に更新するメソッド
   */
- private void updateTrueFalse(int applicationId) {
-	    DBManager dbManager = DBManager.getInstance();
-	    String updateQuery = "UPDATE livehouse_application_table SET true_false = 1 WHERE id = ?";
 
-	    // ログ出力：処理開始
-	    System.out.println("[INFO] Attempting to update true_false for Application ID: " + applicationId);
 
-	    try (Connection connection = dbManager.getConnection();
-	         PreparedStatement stmt = connection.prepareStatement(updateQuery)) {
-
-	        // ログ出力：DB接続確認
-	        System.out.println("[INFO] Database connection established successfully.");
-
-	        stmt.setInt(1, applicationId);
-
-	        // ログ出力：SQL実行前
-	        System.out.println("[INFO] Executing SQL update query: " + updateQuery);
-
-	        int rowsUpdated = stmt.executeUpdate();
-
-	        // 更新結果に応じてログを出力
-	        if (rowsUpdated > 0) {
-	            System.out.println("[DEBUG] Application ID " + applicationId + " updated successfully.");
-	        } else {
-	            System.err.println("[ERROR] Application ID " + applicationId + " update failed. No rows affected.");
-	        }
-	    } catch (SQLException e) {
-	        // エラーログを出力
-	        System.err.println("[ERROR] SQLException occurred while updating Application ID " + applicationId);
-	        e.printStackTrace();
-	        throw new RuntimeException("Failed to update true_false in the database", e);
-	    }
-	}
 
 
 
