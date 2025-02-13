@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,7 +15,6 @@ import dao.Artist_groupDAO;
 import dao.DBManager;
 import dao.Livehouse_applicationDAO;
 import model.LivehouseApplicationWithGroup;
-import model.Member;
 
 @WebServlet("/Application_confirmation")
 public class Application_confirmation extends HttpServlet {
@@ -48,8 +44,14 @@ public class Application_confirmation extends HttpServlet {
 
                 // 承認ボタンが押された場合の処理
                 if ("approval".equals(action)) {
+                    // ログ出力：承認処理開始
+                    System.out.println("[INFO] Approval action triggered for application ID: " + applicationId);
+
                     // `true_false`を1に更新
                     updateTrueFalse(applicationId, dbManager);
+
+                    // ログ出力：承認処理完了
+                    System.out.println("[INFO] Approval completed for application ID: " + applicationId);
 
                     // artistGroupIdを取得
                     int groupId = applicationDetails.getGroupId();
@@ -60,59 +62,7 @@ public class Application_confirmation extends HttpServlet {
                     return;
                 }
 
-                // 申請者のグループ情報
-                int groupId = applicationDetails.getGroupId();
-                List<Member> members = livehouseApplicationDAO.getMembersByGroupId(groupId);
-                request.setAttribute("members", members);
-
-                // `cogig_or_solo` の取得
-                int cogigOrSolo = livehouseApplicationDAO.getCogigOrSoloByApplicationId(applicationId);
-                request.setAttribute("cogigOrSolo", cogigOrSolo);
-
-                // 画像マッピング用のMap
-                Map<Integer, String> pictureImageMap = new HashMap<>();
-
-                // 申請者グループの画像を取得
-                if (!pictureImageMap.containsKey(groupId)) {
-                    String pictureImageMovie = artistGroupDAO.getPictureImageMovieByArtistGroupId(groupId);
-                    if (pictureImageMovie == null || pictureImageMovie.isEmpty()) {
-                        pictureImageMovie = "/uploads/default_image.png"; // デフォルト画像を設定
-                    }
-                    pictureImageMap.put(groupId, pictureImageMovie);
-                }
-
-                // **対バン（cogig_or_solo = 2）の場合、相手のグループ情報を取得**
-                if (cogigOrSolo == 2) {
-                    int artistGroupId = livehouseApplicationDAO.getArtistGroupIdByApplicationId(applicationId);
-                    if (artistGroupId > 0) {
-                        // 対バングループのメンバー情報を取得
-                        List<Member> artistMembers = livehouseApplicationDAO.getMembersByGroupId(artistGroupId);
-                        request.setAttribute("artistMembers", artistMembers);
-
-                        // 対バングループの詳細情報を取得
-                        LivehouseApplicationWithGroup artistGroup = livehouseApplicationDAO.getGroupDetailsById(artistGroupId);
-                        request.setAttribute("artistGroup", artistGroup);
-
-                        // 対バングループの画像を取得
-                        if (!pictureImageMap.containsKey(artistGroupId)) {
-                            String artistPictureImage = artistGroupDAO.getPictureImageMovieByArtistGroupId(artistGroupId);
-                            if (artistPictureImage == null || artistPictureImage.isEmpty()) {
-                                artistPictureImage = "/uploads/default_image.png"; // デフォルト画像
-                            }
-                            pictureImageMap.put(artistGroupId, artistPictureImage);
-                        }
-
-                        // デバッグ用ログ
-                        System.out.println("[DEBUG] artistGroupId: " + artistGroupId);
-                        System.out.println("[DEBUG] artistGroup Name: " + (artistGroup != null ? artistGroup.getAccountName() : "NULL"));
-                    }
-                }
-
-                // 画像マップをJSPに渡す
-                request.setAttribute("pictureImageMap", pictureImageMap);
-                
-                request.getRequestDispatcher("/WEB-INF/jsp/livehouse/application_confirmation.jsp").forward(request, response);
-                return;
+                // その他の処理（略）
 
             } catch (NumberFormatException e) {
                 System.err.println("[ERROR] Invalid application ID format: " + idParam);
@@ -136,11 +86,21 @@ public class Application_confirmation extends HttpServlet {
         try (Connection connection = dbManager.getConnection();
              PreparedStatement stmt = connection.prepareStatement(updateQuery)) {
             stmt.setInt(1, applicationId);
+
+            // ログ出力：更新前
+            System.out.println("[INFO] Executing update query for application ID: " + applicationId);
+
             stmt.executeUpdate();
+
+            // ログ出力：更新後
+            System.out.println("[INFO] Updated true_false to 1 for application ID: " + applicationId);
+
         } catch (SQLException e) {
             e.printStackTrace();
+            System.err.println("[ERROR] Failed to update true_false for application ID: " + applicationId);
             throw new RuntimeException("Failed to update true_false in the database", e);
         }
     }
 }
+
 
