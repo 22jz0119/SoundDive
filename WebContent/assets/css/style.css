@@ -1127,12 +1127,14 @@ input[type="submit"]:active, .info-check:active {
 }
 
 .application-artist-list-ul0{
+	
 	list-style: none;
 }
 
 .application-artist-list-ul0-li1{
 	font-size: 1.6rem;
 	border-bottom: 1px solid #FFFFFF;
+	
 }
 
 

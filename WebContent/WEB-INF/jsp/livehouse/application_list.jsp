@@ -45,18 +45,20 @@
                 <c:choose>
                     <c:when test="${not empty soloApplications}">
                         <c:forEach var="application" items="${soloApplications}">
-                            <div class="apllicationList-MaiinFrame">
-                                <div class="application-artist-list-img-containar">
-                                    <c:set var="groupId" value="${application.groupId}" />
-                                    <c:set var="imagePath" value="${pictureImageMap[groupId]}" />
-                                    <img src="${pageContext.request.contextPath}${imagePath}" 
-                                         alt="バンドのイラスト" 
-                                         class="application-artist-list-ikon"
+                            <div class="apllicatio<div class="application-artist-list-img-containar">
+								    <c:set var="groupId" value="${application.groupId}" />
+								    <c:set var="imagePath" value="${pictureImageMap[groupId]}" />
+								    <img src="${pageContext.request.contextPath}${imagePath}" 
+								         alt="バンドのイラスト" 
+								         class="application-artist-list-ikon"
+								         style="width: 150px; height: auto; max-height: 150px; object-fit: cover; border-radius: 10px;">
+								</div>
+    class="application-artist-list-ikon"
                                          style="width: 150px; height: auto; max-height: 150px; object-fit: cover; border-radius: 10px;">
                                 </div>
                                 <div>
                                     <ul class="application-artist-list-ul0">
-                                        <li><p>${application.accountName} (ソロ)</p></li>
+                                        <li class="application-artist-list-ul0-li1"><p>${application.accountName} (ソロ)</p></li>
                                     </ul>
                                     <ul class="application-artist-list-ul1">
                                         <li class="application-artist-list-ul1-li1"><p>ジャンル</p></li>
@@ -93,12 +95,12 @@
                                     <c:set var="imagePath" value="${pictureImageMap[groupId]}" />
                                     <img src="${pageContext.request.contextPath}${imagePath}" 
                                          alt="バンドのイラスト" 
-                                         style="width: 150px; height: auto; max-height: 150px; object-fit: cover; border-radius: 10px;">
-                                </div>
+                                         style="width: 150px; height: auto;			x-height: 150px; object-fit: cover; border-radius: 10px;">
+     			                        </div>
                                 <div>
-                                    <ul class="application-artist-list-ul0">
-                                        <li class="application-artist-list-ul0-li1"><p>${application.accountName}</p></li>
-                                    </ul>
+ 			                                <ul class="application-artist-list-ul			
+                             			        <li class="application-artist-list-ul0-li1"><p>${application.accountName}</p></li>
+                   			              </ul>
                                     <ul class="application-artist-list-ul1">
                                         <li class="application-artist-list-ul1-li1"><p>ジャンル</p></li>
                                         <li class="application-artist-list-ul1-li2"><p>${application.groupGenre}</p></li>
