@@ -21,6 +21,7 @@ import dao.Livehouse_applicationDAO;
 import model.LivehouseApplicationWithGroup;
 import model.Member;
 
+
 @WebServlet("/Application_confirmation")
 public class Application_confirmation extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -146,6 +147,7 @@ public class Application_confirmation extends HttpServlet {
             return;
         }
     }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
