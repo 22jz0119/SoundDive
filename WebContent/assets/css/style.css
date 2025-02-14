@@ -1148,8 +1148,23 @@ input[type="submit"]:active, .info-check:active {
 	
 }
 
+.bee-2{
+	margin-left: 300px;
+	font-size: 1.5rem;
+}
 
+.bee-3{
+	display: flex;
+	justify-content: center;
+}
 
+.application-details-ul{
+	list-style: none;
+}
+.application-details-ul li{
+	margin-top: 20px;
+	font-size: 1.3rem;
+}
 
 
 .application-list-multi{
