@@ -96,5 +96,31 @@ public class Approval_history extends HttpServlet {
         // JSPへフォワード
         request.getRequestDispatcher("/WEB-INF/jsp/livehouse/approval_history.jsp").forward(request, response);
     }
+
+@Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    System.out.println("[INFO] Approval_history Servlet: doPost() started");
+    String applicationIdStr = request.getParameter("applicationId");
+
+    if (applicationIdStr != null && !applicationIdStr.isEmpty()) {
+        try {
+            int applicationId = Integer.parseInt(applicationIdStr);
+            Livehouse_applicationDAO dao = new Livehouse_applicationDAO(DBManager.getInstance());
+            boolean isDeleted = dao.deleteReservationById(applicationId);
+
+            if (isDeleted) {
+                System.out.println("[DEBUG] 予約ID " + applicationId + " を削除しました。");
+            } else {
+                System.out.println("[ERROR] 予約ID " + applicationId + " の削除に失敗しました。");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("[ERROR] 不正な予約IDが指定されました: " + applicationIdStr);
+        }
+    } else {
+        System.out.println("[ERROR] 予約IDが送信されていません。");
+    }
+
+    response.sendRedirect(request.getContextPath() + "/Approval_history");
+}
 }
 

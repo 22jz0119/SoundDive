@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,6 +29,7 @@
 </header>
 
 <main>
+    <!-- 予約承認履歴セクション -->
     <section class="application-list-count">
         <h2>予約承認履歴一覧ページ</h2>
         <div class="reservation-date">
@@ -39,9 +40,9 @@
         </div>
     </section>
 
+    <!-- ソロのデータ表示 -->
     <div class="application-lists">
         <ul>
-            <!-- ソロ のデータ表示 -->
             <c:choose>
                 <c:when test="${not empty soloApplications}">
                     <c:forEach var="application" items="${soloApplications}">
@@ -76,7 +77,7 @@
                                 </ul>
                                 <ul class="application-artist-list-ul5">
                                     <li class="application-artist-list-ul5-li1">
-                                        <a href="<c:url value='/Application_confirmation' />?id=${application.id}" class="application-artist-list-ul5-li1-a">詳細を見る</a>
+                                         <a href="<c:url value='/Livehouse_history_detail' />?id=${application.id}" class="application-artist-list-ul5-li1-a">詳細を見る</a>
                                     </li>
                                 </ul>
                                 <ul class="application-artist-list-ul5">
@@ -97,7 +98,7 @@
             </c:choose>
         </ul>
         
-        <!-- 対バン のデータ表示 -->
+        <!-- 対バンのデータ表示 -->
         <p>対バン</p>
         <div class="application-list-multi">
             <c:choose>
@@ -109,7 +110,6 @@
                                 <!-- 対バンデータの開始 -->
                                 <ul class="cogig-group">
                             </c:if>
-
                             <li>
                                 <div class="application-artist-list-img-containar">
                                     <c:set var="groupId" value="${application.groupId}" />
@@ -146,19 +146,22 @@
                                             </li>
                                         </ul>
                                     </c:if>
+                                    <!-- 削除ボタン追加 -->
+                                    <ul class="application-artist-list-ul5">
+                                        <li>
+                                            <form action="${pageContext.request.contextPath}/Approval_history" method="post" onsubmit="return confirm('本当に削除しますか？');">
+                                                <input type="hidden" name="applicationId" value="${application.id}">
+                                                <button type="submit" class="delete-button">削除する</button>
+                                            </form>
+                                        </li>
+                                    </ul>
                                 </div>
                             </li>
-
-                            <c:if test="${previousReservationId ne application.id}">
-                                </ul> <!-- cogig-groupの閉じタグ -->
-                            </c:if>
-
-                            <c:set var="previousReservationId" value="${application.id}" />
                         </div>
                     </c:forEach>
                 </c:when>
                 <c:otherwise>
-                    <li>対バンデータがありません</li>
+                    <li>データがありません</li>
                 </c:otherwise>
             </c:choose>
         </div>

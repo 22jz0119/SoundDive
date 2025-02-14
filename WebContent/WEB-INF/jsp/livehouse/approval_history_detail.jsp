@@ -1,12 +1,13 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
 <title>承認履歴詳細ページ</title>
 </head>
 <body>
@@ -28,18 +29,14 @@
             <div class="main-reservation-confirmation">
                 <section class="confirmation-sec">
                     <div class="confirmation-div">
-                        <h1 class="confirmation-title">承認予約確認画面</h1>
+                        <h1 class="confirmation-title">アーティスト承認詳細画面</h1>
                     </div>
-                    <p class="question-approval">承認された予約内容です</p>
+                    <p class="question-approval">承認された予約詳細です</p>
                 </section>
                 <div class="band-confirmation-container">
                     <div class="confirmation-profile">
                         <div class="confirmation-artist-img-div">
-                            <c:set var="groupId" value="${application.groupId}" />
-                                    <c:set var="imagePath" value="${pictureImageMap[groupId]}" />
-                                    <img src="${pageContext.request.contextPath}${imagePath}" 
-                                         alt="バンドのイラスト" 
-                                         style="width: 150px; height: auto; max-height: 150px; object-fit: cover; border-radius: 10px;">
+                            <img class="confirmation-artist-img" src="../assets/img/アーティスト画像.png" alt="アーティスト画像">
                         </div>
                         <ul class="confirmation-info">
                             <h2>${application.accountName}</h2>
@@ -58,11 +55,7 @@
                         <h2>対バングループ情報</h2>
                         <div class="confirmation-profile">
                             <div class="confirmation-artist-img-div">
-                                <c:set var="groupId" value="${application.groupId}" />
-                                    <c:set var="imagePath" value="${pictureImageMap[groupId]}" />
-                                    <img src="${pageContext.request.contextPath}${imagePath}" 
-                                         alt="バンドのイラスト" 
-                                         style="width: 150px; height: auto; max-height: 150px; object-fit: cover; border-radius: 10px;">
+                                <img class="confirmation-artist-img" src="../assets/img/アーティスト画像.png" alt="アーティスト画像">
                             </div>
                             <ul class="confirmation-info">
                                 <h2>${artistGroup.accountName}</h2>
@@ -96,5 +89,4 @@
         </main>
     </body>
 </body>
-
 </html>

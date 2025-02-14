@@ -755,6 +755,16 @@ input[type="submit"]:active, .info-check:active {
     font-size: small;
 }
 /*アーティスト申請承認ページ*/
+ /* すべてのリストに対して・を非表示にする */
+    ul {
+        list-style-type: none; /* リストの・を非表示 */
+        padding: 0; /* リストの余白も削除 */
+        margin: 0; /* リストの外側の余白を削除 */
+    }
+.reservation-details-container-info {
+        list-style-type: none; /* リストの・を非表示 */
+        padding: 0; /* リストの余白も削除 */
+    }
 .main-application_approval{
     padding-top: 100px;
 }
